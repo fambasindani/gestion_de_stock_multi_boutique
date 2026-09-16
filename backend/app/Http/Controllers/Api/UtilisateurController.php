@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Utilisateur;
 use App\Models\Role;
+use App\Models\CommandeVente;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -43,10 +45,39 @@ class UtilisateurController extends Controller
     public function show($id)
     {
         try {
-            $utilisateur = Utilisateur::with('roles')->findOrFail($id);
+            $utilisateur = Utilisateur::with(['roles.permissions', 'societe'])->findOrFail($id);
+
+            // Permissions distinctes (via les rôles)
+            $permissions = [];
+            foreach ($utilisateur->roles as $role) {
+                foreach ($role->permissions as $perm) {
+                    $permissions[] = ['nom' => $perm->nom, 'garde' => $perm->garde ?? null];
+                }
+            }
+            $permissions = collect($permissions)->unique('nom')->values();
+
+            // Statistiques de vente du vendeur
+            $ventes = CommandeVente::where('cree_par_utilisateur_id', $utilisateur->id)
+                ->whereNotIn('etat', ['brouillon', 'annule'])
+                ->selectRaw('COUNT(*) as nombre_ventes, COALESCE(SUM(montant_total_ht),0) as total_ht, COALESCE(SUM(montant_total_ttc),0) as total_ttc')
+                ->first();
+
+            // Activité récente (logs)
+            $activite = AuditLog::where('user_id', $utilisateur->id)
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get(['id', 'action', 'description', 'created_at']);
+
             return response()->json([
                 'success' => true,
                 'data' => $utilisateur,
+                'permissions' => $permissions,
+                'statistiques' => [
+                    'nombre_ventes' => (int) ($ventes->nombre_ventes ?? 0),
+                    'total_ht' => round((float) ($ventes->total_ht ?? 0), 2),
+                    'total_ttc' => round((float) ($ventes->total_ttc ?? 0), 2),
+                ],
+                'activite_recente' => $activite,
                 'message' => 'Utilisateur récupéré avec succès'
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -66,7 +97,7 @@ class UtilisateurController extends Controller
             'mot_de_passe' => 'required|string|min:8',
             'telephone' => 'nullable|string|max:50',
             'actif' => 'boolean',
-            'societe_id' => 'nullable|integer|exists:societe,id',
+            'societe_id' => 'nullable|integer|exists:societes,id',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id',  // ← 'roles' avec 's'
         ]);
@@ -78,7 +109,7 @@ class UtilisateurController extends Controller
             'mot_de_passe' => $validated['mot_de_passe'],
             'telephone' => $validated['telephone'] ?? null,
             'actif' => $validated['actif'] ?? true,
-            'societe_id' => $validated['societe_id'] ?? null,
+            'societe_id' => $validated['societe_id'] ?? (app()->bound('societe_id') ? app('societe_id') : null),
         ]);
 
         // Assigner les rôles
@@ -104,7 +135,7 @@ class UtilisateurController extends Controller
             'mot_de_passe' => 'nullable|string|min:8',
             'telephone' => 'nullable|string|max:50',
             'actif' => 'boolean',
-            'societe_id' => 'nullable|integer|exists:societe,id',
+            'societe_id' => 'nullable|integer|exists:societes,id',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id',  // ← 'roles' avec 's'
         ]);

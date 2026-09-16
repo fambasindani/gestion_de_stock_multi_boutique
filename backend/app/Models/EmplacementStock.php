@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmplacementStock extends Model
 {
+    use Concerns\BelongsToSociete;
+
     protected $table = 'emplacement_stock';
     protected $primaryKey = 'id';
 

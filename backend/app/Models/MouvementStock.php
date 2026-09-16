@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 // ✅ La classe DOIT s'appeler MouvementStock
 class MouvementStock extends Model
 {
+    use Concerns\BelongsToSociete;
+
     protected $table = 'mouvement_stock';
     protected $primaryKey = 'id';
 

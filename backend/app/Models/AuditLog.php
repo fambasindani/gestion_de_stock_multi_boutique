@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class AuditLog extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Models\Concerns\BelongsToSociete;
 
     protected $fillable = [
+        'societe_id',
         'user_id',
         'action',
         'entity_type',

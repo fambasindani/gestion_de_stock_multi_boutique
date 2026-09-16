@@ -88,6 +88,14 @@ class DashboardController extends Controller
     }
 
     /**
+     * Société courante (null = super-admin = toutes les sociétés)
+     */
+    private function societeId()
+    {
+        return app()->bound('societe_id') ? app('societe_id') : null;
+    }
+
+    /**
      * Statistiques générales
      */
     private function getGeneralStats()
@@ -370,6 +378,9 @@ class DashboardController extends Controller
         // Lignes de commande de vente
         return DB::table('ligne_commande_vente')
                  ->join('commande_vente', 'ligne_commande_vente.commande_vente_id', '=', 'commande_vente.id')
+                 ->when($this->societeId(), function ($q) {
+                     $q->where('commande_vente.societe_id', $this->societeId());
+                 })
                  ->whereBetween('commande_vente.date_commande', [$dateDebut, $dateFin])
                  ->where('commande_vente.etat', '!=', 'annule')
                  ->select(
@@ -418,6 +429,10 @@ class DashboardController extends Controller
         // Nombre d'utilisateurs par rôle
         $usersParRole = DB::table('utilisateur_role')
                           ->join('roles', 'utilisateur_role.role_id', '=', 'roles.id')
+                          ->join('utilisateurs', 'utilisateurs.id', '=', 'utilisateur_role.utilisateur_id')
+                          ->when($this->societeId(), function ($q) {
+                              $q->where('utilisateurs.societe_id', $this->societeId());
+                          })
                           ->select('roles.nom', DB::raw('count(*) as total'))
                           ->groupBy('roles.nom')
                           ->get()
@@ -526,6 +541,9 @@ class DashboardController extends Controller
             // Valeur du stock (estimation)
             $valeurStock = DB::table('quantite_stock')
                              ->join('variante_produit', 'quantite_stock.produit_id', '=', 'variante_produit.id')
+                             ->when($this->societeId(), function ($q) {
+                                 $q->where('quantite_stock.societe_id', $this->societeId());
+                             })
                              ->select(DB::raw('SUM(quantite_stock.quantite_disponible * variante_produit.prix_achat) as valeur_totale'))
                              ->first();
 

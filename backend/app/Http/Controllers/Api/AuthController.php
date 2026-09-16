@@ -25,18 +25,34 @@ class AuthController extends Controller
             ]);
         }
 
+        // Abonnement / société
+        if (!$user->est_super_admin && $user->societe_id) {
+            $societe = \App\Models\Societe::find($user->societe_id);
+            if (!$societe || !$societe->actif) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Abonnement inactif : contactez l\'administrateur.',
+                ], 403);
+            }
+        }
+
         // Mettre à jour dernière connexion
         $user->update(['derniere_connexion' => now()]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        $this->logActivity('login', 'Utilisateur', $user->id, "Connexion de {$user->email}");
+        $this->logActivity('login', 'Utilisateur', $user->id, "Connexion de {$user->email}", null, null, $user->societe_id);
+
+        $user->load('societe');
 
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
             'utilisateur' => $user,
+            'societe' => $user->societe,
+            'est_super_admin' => (bool) $user->est_super_admin,
             'roles' => $user->roles->pluck('nom'),
+            'permissions' => $this->getUserPermissions($user),
         ]);
     }
 
@@ -49,10 +65,15 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
+        $user = $request->user();
+        $user->load('societe');
+
         return response()->json([
-            'utilisateur' => $request->user(),
-            'roles' => $request->user()->roles->pluck('nom'),
-            'permissions' => $this->getUserPermissions($request->user()),
+            'utilisateur' => $user,
+            'societe' => $user->societe,
+            'est_super_admin' => (bool) $user->est_super_admin,
+            'roles' => $user->roles->pluck('nom'),
+            'permissions' => $this->getUserPermissions($user),
         ]);
     }
 

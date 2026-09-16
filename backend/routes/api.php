@@ -21,6 +21,11 @@ use App\Http\Controllers\Api\EcritureComptableController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\RapportController;
+use App\Http\Controllers\Api\InventaireController;
+use App\Http\Controllers\Api\SocieteController;
+use App\Http\Controllers\Api\PosController;
+use App\Http\Controllers\Api\ParametreController;
+use App\Http\Controllers\Api\ProfilController;
 
 
 
@@ -40,7 +45,7 @@ use App\Http\Controllers\Api\RapportController;
 Route::post('/auth/login', [AuthController::class, 'login']);
 
 // Routes protégées par authentification
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'societe'])->group(function () {
 
     // Auth
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -184,6 +189,43 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stocks/resume/produit/{produitId}', [QuantiteStockController::class, 'resumerProduit']);
     Route::get('/stocks/resume/emplacement/{emplacementId}', [QuantiteStockController::class, 'resumerEmplacement']);
 
+    // Inventaires & ajustements
+    Route::get('/inventaires', [InventaireController::class, 'index']);
+    Route::post('/inventaires', [InventaireController::class, 'store']);
+    Route::get('/inventaires/{id}', [InventaireController::class, 'show']);
+    Route::put('/inventaires/{id}', [InventaireController::class, 'update']);
+    Route::delete('/inventaires/{id}', [InventaireController::class, 'destroy']);
+    Route::post('/inventaires/{id}/generer-lignes', [InventaireController::class, 'genererLignes']);
+    Route::post('/inventaires/{id}/lignes', [InventaireController::class, 'ajouterLigne']);
+    Route::put('/inventaires/{id}/lignes/{ligneId}', [InventaireController::class, 'updateLigne']);
+    Route::delete('/inventaires/{id}/lignes/{ligneId}', [InventaireController::class, 'supprimerLigne']);
+    Route::post('/inventaires/{id}/cloturer', [InventaireController::class, 'cloturer']);
+    Route::post('/inventaires/{id}/ajuster', [InventaireController::class, 'ajuster']);
+
+    // Profil de l'utilisateur connecté
+    Route::get('/profil', [ProfilController::class, 'show']);
+    Route::put('/profil', [ProfilController::class, 'update']);
+    Route::put('/profil/password', [ProfilController::class, 'updatePassword']);
+
+    // Point de vente (vente comptoir) + ticket
+    Route::post('/pos/vendre', [PosController::class, 'vendre']);
+
+    // Paramètres (TVA, entreprise, ticket)
+    Route::get('/parametres', [ParametreController::class, 'index']);
+    Route::put('/parametres', [ParametreController::class, 'update']);
+
+    // Sociétés / abonnements (permission gerer_societes ou super-admin)
+    Route::middleware('permission:gerer_societes')->group(function () {
+        Route::get('/societes', [SocieteController::class, 'index']);
+        Route::post('/societes', [SocieteController::class, 'store']);
+        Route::get('/societes/{id}', [SocieteController::class, 'show']);
+        Route::put('/societes/{id}', [SocieteController::class, 'update']);
+        Route::delete('/societes/{id}', [SocieteController::class, 'destroy']);
+        Route::post('/societes/{id}/activer', [SocieteController::class, 'activer']);
+        Route::post('/societes/{id}/desactiver', [SocieteController::class, 'desactiver']);
+        Route::post('/societes/{id}/logo', [SocieteController::class, 'uploadLogo']);
+    });
+
 
 
 
@@ -236,6 +278,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/rapports/achats', [RapportController::class, 'achats']);
     Route::get('/rapports/mouvements', [RapportController::class, 'mouvements']);
     Route::get('/rapports/stock', [RapportController::class, 'stock']);
+    Route::get('/rapports/ventes-vendeurs', [RapportController::class, 'ventesVendeurs']);
+    Route::get('/rapports/ventes-vendeurs/{utilisateurId}', [RapportController::class, 'ventesVendeurDetails']);
 
 
 

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class UniteMesure extends Model
 {
+    use Concerns\BelongsToSociete;
+
     protected $table = 'unite_mesure';
     protected $primaryKey = 'id';
 

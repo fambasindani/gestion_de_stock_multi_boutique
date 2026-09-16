@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class CommandeAchat extends Model
 {
+    use Concerns\BelongsToSociete;
+
     protected $table = 'commande_achat';
     protected $primaryKey = 'id';
 

@@ -8,7 +8,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Utilisateur extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, \App\Models\Concerns\BelongsToSociete;
 
     // ✅ AJOUTER CETTE LIGNE
     protected $table = 'utilisateurs';
@@ -16,8 +16,20 @@ class Utilisateur extends Authenticatable
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'nom', 'email', 'mot_de_passe', 'telephone', 'actif', 'societe_id', 'derniere_connexion'
+        'nom', 'email', 'mot_de_passe', 'telephone', 'actif', 'societe_id',
+        'est_super_admin', 'derniere_connexion'
     ];
+
+    protected $casts = [
+        'actif' => 'boolean',
+        'est_super_admin' => 'boolean',
+        'derniere_connexion' => 'datetime',
+    ];
+
+    public function societe()
+    {
+        return $this->belongsTo(Societe::class, 'societe_id');
+    }
 
     protected $hidden = [
         'mot_de_passe', 'remember_token',

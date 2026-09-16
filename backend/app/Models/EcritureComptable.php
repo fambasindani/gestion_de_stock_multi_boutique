@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class EcritureComptable extends Model
 {
+    use Concerns\BelongsToSociete;
+
     protected $table = 'ecriture_comptable';
     protected $primaryKey = 'id';
 

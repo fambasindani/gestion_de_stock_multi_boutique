@@ -7,6 +7,8 @@ use Carbon\Carbon;
 
 class LotTracabilite extends Model
 {
+    use Concerns\BelongsToSociete;
+
     protected $table = 'lot_tracabilite';
     protected $primaryKey = 'id';
 

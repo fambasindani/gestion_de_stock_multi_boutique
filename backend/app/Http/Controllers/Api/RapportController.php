@@ -11,6 +11,7 @@ use App\Models\CommandeVente;
 use App\Models\LigneCommandeVente;
 use App\Models\CommandeAchat;
 use App\Models\LigneCommandeAchat;
+use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -217,6 +218,142 @@ class RapportController extends Controller
                 'success' => false,
                 'message' => 'Erreur lors de la génération du rapport',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Ventes par vendeur (utilisateur) sur une période
+     */
+    public function ventesVendeurs(Request $request)
+    {
+        try {
+            $request->validate([
+                'date_debut' => 'nullable|date',
+                'date_fin' => 'nullable|date|after_or_equal:date_debut',
+                'utilisateur_id' => 'nullable|exists:utilisateurs,id',
+            ]);
+
+            $query = CommandeVente::with('creePar:id,nom,email')
+                ->whereNotIn('etat', ['brouillon', 'annule']);
+
+            if ($request->filled('date_debut')) {
+                $query->whereDate('date_commande', '>=', $request->date_debut);
+            }
+            if ($request->filled('date_fin')) {
+                $query->whereDate('date_commande', '<=', $request->date_fin);
+            }
+            if ($request->filled('utilisateur_id')) {
+                $query->where('cree_par_utilisateur_id', $request->utilisateur_id);
+            }
+
+            $commandes = $query->get();
+
+            $lignes = $commandes->groupBy('cree_par_utilisateur_id')->map(function ($group) {
+                $user = $group->first()->creePar;
+                return [
+                    'utilisateur_id' => $user->id ?? null,
+                    'vendeur' => $user->nom ?? 'Non attribué',
+                    'email' => $user->email ?? '',
+                    'nombre_ventes' => $group->count(),
+                    'total_ht' => round($group->sum('montant_total_ht'), 2),
+                    'total_remise' => round($group->sum('montant_remise'), 2),
+                    'total_ttc' => round($group->sum('montant_total_ttc'), 2),
+                ];
+            })->sortByDesc('total_ttc')->values();
+
+            $totaux = [
+                'nombre_ventes' => $commandes->count(),
+                'total_ht' => round($commandes->sum('montant_total_ht'), 2),
+                'total_remise' => round($commandes->sum('montant_remise'), 2),
+                'total_ttc' => round($commandes->sum('montant_total_ttc'), 2),
+                'nombre_vendeurs' => $lignes->count(),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => ['lignes' => $lignes, 'totaux' => $totaux],
+                'message' => 'Rapport des ventes par vendeur généré avec succès',
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération du rapport',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Détail des ventes d'un vendeur sur une période
+     */
+    public function ventesVendeurDetails(Request $request, $utilisateurId)
+    {
+        try {
+            $request->validate([
+                'date_debut' => 'nullable|date',
+                'date_fin' => 'nullable|date|after_or_equal:date_debut',
+            ]);
+
+            $vendeur = Utilisateur::findOrFail($utilisateurId);
+
+            $query = CommandeVente::with(['partenaire:id,nom', 'lignes'])
+                ->where('cree_par_utilisateur_id', $utilisateurId)
+                ->whereNotIn('etat', ['brouillon', 'annule']);
+
+            if ($request->filled('date_debut')) {
+                $query->whereDate('date_commande', '>=', $request->date_debut);
+            }
+            if ($request->filled('date_fin')) {
+                $query->whereDate('date_commande', '<=', $request->date_fin);
+            }
+
+            $commandes = $query->orderBy('date_commande', 'desc')->orderBy('id', 'desc')->get();
+
+            $lignes = $commandes->map(function ($c) {
+                return [
+                    'id' => $c->id,
+                    'reference' => $c->reference,
+                    'date_commande' => optional($c->date_commande)->format('Y-m-d'),
+                    'client' => $c->partenaire->nom ?? ($c->client_nom ?? 'Comptoir'),
+                    'etat' => $c->etat,
+                    'mode_paiement' => $c->mode_paiement,
+                    'nombre_articles' => $c->lignes->count(),
+                    'total_ht' => round((float) $c->montant_total_ht, 2),
+                    'total_remise' => round((float) $c->montant_remise, 2),
+                    'total_ttc' => round((float) $c->montant_total_ttc, 2),
+                ];
+            })->values();
+
+            $totaux = [
+                'nombre_ventes' => $commandes->count(),
+                'total_ht' => round((float) $commandes->sum('montant_total_ht'), 2),
+                'total_remise' => round((float) $commandes->sum('montant_remise'), 2),
+                'total_ttc' => round((float) $commandes->sum('montant_total_ttc'), 2),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'vendeur' => [
+                        'id' => $vendeur->id,
+                        'nom' => $vendeur->nom,
+                        'email' => $vendeur->email,
+                    ],
+                    'lignes' => $lignes,
+                    'totaux' => $totaux,
+                ],
+                'message' => 'Détail des ventes du vendeur récupéré avec succès',
+            ], 200);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['success' => false, 'message' => 'Vendeur non trouvé'], 404);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération du détail',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

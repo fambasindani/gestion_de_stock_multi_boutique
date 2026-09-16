@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Partenaire extends Model
 {
+    use Concerns\BelongsToSociete;
+
     protected $table = 'partenaire';
     protected $primaryKey = 'id';
 

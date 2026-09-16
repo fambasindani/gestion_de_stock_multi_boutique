@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class TransfertStock extends Model
 {
+    use Concerns\BelongsToSociete;
+
     // ✅ Spécifier le nom exact de la table (sans 's')
     protected $table = 'transfert_stock';
     

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class VarianteProduit extends Model
 {
+    use Concerns\BelongsToSociete;
+
     protected $table = 'variante_produit';
     protected $primaryKey = 'id';
 
