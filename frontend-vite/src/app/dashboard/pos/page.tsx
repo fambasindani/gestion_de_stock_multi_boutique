@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,6 +25,8 @@ import {
   Loader2,
   Banknote,
   Download,
+  ExternalLink,
+  Receipt,
 } from "lucide-react";
 
 interface CartLine {
@@ -60,6 +63,7 @@ function unwrapList<T>(payload: unknown): T[] {
 }
 
 export default function PosPage() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState<CartLine[]>([]);
   const [clientNom, setClientNom] = useState("");
@@ -210,6 +214,20 @@ export default function PosPage() {
         actions={
           lastSale && (
             <>
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/ventes/commandes/${lastSale.commande.id}/details`)}
+              >
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Voir la commande
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/dashboard/factures/${lastSale.facture.id}/details`)}
+              >
+                <Receipt className="mr-2 h-4 w-4" />
+                Voir la facture
+              </Button>
               <Button
                 variant="outline"
                 onClick={() =>
