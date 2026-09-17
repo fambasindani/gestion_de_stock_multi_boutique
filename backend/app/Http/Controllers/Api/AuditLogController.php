@@ -12,13 +12,19 @@ class AuditLogController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = AuditLog::with('user');
+            $query = AuditLog::with(['user', 'societe:id,nom']);
 
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where('description', 'LIKE', "%{$search}%")
+                $query->where(function ($q) use ($search) {
+                    $q->where('description', 'LIKE', "%{$search}%")
                       ->orWhere('action', 'LIKE', "%{$search}%")
                       ->orWhere('entity_type', 'LIKE', "%{$search}%");
+                });
+            }
+
+            if ($request->filled('societe_id')) {
+                $query->where('societe_id', $request->societe_id);
             }
 
             if ($request->filled('action')) {
@@ -62,7 +68,7 @@ class AuditLogController extends Controller
     public function show($id)
     {
         try {
-            $log = AuditLog::with('user')->findOrFail($id);
+            $log = AuditLog::with(['user', 'societe:id,nom'])->findOrFail($id);
 
             return response()->json([
                 'success' => true,

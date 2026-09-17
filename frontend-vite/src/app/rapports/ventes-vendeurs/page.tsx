@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -16,7 +17,7 @@ import { utilisateursService } from "@/lib/api/services/utilisateurs.service";
 import { exportToExcel, type ExcelColumn } from "@/lib/utils/exportExcel";
 import { saveElementAsPdf } from "@/lib/utils/exportPdf";
 import { RapportTablePDF } from "@/components/pdf/RapportTablePDF";
-import { formatDateInput } from "@/lib/utils/format";
+import { formatDateInput, formatCompact } from "@/lib/utils/format";
 import {
   Users,
   Receipt,
@@ -46,7 +47,10 @@ function unwrapList<T>(payload: unknown): T[] {
   return Array.isArray(nested) ? (nested as T[]) : [];
 }
 
+import { useAuth } from "@/hooks/useAuth";
+
 export default function RapportVendeursPage() {
+  const { societe } = useAuth();
   const router = useRouter();
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
@@ -112,7 +116,7 @@ export default function RapportVendeursPage() {
       className: "text-right",
       render: (l) => (
         <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
-          {money(l.total_ttc)} CDF
+          {money(l.total_ttc)} {DEVISE}
         </span>
       ),
     },
@@ -190,7 +194,7 @@ export default function RapportVendeursPage() {
       <RapportTablePDF
         title="Ventes par vendeur"
         subtitle="Chiffre d'affaires par utilisateur"
-        company="GS Stock ERP"
+        company={societe?.nom || "GS Stock"}
         columns={[
           { header: "Vendeur", flex: 2, value: (l: VendeurLigne) => l.vendeur },
           { header: "Email", flex: 2, value: (l: VendeurLigne) => l.email },
@@ -251,7 +255,7 @@ export default function RapportVendeursPage() {
         />
         <StatCard
           title="Total TTC"
-          value={`${money(totaux?.total_ttc)} CDF`}
+          value={`${formatCompact(totaux?.total_ttc)} ${DEVISE}`}
           icon={<Wallet className="h-5 w-5" />}
           color="violet"
         />

@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -258,8 +259,8 @@ export default function ProduitDetails() {
                       <TableRow key={v.id}>
                         <TableCell className="font-mono text-xs">{v.code_interne || "-"}</TableCell>
                         <TableCell className="font-medium">{v.nom || "-"}</TableCell>
-                        <TableCell>{v.prix_achat ? `${Number(v.prix_achat).toFixed(2)} CDF` : "-"}</TableCell>
-                        <TableCell>{v.prix_vente ? `${Number(v.prix_vente).toFixed(2)} CDF` : "-"}</TableCell>
+                        <TableCell>{v.prix_achat ? `${Number(v.prix_achat).toFixed(2)} ${DEVISE}` : "-"}</TableCell>
+                        <TableCell>{v.prix_vente ? `${Number(v.prix_vente).toFixed(2)} ${DEVISE}` : "-"}</TableCell>
                         <TableCell className="text-xs">{v.reference_fournisseur || "-"}</TableCell>
                         <TableCell>
                           <DataTableBadge variant={v.actif ? "success" : "danger"}>

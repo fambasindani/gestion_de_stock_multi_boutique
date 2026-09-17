@@ -94,6 +94,28 @@ export class SocietesService {
     return res.json();
   }
 
+  async uploadMonLogo(file: File): Promise<ApiResponse<Societe>> {
+    const token = Cookies.get("auth_token");
+    const societeId =
+      typeof window !== "undefined" ? localStorage.getItem("selected_societe") : null;
+    const form = new FormData();
+    form.append("logo", file);
+    const res = await fetch(`${API_URL}/societe/logo`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(societeId ? { "X-Societe-Id": societeId } : {}),
+      },
+      body: form,
+    });
+    return res.json();
+  }
+
+  async supprimerMonLogo(): Promise<ApiResponse<Societe>> {
+    return apiClient.delete("/societe/logo");
+  }
+
   async activer(id: number): Promise<ApiResponse<Societe>> {
     return apiClient.post(`/societes/${id}/activer`);
   }

@@ -1,0 +1,13 @@
+# Logs
+*.log
+
+# Artefacts de build mobile
+frontend-mobile/**/android/build/
+frontend-mobile/**/ios/App/build/
+
+# Fichiers uploadés (logos des boutiques)
+backend/public/logos/
+
+# Divers
+.DS_Store
+Thumbs.db

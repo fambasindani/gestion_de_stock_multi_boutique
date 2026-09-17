@@ -35,8 +35,21 @@ class PermissionController extends Controller
         return response()->json($permission);
     }
 
+    /**
+     * Les permissions sont un référentiel global : seul le compte plateforme
+     * peut les créer / modifier / supprimer.
+     */
+    private function refuserSiNonPlateforme()
+    {
+        if (!(auth()->user()->est_super_admin ?? false)) {
+            abort(403, "Seul le compte plateforme peut modifier les permissions.");
+        }
+    }
+
     public function store(Request $request)
     {
+        $this->refuserSiNonPlateforme();
+
         $validated = $request->validate([
             'nom' => 'required|string|max:255|unique:permissions',
             'garde' => 'nullable|string|max:100',
@@ -49,6 +62,8 @@ class PermissionController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->refuserSiNonPlateforme();
+
         $permission = Permission::findOrFail($id);
 
         $validated = $request->validate([
@@ -63,6 +78,8 @@ class PermissionController extends Controller
 
     public function destroy($id)
     {
+        $this->refuserSiNonPlateforme();
+
         $permission = Permission::findOrFail($id);
         $permission->delete();
         return response()->json(null, 204);

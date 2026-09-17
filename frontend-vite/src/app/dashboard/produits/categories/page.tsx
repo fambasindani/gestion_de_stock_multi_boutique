@@ -1,4 +1,5 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
 
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -350,7 +351,7 @@ export default function CategoriesPage() {
                 <Input
                   placeholder="Rechercher..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => { const v = e.target.value; liveSearch(() => setSearch(v)); }}
                   className="pl-9 h-8 w-48 text-sm"
                 />
               </div>

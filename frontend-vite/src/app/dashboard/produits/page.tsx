@@ -1,4 +1,5 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
 
 import React, { useState, Suspense, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -375,7 +376,7 @@ function ProduitsPage() {
         <CardHeader className="pb-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              {data?.total ?? 0} produit(s)
+              {pagination.total} produit(s)
             </CardTitle>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">Afficher</span>
@@ -402,7 +403,7 @@ function ProduitsPage() {
                 <Input
                   placeholder="Rechercher par nom, type..."
                   value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={(e) => { const v = e.target.value; setSearchInput(v); liveSearch(() => { setSearch(v); setPage(1); }); }}
                   onKeyDown={handleKeyDown}
                   className="pl-9"
                 />

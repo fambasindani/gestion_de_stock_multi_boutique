@@ -12,6 +12,7 @@ use App\Models\LigneCommandeVente;
 use App\Models\CommandeAchat;
 use App\Models\LigneCommandeAchat;
 use App\Models\Utilisateur;
+use App\Models\EcritureComptable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -218,6 +219,295 @@ class RapportController extends Controller
                 'success' => false,
                 'message' => 'Erreur lors de la génération du rapport',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Chiffre d'affaires par client ou par fournisseur (factures)
+     */
+    public function caPartenaires(Request $request)
+    {
+        try {
+            $request->validate([
+                'type' => 'required|in:client,fournisseur',
+                'date_debut' => 'nullable|date',
+                'date_fin' => 'nullable|date|after_or_equal:date_debut',
+            ]);
+
+            $typeFacture = $request->type === 'fournisseur' ? 'facture_fournisseur' : 'facture_client';
+
+            $query = EcritureComptable::with('partenaire:id,nom')
+                ->where('type', $typeFacture)
+                ->where('statut', '!=', 'annulee')
+                ->select(
+                    'partenaire_id',
+                    \DB::raw('COUNT(*) as nombre_factures'),
+                    \DB::raw('COALESCE(SUM(montant_ht),0) as total_ht'),
+                    \DB::raw('COALESCE(SUM(montant_ttc),0) as total_ttc'),
+                    \DB::raw('COALESCE(SUM(montant_restant),0) as total_impaye')
+                )
+                ->groupBy('partenaire_id')
+                ->orderByDesc('total_ttc');
+
+            if ($request->filled('date_debut')) {
+                $query->whereDate('date_emission', '>=', $request->date_debut);
+            }
+            if ($request->filled('date_fin')) {
+                $query->whereDate('date_emission', '<=', $request->date_fin);
+            }
+
+            $rows = $query->get();
+
+            $lignes = $rows->map(function ($r) {
+                return [
+                    'partenaire_id' => $r->partenaire_id,
+                    'partenaire' => $r->partenaire->nom ?? 'N/A',
+                    'nombre_factures' => (int) $r->nombre_factures,
+                    'total_ht' => round((float) $r->total_ht, 2),
+                    'total_ttc' => round((float) $r->total_ttc, 2),
+                    'total_impaye' => round((float) $r->total_impaye, 2),
+                ];
+            })->values();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'type' => $request->type,
+                    'lignes' => $lignes,
+                    'totaux' => [
+                        'nombre_partenaires' => $lignes->count(),
+                        'nombre_factures' => (int) $rows->sum('nombre_factures'),
+                        'total_ht' => round((float) $rows->sum('total_ht'), 2),
+                        'total_ttc' => round((float) $rows->sum('total_ttc'), 2),
+                        'total_impaye' => round((float) $rows->sum('total_impaye'), 2),
+                    ],
+                ],
+                'message' => 'Rapport généré avec succès',
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération du rapport',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Variations des prix d'achat par produit (sur une période)
+     */
+    public function variationsPrix(Request $request)
+    {
+        try {
+            $request->validate([
+                'date_debut' => 'nullable|date',
+                'date_fin' => 'nullable|date|after_or_equal:date_debut',
+                'produit_id' => 'nullable|exists:variante_produit,id',
+            ]);
+
+            $query = LigneCommandeAchat::query()
+                ->join('commande_achat', 'ligne_commande_achat.commande_achat_id', '=', 'commande_achat.id')
+                ->leftJoin('variante_produit', 'ligne_commande_achat.produit_id', '=', 'variante_produit.id')
+                ->whereNotIn('commande_achat.etat', ['brouillon', 'annule'])
+                ->select(
+                    'ligne_commande_achat.produit_id',
+                    'ligne_commande_achat.nom_produit',
+                    'variante_produit.code_interne',
+                    'commande_achat.date_commande',
+                    'ligne_commande_achat.prix_unitaire_ht'
+                );
+
+            if ($request->filled('date_debut')) {
+                $query->whereDate('commande_achat.date_commande', '>=', $request->date_debut);
+            }
+            if ($request->filled('date_fin')) {
+                $query->whereDate('commande_achat.date_commande', '<=', $request->date_fin);
+            }
+            if ($request->filled('produit_id')) {
+                $query->where('ligne_commande_achat.produit_id', $request->produit_id);
+            }
+
+            $rows = $query->orderBy('commande_achat.date_commande')->get();
+
+            $lignes = $rows->groupBy('produit_id')->map(function ($group, $produitId) {
+                $prix = $group->pluck('prix_unitaire_ht')->map(fn ($p) => (float) $p);
+                $premier = $prix->first();
+                $dernier = $prix->last();
+                $variation = $premier > 0 ? round((($dernier - $premier) / $premier) * 100, 2) : 0;
+
+                return [
+                    'produit_id' => (int) $produitId,
+                    'produit' => $group->first()->nom_produit,
+                    'code' => $group->first()->code_interne,
+                    'nombre_achats' => $group->count(),
+                    'prix_min' => round($prix->min(), 2),
+                    'prix_max' => round($prix->max(), 2),
+                    'premier_prix' => round($premier, 2),
+                    'dernier_prix' => round($dernier, 2),
+                    'variation_pct' => $variation,
+                    'tendance' => $variation > 0 ? 'hausse' : ($variation < 0 ? 'baisse' : 'stable'),
+                ];
+            })->sortByDesc(fn ($l) => abs($l['variation_pct']))->values();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'lignes' => $lignes,
+                    'totaux' => [
+                        'nombre_produits' => $lignes->count(),
+                        'en_hausse' => $lignes->where('tendance', 'hausse')->count(),
+                        'en_baisse' => $lignes->where('tendance', 'baisse')->count(),
+                        'stables' => $lignes->where('tendance', 'stable')->count(),
+                    ],
+                ],
+                'message' => 'Rapport des variations de prix généré avec succès',
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération du rapport',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Produits en rupture de stock (quantité <= 0)
+     */
+    public function ruptureStock(Request $request)
+    {
+        return $this->rapportSeuils($request, 'rupture');
+    }
+
+    /**
+     * Produits en stock bas (0 < quantité <= seuil minimum)
+     */
+    public function stockBas(Request $request)
+    {
+        return $this->rapportSeuils($request, 'bas');
+    }
+
+    private function rapportSeuils(Request $request, string $mode)
+    {
+        try {
+            $query = QuantiteStock::with(['produit.modele.categorie', 'emplacement']);
+
+            if ($mode === 'rupture') {
+                $query->where('quantite_disponible', '<=', 0);
+            } else {
+                $query->where('quantite_disponible', '>', 0)
+                      ->whereNotNull('seuil_minimum')
+                      ->whereRaw('quantite_disponible <= seuil_minimum');
+            }
+
+            if ($request->filled('emplacement_id')) {
+                $query->where('emplacement_id', $request->emplacement_id);
+            }
+
+            $lignes = $query->orderBy('quantite_disponible')->get()->map(function ($s) {
+                $produit = $s->produit;
+                $seuil = $s->seuil_minimum !== null ? (float) $s->seuil_minimum : null;
+                $qte = (float) $s->quantite_disponible;
+                return [
+                    'produit_id' => $s->produit_id,
+                    'produit' => $produit->nom ?? $produit->modele->nom ?? ('#' . $s->produit_id),
+                    'code' => $produit->code_interne ?? null,
+                    'categorie' => $produit->modele->categorie->nom ?? null,
+                    'emplacement' => $s->emplacement->nom ?? null,
+                    'quantite' => round($qte, 2),
+                    'seuil_minimum' => $seuil,
+                    'manque' => $seuil !== null ? round(max(0, $seuil - $qte), 2) : null,
+                    'valeur' => round($qte * (float) ($produit->prix_achat ?? 0), 2),
+                ];
+            })->values();
+
+            $totaux = [
+                'nombre_produits' => $lignes->count(),
+                'quantite_totale' => round($lignes->sum('quantite'), 2),
+                'manque_total' => round($lignes->sum('manque'), 2),
+                'valeur_totale' => round($lignes->sum('valeur'), 2),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => ['lignes' => $lignes, 'totaux' => $totaux],
+                'message' => 'Rapport généré avec succès',
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération du rapport',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Rapport des bons de commande (achats)
+     */
+    public function bonsCommande(Request $request)
+    {
+        try {
+            $request->validate([
+                'date_debut' => 'nullable|date',
+                'date_fin' => 'nullable|date|after_or_equal:date_debut',
+                'partenaire_id' => 'nullable|exists:partenaire,id',
+                'etat' => 'nullable|string',
+            ]);
+
+            $query = CommandeAchat::with(['partenaire:id,nom'])->withCount('lignes');
+
+            if ($request->filled('date_debut')) {
+                $query->whereDate('date_commande', '>=', $request->date_debut);
+            }
+            if ($request->filled('date_fin')) {
+                $query->whereDate('date_commande', '<=', $request->date_fin);
+            }
+            if ($request->filled('partenaire_id')) {
+                $query->where('partenaire_id', $request->partenaire_id);
+            }
+            if ($request->filled('etat') && $request->etat !== 'all') {
+                $query->where('etat', $request->etat);
+            }
+
+            $commandes = $query->orderBy('date_commande', 'desc')->orderBy('id', 'desc')->get();
+
+            $lignes = $commandes->map(function ($c) {
+                return [
+                    'id' => $c->id,
+                    'reference' => $c->reference,
+                    'date_commande' => optional($c->date_commande)->format('Y-m-d'),
+                    'fournisseur' => $c->partenaire->nom ?? '-',
+                    'etat' => $c->etat,
+                    'etat_label' => $c->etat_label,
+                    'nombre_lignes' => $c->lignes_count ?? 0,
+                    'total_ht' => round((float) $c->montant_total_ht, 2),
+                    'total_ttc' => round((float) $c->montant_total_ttc, 2),
+                ];
+            })->values();
+
+            $totaux = [
+                'nombre_commandes' => $commandes->count(),
+                'total_ht' => round((float) $commandes->sum('montant_total_ht'), 2),
+                'total_ttc' => round((float) $commandes->sum('montant_total_ttc'), 2),
+                'total_lignes' => $commandes->sum('lignes_count'),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => ['lignes' => $lignes, 'totaux' => $totaux],
+                'message' => 'Rapport des bons de commande généré avec succès',
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération du rapport',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

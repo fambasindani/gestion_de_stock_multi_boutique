@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -20,7 +21,7 @@ import type {
 import { exportToExcel, type ExcelColumn } from "@/lib/utils/exportExcel";
 import { saveElementAsPdf } from "@/lib/utils/exportPdf";
 import { RapportTablePDF } from "@/components/pdf/RapportTablePDF";
-import { formatDateInput } from "@/lib/utils/format";
+import { formatDateInput, formatCompact } from "@/lib/utils/format";
 import {
   Boxes,
   Package,
@@ -48,7 +49,10 @@ function unwrapList<T>(payload: unknown): T[] {
   return Array.isArray(nested) ? (nested as T[]) : [];
 }
 
+import { useAuth } from "@/hooks/useAuth";
+
 export default function RapportStockPage() {
+  const { societe } = useAuth();
   const [categorieId, setCategorieId] = useState("");
   const [emplacementId, setEmplacementId] = useState("");
   const [applied, setApplied] = useState<{ categorie_id?: number; emplacement_id?: number }>({});
@@ -157,7 +161,7 @@ export default function RapportStockPage() {
       className: "text-right",
       render: (l) => (
         <span className="font-mono font-medium text-blue-600 dark:text-blue-400">
-          {montant(l.valeur)} CDF
+          {montant(l.valeur)} {DEVISE}
         </span>
       ),
     },
@@ -203,7 +207,7 @@ export default function RapportStockPage() {
       <RapportTablePDF
         title="État du stock"
         subtitle="Valorisation du stock par produit et emplacement"
-        company="GS Stock ERP"
+        company={societe?.nom || "GS Stock"}
         orientation="landscape"
         columns={[
           { header: "Produit", flex: 2.4, value: produitLabel },
@@ -231,7 +235,7 @@ export default function RapportStockPage() {
             value: (l) => Number(l.quantite_reservee_totale),
           },
           {
-            header: "Valeur (CDF)",
+            header: `Valeur (${DEVISE})`,
             flex: 1.2,
             align: "right",
             value: (l) => montant(l.valeur),
@@ -246,7 +250,7 @@ export default function RapportStockPage() {
           { label: "Produits", value: Number(totaux?.nombre_produits ?? 0) },
           { label: "Quantité totale", value: Number(totaux?.quantite_totale ?? 0) },
           {
-            label: "Valeur totale (CDF)",
+            label: `Valeur totale (${DEVISE})`,
             value: montant(totaux?.valeur_totale),
           },
         ]}
@@ -297,7 +301,7 @@ export default function RapportStockPage() {
         />
         <StatCard
           title="Valeur du stock"
-          value={`${montant(totaux?.valeur_totale)} CDF`}
+          value={`${formatCompact(totaux?.valeur_totale)} ${DEVISE}`}
           icon={<Wallet className="h-5 w-5" />}
           color="violet"
         />

@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -8,10 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/common/FormInput";
 import { FormSelect } from "@/components/common/FormSelect";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { FormTextarea } from "@/components/common/FormTextarea";
 import { commandesVenteService } from "@/lib/api/services/commandes-vente.service";
 import { partenairesService } from "@/lib/api/services/partenaires.service";
 import { produitsService } from "@/lib/api/services/produits.service";
+import { parametresService } from "@/lib/api/services/parametres.service";
 import { formatDateInput } from "@/lib/utils/format";
 import {
   FaArrowLeft, FaSave, FaSpinner, FaShoppingCart, FaUser, FaCalendarAlt,
@@ -64,14 +67,36 @@ export function CommandeVenteForm({ id }: CommandeVenteFormProps) {
   const { data: produitsData } = useQuery({
     queryKey: ["produits-select"],
     queryFn: async () => {
-      const response = await produitsService.getAll({ actif: true });
-      return response;
+      const response = await produitsService.getAll({ actif: true, per_page: 500 });
+      const payload = response.data as unknown;
+      const modeles = Array.isArray(payload)
+        ? (payload as any[])
+        : ((payload as { data?: any[] })?.data ?? []);
+      const flat: { id: number; nom: string; sousTitre?: string; prix_vente: number }[] = [];
+      for (const m of modeles) {
+        for (const v of m.variantes ?? []) {
+          flat.push({
+            id: v.id,
+            nom: v.nom && v.nom !== m.nom ? `${m.nom} — ${v.nom}` : m.nom,
+            sousTitre: v.code_interne ?? undefined,
+            prix_vente: Number(v.prix_vente) || 0,
+          });
+        }
+      }
+      return flat;
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 1000,
   });
 
+  const { data: params } = useQuery({
+    queryKey: ["parametres"],
+    queryFn: async () => (await parametresService.getAll()).data ?? {},
+    staleTime: 5 * 60 * 1000,
+  });
+  const tvaTaux = Number(params?.tva_taux ?? 16) || 0;
+
   const clients = Array.isArray(clientsData?.data) ? clientsData.data : [];
-  const produits = (produitsData as any)?.data?.data ?? [];
+  const produits = produitsData ?? [];
 
   useEffect(() => {
     const loadCommande = async () => {
@@ -187,13 +212,10 @@ export function CommandeVenteForm({ id }: CommandeVenteFormProps) {
       updated[index] = { ...updated[index], [field]: value };
 
       if (field === "produit_id" && value) {
-        const produit = produits.find((p: any) => p.id === Number(value));
-        if (produit) {
-          const variante = produit.variantes?.[0];
-          updated[index].nom_produit = produit.nom;
-          if (variante?.prix_vente) {
-            updated[index].prix_unitaire_ht = Number(variante.prix_vente);
-          }
+        const variante = produits.find((p) => p.id === Number(value));
+        if (variante) {
+          updated[index].nom_produit = variante.nom;
+          updated[index].prix_unitaire_ht = variante.prix_vente;
         }
       }
       return updated;
@@ -219,7 +241,7 @@ export function CommandeVenteForm({ id }: CommandeVenteFormProps) {
   };
 
   const totalHT = lignes.reduce((sum, l) => sum + calcLigneTotal(l), 0);
-  const totalTVA = totalHT * 0.2;
+  const totalTVA = totalHT * (tvaTaux / 100);
   const totalTTC = totalHT + totalTVA;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -243,6 +265,7 @@ export function CommandeVenteForm({ id }: CommandeVenteFormProps) {
         quantite: Number(l.quantite),
         prix_unitaire_ht: Number(l.prix_unitaire_ht),
         taux_remise: Number(l.taux_remise),
+        taux_tva: tvaTaux,
       })),
       montant_total_ht: totalHT,
       montant_total_ttc: totalTTC,
@@ -342,18 +365,19 @@ export function CommandeVenteForm({ id }: CommandeVenteFormProps) {
                   <div className="space-y-3">
                     {lignes.map((ligne, index) => (
                       <div key={index} className="flex flex-wrap items-end gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-                        <div className="flex-1 min-w-[200px]">
-                          <FormSelect
-                            label="Produit"
-                            name={`lignes[${index}].produit_id`}
-                            value={String(ligne.produit_id)}
-                            onChange={(e) => handleLigneChange(index, "produit_id", e.target.value)}
-                            options={produits.map((p: any) => ({
-                              value: p.id,
-                              label: `${p.nom}${p.code_interne ? ` (${p.code_interne})` : ""}`,
+                        <div className="flex-1 min-w-[220px]">
+                          <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Produit
+                          </label>
+                          <SearchableSelect
+                            options={produits.map((p) => ({
+                              id: p.id,
+                              nom: p.nom,
+                              sousTitre: p.sousTitre,
                             }))}
-                            icon={<FaBox />}
-                            placeholder="Sélectionner un produit"
+                            value={String(ligne.produit_id || "")}
+                            onValueChange={(v) => handleLigneChange(index, "produit_id", v)}
+                            placeholder="Rechercher un produit / variante"
                           />
                         </div>
                         <div className="w-24">
@@ -395,7 +419,7 @@ export function CommandeVenteForm({ id }: CommandeVenteFormProps) {
                         <div className="w-28 pb-2.5">
                           <p className="text-sm font-medium text-gray-500 mb-1.5">Total HT</p>
                           <p className="text-sm font-bold text-gray-900 dark:text-white">
-                            {calcLigneTotal(ligne).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                            {calcLigneTotal(ligne).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                           </p>
                         </div>
                         <button
@@ -414,19 +438,21 @@ export function CommandeVenteForm({ id }: CommandeVenteFormProps) {
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-gray-600 dark:text-gray-400">Total HT :</span>
                       <span className="font-bold text-gray-900 dark:text-white">
-                        {totalHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                        {totalHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                       </span>
                     </div>
                     <div className="flex justify-between items-center text-sm mt-1">
-                      <span className="text-gray-600 dark:text-gray-400">TVA (20%) :</span>
+                      <span className="text-gray-600 dark:text-gray-400">
+                        TVA ({tvaTaux}%) :
+                      </span>
                       <span className="font-bold text-gray-900 dark:text-white">
-                        {totalTVA.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                        {totalTVA.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                       </span>
                     </div>
                     <div className="flex justify-between items-center text-base mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
                       <span className="font-semibold text-gray-800 dark:text-gray-200">Total TTC :</span>
                       <span className="font-bold text-lg text-blue-700 dark:text-blue-400">
-                        {totalTTC.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                        {totalTTC.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                       </span>
                     </div>
                   </div>
@@ -458,9 +484,9 @@ export function CommandeVenteForm({ id }: CommandeVenteFormProps) {
                 </h5>
 
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <p><strong>Total HT :</strong> {totalHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</p>
-                  <p><strong>TVA :</strong> {totalTVA.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</p>
-                  <p><strong>Total TTC :</strong> {totalTTC.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</p>
+                  <p><strong>Total HT :</strong> {totalHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</p>
+                  <p><strong>TVA :</strong> {totalTVA.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</p>
+                  <p><strong>Total TTC :</strong> {totalTTC.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</p>
                 </div>
 
                 <div className="pt-4 border-t">

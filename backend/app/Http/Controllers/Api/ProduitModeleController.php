@@ -13,6 +13,44 @@ use Exception;
 class ProduitModeleController extends Controller
 {
     /**
+     * Recherche d'un produit (variante) par code-barres / code interne
+     */
+    public function scan($code)
+    {
+        try {
+            $variante = VarianteProduit::with('modele')
+                ->where('code_interne', $code)
+                ->orWhere('reference_fournisseur', $code)
+                ->first();
+
+            if (!$variante) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Aucun produit pour le code « {$code} »",
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $variante->id,
+                    'nom' => $variante->nom ?: ($variante->modele->nom ?? 'Produit'),
+                    'code_interne' => $variante->code_interne,
+                    'prix_vente' => $variante->prix_vente,
+                ],
+                'message' => 'Produit trouvé',
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la recherche du produit',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Liste des produits avec recherche, filtres et pagination
      */
     public function index(Request $request)

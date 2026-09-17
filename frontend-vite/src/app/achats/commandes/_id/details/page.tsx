@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -12,10 +13,13 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { commandesAchatService } from "@/lib/api/services/commandes-achat.service";
 import { CommandeAchat } from "@/lib/api/typess";
 import { formatDateLong } from "@/lib/utils/format";
+import { saveElementAsPdf } from "@/lib/utils/exportPdf";
+import { BonCommandePDF } from "@/components/pdf/BonCommandePDF";
+import { useAuth } from "@/hooks/useAuth";
 import {
   ArrowLeft, Truck, Pencil, Trash2, User, Calendar, FileText,
   Euro, Package, Send, XCircle, CheckCircle, ClipboardList, Loader2,
-  Archive,
+  Archive, FileDown,
 } from "lucide-react";
 
 const statusLabels: Record<string, string> = {
@@ -46,6 +50,7 @@ const nextStatus: Record<string, string> = {
 export default function CommandeAchatDetails() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { societe } = useAuth();
   const queryClient = useQueryClient();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
@@ -165,6 +170,52 @@ export default function CommandeAchatDetails() {
     </div>
   );
 
+  // Taux de TVA réel (depuis les lignes, sinon déduit du montant)
+  const tauxTva = (() => {
+    const rates = Array.from(
+      new Set(
+        (commande.lignes || [])
+          .map((l: any) => Number(l.taux_tva))
+          .filter((n: number) => !Number.isNaN(n))
+      )
+    );
+    if (rates.length === 1) return rates[0];
+    const ht = Number(commande.montant_total_ht);
+    const ttc = Number(commande.montant_total_ttc);
+    if (ht > 0) return Math.round(((ttc - ht) / ht) * 10000) / 100;
+    return null;
+  })();
+
+  const handlePdf = () =>
+    saveElementAsPdf(
+      <BonCommandePDF
+        reference={commande.reference}
+        date_commande={commande.date_commande ? formatDateLong(commande.date_commande) : null}
+        date_livraison_prevue={
+          commande.date_livraison_prevue ? formatDateLong(commande.date_livraison_prevue) : null
+        }
+        statut_label={statusLabels[commande.etat] || commande.etat}
+        fournisseur_nom={commande.partenaire?.nom || "Fournisseur"}
+        fournisseur_adresse={commande.partenaire?.adresse ?? null}
+        fournisseur_email={commande.partenaire?.email ?? null}
+        fournisseur_telephone={commande.partenaire?.telephone ?? null}
+        lignes={(commande.lignes ?? []).map((l: any) => ({
+          nom_produit: l.nom_produit,
+          code_produit: l.code_produit,
+          quantite: l.quantite,
+          prix_unitaire_ht: l.prix_unitaire_ht,
+          taux_tva: l.taux_tva,
+          montant_total_ht:
+            l.montant_total_ht ?? Number(l.quantite) * Number(l.prix_unitaire_ht),
+        }))}
+        montant_ht={commande.montant_total_ht}
+        montant_ttc={commande.montant_total_ttc}
+        notes={commande.notes}
+        societe={societe}
+      />,
+      `BonCommande_${commande.reference}`
+    );
+
   const canProgress = !!nextStatus[commande.etat];
   const canReceptionner = commande.etat === "envoye";
   const canCancel = commande.etat !== "annule" && commande.etat !== "termine";
@@ -188,6 +239,9 @@ export default function CommandeAchatDetails() {
           </div>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={handlePdf}>
+            <FileDown className="mr-2 h-4 w-4" /> Bon de commande
+          </Button>
           {canModify && (
             <Button variant="outline" onClick={() => router.push(`/achats/commandes/${commande.id}/modifier`)}>
               <Pencil className="mr-2 h-4 w-4" /> Modifier
@@ -221,7 +275,7 @@ export default function CommandeAchatDetails() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <InfoStat icon={User} label="Fournisseur" value={commande.partenaire?.nom || "-"} colorClass="bg-amber-100 text-amber-600" />
         <InfoStat icon={Calendar} label="Date" value={formatDateLong(commande.date_commande)} colorClass="bg-purple-100 text-purple-600" />
-        <InfoStat icon={Euro} label="Total TTC" value={`${Number(commande.montant_total_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF`} colorClass="bg-emerald-100 text-emerald-600" />
+        <InfoStat icon={Euro} label="Total TTC" value={`${Number(commande.montant_total_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} ${DEVISE}`} colorClass="bg-emerald-100 text-emerald-600" />
         <InfoStat icon={ClipboardList} label="Statut" value={statusLabels[commande.etat] || commande.etat} colorClass={commande.etat === "termine" || commande.etat === "recu" ? "bg-emerald-100 text-emerald-600" : commande.etat === "annule" ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-600"} />
       </div>
 
@@ -257,11 +311,11 @@ export default function CommandeAchatDetails() {
                           </span>
                         </td>
                         <td className="py-3 pr-4 text-right">
-                          {Number(ligne.prix_unitaire_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                          {Number(ligne.prix_unitaire_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                         </td>
                         <td className="py-3 pr-4 text-right">{ligne.taux_remise}%</td>
                         <td className="py-3 text-right font-medium">
-                          {Number(ligne.montant_total_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                          {Number(ligne.montant_total_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                         </td>
                       </tr>
                     ))}
@@ -276,19 +330,21 @@ export default function CommandeAchatDetails() {
               <div className="flex justify-end items-center gap-4">
                 <span className="text-sm text-gray-500">Total HT :</span>
                 <span className="font-semibold">
-                  {Number(commande.montant_total_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                  {Number(commande.montant_total_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                 </span>
               </div>
               <div className="flex justify-end items-center gap-4">
-                <span className="text-sm text-gray-500">TVA (20%) :</span>
+                <span className="text-sm text-gray-500">
+                  TVA{tauxTva !== null ? ` (${tauxTva}%)` : ""} :
+                </span>
                 <span className="font-semibold">
-                  {(Number(commande.montant_total_ttc) - Number(commande.montant_total_ht)).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                  {(Number(commande.montant_total_ttc) - Number(commande.montant_total_ht)).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                 </span>
               </div>
               <div className="flex justify-end items-center gap-4 text-lg">
                 <span className="font-semibold text-gray-700">Total TTC :</span>
                 <span className="font-bold text-blue-700">
-                  {Number(commande.montant_total_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                  {Number(commande.montant_total_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                 </span>
               </div>
             </div>

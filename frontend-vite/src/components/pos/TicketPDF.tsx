@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import type { PosVenteResult } from "@/lib/api/services/pos.service";
-import { resolveMediaUrl } from "@/lib/utils/assets";
+import { resolveLogoUrl } from "@/lib/utils/assets";
 
 const money = (v: unknown) => Number(v ?? 0).toFixed(2);
 
@@ -44,7 +44,7 @@ interface TicketPDFProps {
 }
 
 export function TicketPDF({ vente, entreprise }: TicketPDFProps) {
-  const logo = resolveMediaUrl(vente.societe?.logo);
+  const logo = resolveLogoUrl(vente.societe);
   const nom = entreprise?.entreprise_nom || vente.societe?.nom || "GS Stock";
   const adresse = entreprise?.entreprise_adresse || "";
   const tel = entreprise?.entreprise_telephone || "";

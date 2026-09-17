@@ -4,6 +4,7 @@ import { ApiResponse } from '../types';
 export interface AuditLog {
   id: number;
   user_id: number | null;
+  societe_id: number | null;
   action: string;
   entity_type: string | null;
   entity_id: number | null;
@@ -15,10 +16,11 @@ export interface AuditLog {
   created_at: string;
   updated_at: string;
   user?: { id: number; nom: string; email: string } | null;
+  societe?: { id: number; nom: string } | null;
 }
 
 export class AuditLogsService {
-  async getAll(params?: { search?: string; page?: number; per_page?: number; action?: string; entity_type?: string; user_id?: number; date_debut?: string; date_fin?: string }): Promise<ApiResponse<AuditLog[]>> {
+  async getAll(params?: { search?: string; page?: number; per_page?: number; action?: string; entity_type?: string; user_id?: number; societe_id?: number; date_debut?: string; date_fin?: string }): Promise<ApiResponse<AuditLog[]>> {
     let url = '/audit-logs';
     if (params) {
       const searchParams = new URLSearchParams();
@@ -28,6 +30,7 @@ export class AuditLogsService {
       if (params.action) searchParams.append('action', params.action);
       if (params.entity_type) searchParams.append('entity_type', params.entity_type);
       if (params.user_id) searchParams.append('user_id', String(params.user_id));
+      if (params.societe_id) searchParams.append('societe_id', String(params.societe_id));
       if (params.date_debut) searchParams.append('date_debut', params.date_debut);
       if (params.date_fin) searchParams.append('date_fin', params.date_fin);
       const qs = searchParams.toString();

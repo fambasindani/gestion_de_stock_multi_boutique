@@ -1,4 +1,6 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -60,8 +62,8 @@ export default function PaiementsPage() {
     { key: "reference", label: "Référence", render: (item: EcritureComptable) => <span className="font-mono text-sm font-medium">{item.reference}</span> },
     { key: "partenaire.nom", label: "Partenaire", render: (item: EcritureComptable) => <span>{item.partenaire?.nom || "-"}</span> },
     { key: "date_paiement", label: "Date paiement", render: (item: EcritureComptable) => <span>{formatDateShort(item.date_paiement || item.date_emission)}</span> },
-    { key: "montant_ttc", label: "Montant TTC", render: (item: EcritureComptable) => <span className="font-medium">{Number(item.montant_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</span> },
-    { key: "montant_paye", label: "Payé", render: (item: EcritureComptable) => <span className="font-medium text-emerald-600">{Number(item.montant_paye).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</span> },
+    { key: "montant_ttc", label: "Montant TTC", render: (item: EcritureComptable) => <span className="font-medium">{Number(item.montant_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</span> },
+    { key: "montant_paye", label: "Payé", render: (item: EcritureComptable) => <span className="font-medium text-emerald-600">{Number(item.montant_paye).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</span> },
     { key: "mode_paiement", label: "Mode", render: (item: EcritureComptable) => item.mode_paiement ? <DataTableBadge variant="outline">{item.mode_paiement}</DataTableBadge> : "-" },
   ];
 
@@ -103,7 +105,7 @@ export default function PaiementsPage() {
       <Card>
         <CardHeader className="pb-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">{data?.total ?? 0} paiement(s)</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">{pagination.total} paiement(s)</CardTitle>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">Afficher</span>
               <Select value={String(perPage)} onValueChange={handlePerPageChange}>
@@ -124,7 +126,7 @@ export default function PaiementsPage() {
             <div className="flex-1 min-w-[200px]">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input placeholder="Rechercher par référence..." value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={handleKeyDown} className="pl-9" />
+                <Input placeholder="Rechercher par référence..." value={searchInput} onChange={(e) => { const v = e.target.value; setSearchInput(v); liveSearch(() => { setSearch(v); setPage(1); }); }} onKeyDown={handleKeyDown} className="pl-9" />
               </div>
             </div>
             <Button onClick={handleSearchSubmit} className="bg-blue-600 hover:bg-blue-700 text-white"><Search className="h-4 w-4 mr-2" />Rechercher</Button>

@@ -48,6 +48,14 @@ export class ApiClient {
       console.log('⚠️ Pas de token disponible');
     }
 
+    // Super-admin : société ciblée (null = toutes)
+    if (typeof window !== 'undefined') {
+      const societeId = localStorage.getItem('selected_societe');
+      if (societeId) {
+        headers['X-Societe-Id'] = societeId;
+      }
+    }
+
     const url = `${this.baseUrl}${endpoint}`;
     
     console.log(`📤 ${options.method || 'GET'} ${url}`);

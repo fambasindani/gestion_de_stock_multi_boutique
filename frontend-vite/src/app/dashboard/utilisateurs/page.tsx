@@ -1,4 +1,5 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -22,6 +23,7 @@ import { SkeletonTable } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { utilisateursService } from "@/lib/api/services/utilisateurs.service";
 import { Utilisateur } from "@/lib/api/typess";
+import { formatDateTime } from "@/lib/utils/format";
 import {
   Plus, Users, Search, RefreshCw, Trash2, Eye, Pencil,
   CheckCircle, XCircle, Loader2, Shield
@@ -154,7 +156,7 @@ export default function UtilisateursPage() {
         </div>
       ),
     },
-    { key: "derniere_connexion", label: "Dernière connexion", hidden: "sm" as const, render: (item: Utilisateur) => <span>{item.derniere_connexion || "Jamais"}</span> },
+    { key: "derniere_connexion", label: "Dernière connexion", hidden: "sm" as const, render: (item: Utilisateur) => <span>{item.derniere_connexion ? formatDateTime(item.derniere_connexion) : "Jamais"}</span> },
     {
       key: "actif",
       label: "Statut",
@@ -270,7 +272,7 @@ export default function UtilisateursPage() {
             <div className="flex-1 min-w-[200px]">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input placeholder="Rechercher par nom, email..." value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={handleKeyDown} className="pl-9" />
+                <Input placeholder="Rechercher par nom, email..." value={searchInput} onChange={(e) => { const v = e.target.value; setSearchInput(v); liveSearch(() => { setSearch(v); setPage(1); }); }} onKeyDown={handleKeyDown} className="pl-9" />
               </div>
             </div>
             <Button onClick={handleSearchSubmit} className="bg-blue-600 hover:bg-blue-700 text-white"><Search className="h-4 w-4 mr-2" />Rechercher</Button>

@@ -1,4 +1,5 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
 
 import React, { useState, Suspense, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -433,7 +434,7 @@ function PartenairesPage() {
                 <Input
                   placeholder="Rechercher par nom, email, code..."
                   value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={(e) => { const v = e.target.value; setSearchInput(v); liveSearch(() => { setSearch(v); setPage(1); }); }}
                   onKeyDown={handleKeyDown}
                   className="pl-9"
                 />

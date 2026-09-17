@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState, Suspense, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -63,7 +64,7 @@ function RapportPage() {
   const lignes = activeQuery.data?.lignes ?? [];
   const totaux = activeQuery.data?.totaux as Record<string, number> | undefined;
 
-  const formatMontant = (v: number) => `${Number(v).toFixed(2)} CDF`;
+  const formatMontant = (v: number) => `${Number(v).toFixed(2)} ${DEVISE}`;
 
   const exporterExcel = useCallback(() => {
     const rows = lignes.map((l: any) => {
@@ -182,12 +183,12 @@ function RapportPage() {
                     <Text style={[styles.td, { width: colWidths[2], color: COLORS.red }]}>{Number(l.total_sortie)}</Text>
                     <Text style={[styles.td, { width: colWidths[3], color: Number(l.solde) >= 0 ? COLORS.emerald : COLORS.red }]}>{Number(l.solde)}</Text>
                     <Text style={[styles.td, { width: colWidths[4] }]}>{Number(l.stock_actuel)}</Text>
-                    <Text style={[styles.td, { width: colWidths[5] }]}>{Number(l.valeur_stock).toFixed(2)} CDF</Text>
+                    <Text style={[styles.td, { width: colWidths[5] }]}>{Number(l.valeur_stock).toFixed(2)} {DEVISE}</Text>
                   </>
                 ) : (
                   <>
                     <Text style={[styles.td, { width: colWidths[1] }]}>{Number(l.total_quantite)}</Text>
-                    <Text style={[styles.td, { width: colWidths[2], color: tab === "ventes" ? COLORS.primary : COLORS.amber }]}>{Number(l.total_montant_ht).toFixed(2)} CDF</Text>
+                    <Text style={[styles.td, { width: colWidths[2], color: tab === "ventes" ? COLORS.primary : COLORS.amber }]}>{Number(l.total_montant_ht).toFixed(2)} {DEVISE}</Text>
                     <Text style={[styles.td, { width: colWidths[3], color: COLORS.muted }]}>{l.nombre_commandes}</Text>
                   </>
                 )}
@@ -202,12 +203,12 @@ function RapportPage() {
                     <Text style={[styles.totalsCell, { width: colWidths[2] }]}>{Number(totaux.total_sortie)}</Text>
                     <Text style={[styles.totalsCell, { width: colWidths[3] }]}>{Number(totaux.solde)}</Text>
                     <Text style={[styles.totalsCell, { width: colWidths[4] }]}>-</Text>
-                    <Text style={[styles.totalsCell, { width: colWidths[5] }]}>{Number(totaux.valeur_stock).toFixed(2)} CDF</Text>
+                    <Text style={[styles.totalsCell, { width: colWidths[5] }]}>{Number(totaux.valeur_stock).toFixed(2)} {DEVISE}</Text>
                   </>
                 ) : (
                   <>
                     <Text style={[styles.totalsCell, { width: colWidths[1] }]}>{Number(totaux.total_quantite)}</Text>
-                    <Text style={[styles.totalsCell, { width: colWidths[2] }]}>{Number(totaux.total_montant_ht).toFixed(2)} CDF</Text>
+                    <Text style={[styles.totalsCell, { width: colWidths[2] }]}>{Number(totaux.total_montant_ht).toFixed(2)} {DEVISE}</Text>
                     <Text style={[styles.totalsCell, { width: colWidths[3] }]}>{totaux.nombre_commandes}</Text>
                   </>
                 )}

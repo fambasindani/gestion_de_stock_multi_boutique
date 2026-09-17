@@ -84,6 +84,7 @@ class SocieteController extends Controller
             // Paramètres par défaut de la boutique (TVA, ticket...)
             foreach ([
                 'tva_taux' => '16',
+                'devise' => 'CDF',
                 'entreprise_nom' => $societe->nom,
                 'entreprise_adresse' => '',
                 'entreprise_telephone' => '',
@@ -96,14 +97,26 @@ class SocieteController extends Controller
                 ]);
             }
 
+            // Rôles propres à la boutique (copies des modèles globaux)
+            \App\Models\Role::seedPourSociete($societe->id);
+
             if (!empty($validated['admin_email']) && !empty($validated['admin_mot_de_passe'])) {
-                Utilisateur::create([
+                $admin = Utilisateur::create([
                     'nom' => $validated['admin_nom'] ?? $validated['nom'],
                     'email' => $validated['admin_email'],
                     'mot_de_passe' => $validated['admin_mot_de_passe'],
                     'societe_id' => $societe->id,
                     'actif' => 1,
                 ]);
+
+                // Le propriétaire de la boutique reçoit le rôle complet (menu entier),
+                // cloisonné à sa société.
+                $roleProprietaire = \App\Models\Role::where('societe_id', $societe->id)
+                    ->where('nom', 'responsable_boutique')
+                    ->first();
+                if ($roleProprietaire) {
+                    $admin->roles()->sync([$roleProprietaire->id]);
+                }
             }
 
             DB::commit();
@@ -196,26 +209,7 @@ class SocieteController extends Controller
             ]);
 
             $societe = Societe::findOrFail($id);
-            $file = $request->file('logo');
-
-            $dir = public_path('logos');
-            if (!is_dir($dir)) {
-                @mkdir($dir, 0755, true);
-            }
-
-            $name = 'societe-' . $societe->id . '-' . time() . '.' . strtolower($file->getClientOriginalExtension());
-            $file->move($dir, $name);
-
-            // Supprimer l'ancien logo si présent
-            if ($societe->logo) {
-                $old = public_path(ltrim($societe->logo, '/'));
-                if (is_file($old)) {
-                    @unlink($old);
-                }
-            }
-
-            $societe->logo = '/logos/' . $name;
-            $societe->save();
+            $this->enregistrerLogo($societe, $request->file('logo'));
 
             return response()->json([
                 'success' => true,
@@ -230,6 +224,109 @@ class SocieteController extends Controller
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => 'Erreur lors de l\'upload', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Upload du logo de SA propre boutique (accessible au propriétaire / gérant).
+     */
+    public function uploadMonLogo(Request $request)
+    {
+        try {
+            $request->validate([
+                'logo' => 'required|image|mimes:png,jpg,jpeg,webp,svg|max:2048',
+            ]);
+
+            $user = auth()->user();
+            if (!$user || !$user->societe_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucune société associée à votre compte',
+                ], 422);
+            }
+
+            $societe = Societe::findOrFail($user->societe_id);
+            $this->enregistrerLogo($societe, $request->file('logo'));
+
+            return response()->json([
+                'success' => true,
+                'data' => $societe,
+                'message' => 'Logo mis à jour avec succès',
+            ], 200);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['success' => false, 'message' => 'Société non trouvée'], 404);
+        } catch (ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Fichier invalide', 'errors' => $e->errors()], 422);
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'upload', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Supprimer le logo de SA propre boutique.
+     */
+    public function deleteMonLogo()
+    {
+        try {
+            $user = auth()->user();
+            if (!$user || !$user->societe_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucune société associée à votre compte',
+                ], 422);
+            }
+
+            $societe = Societe::findOrFail($user->societe_id);
+            $this->supprimerLogo($societe);
+
+            return response()->json([
+                'success' => true,
+                'data' => $societe,
+                'message' => 'Logo supprimé',
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Erreur lors de la suppression du logo', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Enregistre un fichier logo pour une société (remplace l'ancien).
+     */
+    private function enregistrerLogo(Societe $societe, $file): void
+    {
+        $dir = public_path('logos');
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+
+        $name = 'societe-' . $societe->id . '-' . time() . '.' . strtolower($file->getClientOriginalExtension());
+        $file->move($dir, $name);
+
+        if ($societe->logo) {
+            $old = public_path(ltrim($societe->logo, '/'));
+            if (is_file($old)) {
+                @unlink($old);
+            }
+        }
+
+        $societe->logo = '/logos/' . $name;
+        $societe->save();
+    }
+
+    /**
+     * Supprime le fichier logo d'une société.
+     */
+    private function supprimerLogo(Societe $societe): void
+    {
+        if ($societe->logo) {
+            $old = public_path(ltrim($societe->logo, '/'));
+            if (is_file($old)) {
+                @unlink($old);
+            }
+        }
+        $societe->logo = null;
+        $societe->save();
     }
 
     public function activer($id)

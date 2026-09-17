@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -12,6 +13,7 @@ import { FormTextarea } from "@/components/common/FormTextarea";
 import { facturesService } from "@/lib/api/services/factures.service";
 import { partenairesService } from "@/lib/api/services/partenaires.service";
 import { produitsService } from "@/lib/api/services/produits.service";
+import { parametresService } from "@/lib/api/services/parametres.service";
 import { Partenaire } from "@/lib/api/typess";
 import { ProduitModele } from "@/lib/api/typess";
 import {
@@ -106,6 +108,20 @@ export function FactureForm({ id }: FactureFormProps) {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [initialLoading, setInitialLoading] = useState(isEditMode);
+
+  const { data: params } = useQuery({
+    queryKey: ["parametres"],
+    queryFn: async () => (await parametresService.getAll()).data ?? {},
+    staleTime: 5 * 60 * 1000,
+  });
+  const tvaTaux = Number(params?.tva_taux ?? 16) || 0;
+
+  useEffect(() => {
+    if (params && lignes.length === 1 && lignes[0].produit_id === null) {
+      setLignes((prev) => [{ ...prev[0], taux_tva: tvaTaux }]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: partenairesData } = useQuery({
@@ -257,7 +273,7 @@ export function FactureForm({ id }: FactureFormProps) {
   };
 
   const ajouterLigne = () => {
-    setLignes((prev) => [...prev, { produit_id: null, nom_produit: "", description: "", quantite: 1, prix_unitaire_ht: 0, taux_tva: 20, taux_remise: 0, montant_ht: 0, montant_tva: 0, montant_ttc: 0 }]);
+    setLignes((prev) => [...prev, { produit_id: null, nom_produit: "", description: "", quantite: 1, prix_unitaire_ht: 0, taux_tva: tvaTaux, taux_remise: 0, montant_ht: 0, montant_tva: 0, montant_ttc: 0 }]);
   };
 
   const supprimerLigne = (index: number) => {
@@ -485,7 +501,7 @@ export function FactureForm({ id }: FactureFormProps) {
                             Total HT
                           </label>
                           <div className="h-[38px] rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 flex items-center text-sm font-medium">
-                            {ligne.montant_ht.toFixed(2)} CDF
+                            {ligne.montant_ht.toFixed(2)} {DEVISE}
                           </div>
                         </div>
                       </div>
@@ -506,15 +522,15 @@ export function FactureForm({ id }: FactureFormProps) {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center py-2 border-b">
                     <span className="text-sm text-gray-500">Total HT</span>
-                    <span className="text-sm font-semibold">{totalHt.toFixed(2)} CDF</span>
+                    <span className="text-sm font-semibold">{totalHt.toFixed(2)} {DEVISE}</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b">
                     <span className="text-sm text-gray-500">Total TVA</span>
-                    <span className="text-sm font-semibold">{totalTva.toFixed(2)} CDF</span>
+                    <span className="text-sm font-semibold">{totalTva.toFixed(2)} {DEVISE}</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-base font-bold">Total TTC</span>
-                    <span className="text-base font-bold text-blue-600">{totalTtc.toFixed(2)} CDF</span>
+                    <span className="text-base font-bold text-blue-600">{totalTtc.toFixed(2)} {DEVISE}</span>
                   </div>
                 </div>
 

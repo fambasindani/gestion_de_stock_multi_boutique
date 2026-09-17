@@ -1,4 +1,6 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -186,7 +188,7 @@ function CommandesAchatPage() {
       label: "Total TTC",
       render: (item: CommandeAchat) => (
         <span className="font-medium">
-          {Number(item.montant_total_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+          {Number(item.montant_total_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
         </span>
       ),
     },
@@ -314,7 +316,7 @@ function CommandesAchatPage() {
                 <Input
                   placeholder="Rechercher par référence, fournisseur..."
                   value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={(e) => { const v = e.target.value; setSearchInput(v); liveSearch(() => { setSearch(v); setPage(1); }); }}
                   onKeyDown={handleKeyDown}
                   className="pl-9"
                 />

@@ -3,9 +3,22 @@ import { ApiResponse } from '../types';
 import { Role, Permission } from '../typess';
 import { CreateRoleData, UpdateRoleData } from '../typess';
 
+export interface RolesQuery {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  assignables?: boolean;
+}
+
 export class RolesService {
-  async getAll(): Promise<ApiResponse<Role[]>> {
-    return apiClient.get<Role[]>('/roles');
+  async getAll(params: RolesQuery = {}): Promise<ApiResponse<Role[]>> {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', String(params.page));
+    if (params.per_page) query.append('per_page', String(params.per_page));
+    if (params.search) query.append('search', params.search);
+    if (params.assignables) query.append('assignables', '1');
+    const qs = query.toString();
+    return apiClient.get<Role[]>(`/roles${qs ? `?${qs}` : ''}`);
   }
 
   async getById(id: number): Promise<ApiResponse<Role>> {

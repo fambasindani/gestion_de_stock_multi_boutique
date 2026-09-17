@@ -24,4 +24,32 @@ class Role extends Model
         return $this->belongsToMany(Permission::class, 'role_permission', 'role_id', 'permission_id')
                     ->withTimestamps();
     }
+
+    /**
+     * Copie les rôles globaux (societe_id null) pour une société donnée.
+     * Utilisé à la création d'une boutique et par migration.
+     */
+    public static function seedPourSociete(int $societeId): void
+    {
+        $globaux = static::whereNull('societe_id')->with('permissions')->get();
+
+        foreach ($globaux as $modele) {
+            $existe = static::where('societe_id', $societeId)
+                ->where('nom', $modele->nom)
+                ->exists();
+
+            if ($existe) {
+                continue;
+            }
+
+            $copie = static::create([
+                'nom' => $modele->nom,
+                'description' => $modele->description,
+                'societe_id' => $societeId,
+                'actif' => $modele->actif,
+            ]);
+
+            $copie->permissions()->sync($modele->permissions->pluck('id')->all());
+        }
+    }
 }

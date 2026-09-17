@@ -21,7 +21,8 @@ import {
 } from "@/lib/api/services/inventaires.service";
 import { exportToExcel, type ExcelColumn } from "@/lib/utils/exportExcel";
 import { saveElementAsPdf } from "@/lib/utils/exportPdf";
-import { RapportTablePDF } from "@/components/pdf/RapportTablePDF";
+import { PVInventairePDF } from "@/components/pdf/PVInventairePDF";
+import { useAuth } from "@/hooks/useAuth";
 import { formatDateShort, formatDateInput } from "@/lib/utils/format";
 import {
   ClipboardList,
@@ -43,6 +44,7 @@ const produitCode = (l: LigneInventaire) => l.produit?.code_interne || "";
 const num = (v: unknown) => Number(v ?? 0);
 
 export default function InventaireDetailPage() {
+  const { societe, currentUser } = useAuth();
   const params = useParams<{ id: string }>();
   const id = Number(params.id);
   const router = useRouter();
@@ -244,39 +246,31 @@ export default function InventaireDetailPage() {
 
   const handlePdf = () =>
     saveElementAsPdf(
-      <RapportTablePDF
-        title="Procès-verbal d'inventaire"
-        subtitle={inventaire?.reference}
-        company="GS Stock ERP"
-        orientation="landscape"
-        columns={[
-          { header: "Produit", flex: 2.4, value: produitLabel },
-          { header: "Code", flex: 1, value: (l) => produitCode(l) || "-" },
-          { header: "Emplacement", flex: 1.4, value: (l) => l.emplacement?.nom ?? "-" },
-          { header: "Théorique", flex: 1, align: "right", value: (l) => num(l.quantite_theorique) },
-          { header: "Physique", flex: 1, align: "right", value: (l) => num(l.quantite_physique) },
-          {
-            header: "Écart",
-            flex: 1,
-            align: "right",
-            value: (l) => (num(l.ecart) > 0 ? `+${num(l.ecart)}` : num(l.ecart)),
-          },
-          { header: "Ajusté", flex: 0.8, align: "center", value: (l) => (l.ajuste ? "Oui" : "Non") },
-        ]}
-        rows={lignes}
-        meta={[
-          { label: "Date", value: formatDateShort(inventaire?.date_inventaire) },
-          { label: "Emplacement", value: inventaire?.emplacement?.nom ?? "Tous" },
-          { label: "Statut", value: inventaire?.statut === "cloture" ? "Clôturé" : "En cours" },
-        ]}
-        stats={[
-          { label: "Lignes", value: num(totaux?.nombre_lignes) },
-          { label: "Excédents", value: num(totaux?.excédents) },
-          { label: "Manquants", value: num(totaux?.manquants) },
-          { label: "Écart total", value: num(totaux?.total_ecart) },
-        ]}
+      <PVInventairePDF
+        reference={inventaire?.reference ?? String(id)}
+        dateInventaire={formatDateShort(inventaire?.date_inventaire)}
+        emplacement={inventaire?.emplacement?.nom ?? "Tous"}
+        statut={inventaire?.statut === "cloture" ? "Clôturé" : "En cours"}
+        preparePar={currentUser?.nom ?? null}
+        societe={societe}
+        lignes={lignes.map((l) => ({
+          nom: produitLabel(l),
+          code: produitCode(l),
+          emplacement: l.emplacement?.nom ?? null,
+          theorique: num(l.quantite_theorique),
+          physique: num(l.quantite_physique),
+          ecart: num(l.ecart),
+          ajuste: l.ajuste,
+        }))}
+        totaux={{
+          nombre_lignes: num(totaux?.nombre_lignes),
+          lignes_ajustees: num(totaux?.lignes_ajustees),
+          total_ecart: num(totaux?.total_ecart),
+          excedents: num(totaux?.excédents),
+          manquants: num(totaux?.manquants),
+        }}
       />,
-      filename
+      `PV_${filename}`
     );
 
   if (isLoading) {

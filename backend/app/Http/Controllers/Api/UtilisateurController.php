@@ -9,6 +9,9 @@ use App\Models\CommandeVente;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
+use Exception;
 
 class UtilisateurController extends Controller
 {
@@ -102,19 +105,25 @@ class UtilisateurController extends Controller
             'roles.*' => 'exists:roles,id',  // ← 'roles' avec 's'
         ]);
 
-        // Création
+        // Création — un non super-admin ne peut créer que dans SA société
+        $estSuperAdmin = (bool) (auth()->user()->est_super_admin ?? false);
+        $societeId = $estSuperAdmin
+            ? ($validated['societe_id'] ?? null)
+            : (app()->bound('societe_id') ? app('societe_id') : null);
+
         $utilisateur = Utilisateur::create([
             'nom' => $validated['nom'],
             'email' => $validated['email'],
             'mot_de_passe' => $validated['mot_de_passe'],
             'telephone' => $validated['telephone'] ?? null,
             'actif' => $validated['actif'] ?? true,
-            'societe_id' => $validated['societe_id'] ?? (app()->bound('societe_id') ? app('societe_id') : null),
+            'societe_id' => $societeId,
         ]);
 
-        // Assigner les rôles
-        if (!empty($validated['roles'])) {
-            $utilisateur->roles()->sync($validated['roles']);
+        // Assigner les rôles (un non super-admin ne peut attribuer que des rôles "assignables")
+        $roleIds = $this->filtrerRolesAssignables($validated['roles'] ?? []);
+        if (!empty($roleIds)) {
+            $utilisateur->roles()->sync($roleIds);
         }
 
         return response()->json([
@@ -145,16 +154,19 @@ class UtilisateurController extends Controller
         if (isset($validated['email'])) $utilisateur->email = $validated['email'];
         if (isset($validated['telephone'])) $utilisateur->telephone = $validated['telephone'];
         if (isset($validated['actif'])) $utilisateur->actif = $validated['actif'];
-        if (isset($validated['societe_id'])) $utilisateur->societe_id = $validated['societe_id'];
+        // Un non super-admin ne peut pas déplacer un utilisateur vers une autre société
+        if ((auth()->user()->est_super_admin ?? false) && isset($validated['societe_id'])) {
+            $utilisateur->societe_id = $validated['societe_id'];
+        }
         if (!empty($validated['mot_de_passe'])) {
             $utilisateur->mot_de_passe = $validated['mot_de_passe'];
         }
 
         $utilisateur->save();
 
-        // Synchroniser les rôles si fournis
+        // Synchroniser les rôles si fournis (filtrés pour un non super-admin)
         if (isset($validated['roles'])) {
-            $utilisateur->roles()->sync($validated['roles']);
+            $utilisateur->roles()->sync($this->filtrerRolesAssignables($validated['roles']));
         }
 
         return response()->json([
@@ -162,6 +174,61 @@ class UtilisateurController extends Controller
             'data' => $utilisateur->load('roles'),
             'message' => 'Utilisateur mis à jour avec succès'
         ]);
+    }
+
+    /**
+     * Attribuer des rôles à un utilisateur.
+     */
+    public function assignerRoles(Request $request, $id)
+    {
+        try {
+            $utilisateur = Utilisateur::findOrFail($id);
+
+            $validated = $request->validate([
+                'roles' => 'nullable|array',
+                'roles.*' => 'exists:roles,id',
+            ]);
+
+            $roleIds = $this->filtrerRolesAssignables($validated['roles'] ?? []);
+            $utilisateur->roles()->sync($roleIds);
+
+            return response()->json([
+                'success' => true,
+                'data' => $utilisateur->load('roles'),
+                'message' => 'Rôles assignés avec succès',
+            ], 200);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['success' => false, 'message' => 'Utilisateur non trouvé'], 404);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Erreur lors de l'assignation des rôles",
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Filtre les rôles demandés : un non super-admin ne peut attribuer
+     * que des rôles sans droits globaux.
+     */
+    private function filtrerRolesAssignables(array $roleIds): array
+    {
+        if (auth()->user()->est_super_admin ?? false) {
+            return $roleIds;
+        }
+
+        $societeId = app()->bound('societe_id') ? app('societe_id') : null;
+        $autorises = Role::where('societe_id', $societeId)->pluck('id')->all();
+
+        return array_values(array_intersect($roleIds, $autorises));
     }
 
     public function destroy($id)

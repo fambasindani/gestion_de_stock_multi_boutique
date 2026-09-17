@@ -3,9 +3,22 @@ import { ApiResponse } from '../types';
 import { Permission } from '../typess';
 import { CreatePermissionData, UpdatePermissionData } from '../typess';
 
+export interface PermissionsQuery {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  garde?: string;
+}
+
 export class PermissionsService {
-  async getAll(): Promise<ApiResponse<Permission[]>> {
-    return apiClient.get<Permission[]>('/permissions');
+  async getAll(params: PermissionsQuery = {}): Promise<ApiResponse<Permission[]>> {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', String(params.page));
+    if (params.per_page) query.append('per_page', String(params.per_page));
+    if (params.search) query.append('search', params.search);
+    if (params.garde) query.append('garde', params.garde);
+    const qs = query.toString();
+    return apiClient.get<Permission[]>(`/permissions${qs ? `?${qs}` : ''}`);
   }
 
   async getById(id: number): Promise<ApiResponse<Permission>> {

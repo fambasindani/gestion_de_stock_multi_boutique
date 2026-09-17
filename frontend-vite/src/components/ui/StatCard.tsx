@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { formatCompact } from "@/lib/utils/format";
 
 type StatColor =
   | "blue"
@@ -98,7 +99,7 @@ export function StatCard({
               {title}
             </p>
             <p className="mt-1.5 text-3xl font-extrabold leading-none text-slate-900 dark:text-white">
-              {value}
+              {typeof value === "number" ? formatCompact(value) : value}
             </p>
             {hint && (
               <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">

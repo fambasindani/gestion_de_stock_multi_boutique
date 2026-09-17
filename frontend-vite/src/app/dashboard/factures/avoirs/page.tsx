@@ -1,4 +1,6 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -112,7 +114,7 @@ function AvoirsPage() {
     { key: "reference", label: "Référence", render: (item: EcritureComptable) => <span className="font-mono text-sm font-medium">{item.reference}</span> },
     { key: "partenaire.nom", label: "Partenaire", render: (item: EcritureComptable) => <span>{item.partenaire?.nom || "-"}</span> },
     { key: "date_emission", label: "Date émission", hidden: "md" as const, render: (item: EcritureComptable) => <span>{formatDateShort(item.date_emission)}</span> },
-    { key: "montant_ttc", label: "Montant TTC", render: (item: EcritureComptable) => <span className="font-medium">{Number(item.montant_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</span> },
+    { key: "montant_ttc", label: "Montant TTC", render: (item: EcritureComptable) => <span className="font-medium">{Number(item.montant_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</span> },
     { key: "statut", label: "Statut", render: (item: EcritureComptable) => <DataTableBadge variant={statutVariants[item.statut] || "default"}>{statutLabels[item.statut] || item.statut}</DataTableBadge> },
   ];
 
@@ -192,7 +194,7 @@ function AvoirsPage() {
             <div className="flex-1 min-w-[200px]">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input placeholder="Rechercher par référence..." value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={handleKeyDown} className="pl-9" />
+                <Input placeholder="Rechercher par référence..." value={searchInput} onChange={(e) => { const v = e.target.value; setSearchInput(v); liveSearch(() => { setSearch(v); setPage(1); }); }} onKeyDown={handleKeyDown} className="pl-9" />
               </div>
             </div>
             <Button onClick={handleSearchSubmit} className="bg-blue-600 hover:bg-blue-700 text-white"><Search className="h-4 w-4 mr-2" />Rechercher</Button>

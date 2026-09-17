@@ -14,6 +14,8 @@ class CommandeVente extends Model
     protected $fillable = [
         'reference',
         'partenaire_id',
+        'client_nom',
+        'source',
         'date_commande',
         'date_livraison_souhaitee',
         'date_livraison_prevue',

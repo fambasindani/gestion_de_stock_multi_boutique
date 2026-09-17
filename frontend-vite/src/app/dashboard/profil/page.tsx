@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { FormInput } from "@/components/common/FormInput";
 import { Badge } from "@/components/ui/badge";
 import { profilService } from "@/lib/api/services/profil.service";
-import { resolveMediaUrl } from "@/lib/utils/assets";
+import { resolveLogoUrl } from "@/lib/utils/assets";
 import { formatDateTime } from "@/lib/utils/format";
 import {
   User,
@@ -95,7 +95,7 @@ export default function ProfilPage() {
 
   const u = data?.utilisateur;
   const societe = data?.societe;
-  const logo = resolveMediaUrl(societe?.logo);
+  const logo = resolveLogoUrl(societe);
   const initials = (u?.nom || "U")
     .split(" ")
     .map((w) => w.charAt(0))

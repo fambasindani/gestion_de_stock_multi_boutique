@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -21,9 +22,12 @@ import {
   XCircle, Printer, Calendar, Building2, User, Euro, Percent,
   Loader2, Hash, Clock, Ban,
 } from "lucide-react";
-import { formatDateLong } from "@/lib/utils/format";
+import { formatDateLong, formatCompact } from "@/lib/utils/format";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { InvoicePDF } from "@/components/invoices/InvoicePDF";
+import { useAuth } from "@/hooks/useAuth";
+import { resolveLogoUrl } from "@/lib/utils/assets";
+import { parametresService } from "@/lib/api/services/parametres.service";
 
 const statutLabels: Record<string, string> = {
   brouillon: "Brouillon",
@@ -52,6 +56,14 @@ export default function FactureDetailsPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { societe } = useAuth();
+
+  const { data: parametres } = useQuery({
+    queryKey: ["parametres"],
+    queryFn: async () => (await parametresService.getAll()).data ?? {},
+    staleTime: 5 * 60 * 1000,
+  });
+  const tvaTaux = Number(parametres?.tva_taux ?? 16) || 0;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statutDialogOpen, setStatutDialogOpen] = useState(false);
   const [paiementDialogOpen, setPaiementDialogOpen] = useState(false);
@@ -224,6 +236,11 @@ export default function FactureDetailsPage() {
               montant_restant={facture.montant_restant}
               mode_paiement={facture.mode_paiement}
               notes={facture.notes}
+              societe_nom={societe?.nom}
+              societe_logo={resolveLogoUrl(societe)}
+              societe_adresse={societe?.adresse}
+              societe_telephone={societe?.telephone}
+              tva_taux={tvaTaux}
             />}
             fileName={`Facture_${facture.reference}.pdf`}
           >
@@ -256,9 +273,9 @@ export default function FactureDetailsPage() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard icon={Euro} label="Montant TTC" value={`${Number(facture.montant_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF`} color="bg-blue-100 text-blue-600" />
-        <StatCard icon={CreditCard} label="Déjà payé" value={`${Number(facture.montant_paye).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF`} color="bg-emerald-100 text-emerald-600" />
-        <StatCard icon={Clock} label="Restant dû" value={`${Number(facture.montant_restant).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF`} color={facture.montant_restant > 0 ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-600"} />
+        <StatCard icon={Euro} label="Montant TTC" value={`${formatCompact(facture.montant_ttc)} ${DEVISE}`} color="bg-blue-100 text-blue-600" />
+        <StatCard icon={CreditCard} label="Déjà payé" value={`${formatCompact(facture.montant_paye)} ${DEVISE}`} color="bg-emerald-100 text-emerald-600" />
+        <StatCard icon={Clock} label="Restant dû" value={`${formatCompact(facture.montant_restant)} ${DEVISE}`} color={facture.montant_restant > 0 ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-600"} />
         <StatCard icon={Calendar} label="Échéance" value={formatDateLong(facture.date_echeance)} color="bg-purple-100 text-purple-600" />
       </div>
 
@@ -287,10 +304,10 @@ export default function FactureDetailsPage() {
                           {ligne.description && <p className="text-xs text-slate-500">{ligne.description}</p>}
                         </td>
                         <td className="py-3 text-right">{ligne.quantite}</td>
-                        <td className="py-3 text-right">{Number(ligne.prix_unitaire_ht).toFixed(2)} CDF</td>
+                        <td className="py-3 text-right">{Number(ligne.prix_unitaire_ht).toFixed(2)} {DEVISE}</td>
                         <td className="py-3 text-right">{ligne.taux_tva}%</td>
                         <td className="py-3 text-right">{ligne.taux_remise > 0 ? `${ligne.taux_remise}%` : "-"}</td>
-                        <td className="py-3 text-right font-medium">{Number(ligne.montant_ht).toFixed(2)} CDF</td>
+                        <td className="py-3 text-right font-medium">{Number(ligne.montant_ht).toFixed(2)} {DEVISE}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -306,27 +323,27 @@ export default function FactureDetailsPage() {
             <CardContent className="space-y-3">
               <div className="flex justify-between py-2 border-b">
                 <span className="text-sm text-slate-500">Total HT</span>
-                <span className="text-sm font-semibold">{Number(facture.montant_ht).toFixed(2)} CDF</span>
+                <span className="text-sm font-semibold">{Number(facture.montant_ht).toFixed(2)} {DEVISE}</span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-sm text-slate-500">Total TVA</span>
-                <span className="text-sm font-semibold">{Number(facture.montant_tva).toFixed(2)} CDF</span>
+                <span className="text-sm font-semibold">{Number(facture.montant_tva).toFixed(2)} {DEVISE}</span>
               </div>
               <div className="flex justify-between py-2">
                 <span className="text-base font-bold">Total TTC</span>
-                <span className="text-base font-bold text-blue-600">{Number(facture.montant_ttc).toFixed(2)} CDF</span>
+                <span className="text-base font-bold text-blue-600">{Number(facture.montant_ttc).toFixed(2)} {DEVISE}</span>
               </div>
               <div className="border-t pt-3 mt-3 space-y-2">
                 <div className="flex justify-between py-1">
                   <span className="text-sm text-emerald-600">Déjà payé</span>
-                  <span className="text-sm font-semibold text-emerald-600">{Number(facture.montant_paye).toFixed(2)} CDF</span>
+                  <span className="text-sm font-semibold text-emerald-600">{Number(facture.montant_paye).toFixed(2)} {DEVISE}</span>
                 </div>
                 <div className="flex justify-between py-1">
                   <span className={`text-sm font-bold ${facture.montant_restant > 0 ? "text-red-600" : "text-emerald-600"}`}>
                     Restant dû
                   </span>
                   <span className={`text-sm font-bold ${facture.montant_restant > 0 ? "text-red-600" : "text-emerald-600"}`}>
-                    {Number(facture.montant_restant).toFixed(2)} CDF
+                    {Number(facture.montant_restant).toFixed(2)} {DEVISE}
                   </span>
                 </div>
               </div>
@@ -404,10 +421,10 @@ export default function FactureDetailsPage() {
               min="0"
               max={facture.montant_restant}
               step="0.01"
-              placeholder={`Max: ${Number(facture.montant_restant).toFixed(2)} CDF`}
+              placeholder={`Max: ${Number(facture.montant_restant).toFixed(2)} ${DEVISE}`}
             />
             <p className="text-xs text-slate-500 mt-2">
-              Montant restant : {Number(facture.montant_restant).toFixed(2)} CDF
+              Montant restant : {Number(facture.montant_restant).toFixed(2)} {DEVISE}
             </p>
           </div>
           <DialogFooter>

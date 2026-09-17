@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 class CheckPermission
 {
+    /**
+     * Accepte une ou plusieurs permissions séparées par "|" (au moins une suffit).
+     * Ex : permission:gerer_roles|assigner_roles
+     */
     public function handle(Request $request, Closure $next, $permission)
     {
         $user = auth()->user();
@@ -16,9 +20,14 @@ class CheckPermission
             return $next($request);
         }
 
-        if (!$user || !$user->hasPermission($permission)) {
-            abort(403, "Vous n'avez pas la permission : $permission");
+        $requises = array_filter(array_map('trim', explode('|', (string) $permission)));
+
+        foreach ($requises as $perm) {
+            if ($user && $user->hasPermission($perm)) {
+                return $next($request);
+            }
         }
-        return $next($request);
+
+        abort(403, "Vous n'avez pas la permission : $permission");
     }
 }

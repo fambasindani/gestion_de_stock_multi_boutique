@@ -40,7 +40,7 @@ export interface PosVenteResult {
   client_nom: string | null;
   partenaire: string;
   vendeur: string;
-  societe: { nom: string; logo?: string | null } | null;
+  societe: { id?: number; nom: string; logo?: string | null } | null;
   date: string;
 }
 
@@ -54,9 +54,46 @@ export interface PosVenteData {
   notes?: string | null;
 }
 
+export interface PosJournal {
+  date: string;
+  totaux: { nombre_ventes: number; montant_ht: number; montant_ttc: number };
+  par_mode_paiement: { mode: string; nombre: number; montant: number }[];
+  par_vendeur: { vendeur: string; nombre: number; montant: number }[];
+  ventes: {
+    id: number;
+    reference: string;
+    client: string;
+    mode_paiement: string | null;
+    vendeur: string | null;
+    montant_ttc: number;
+  }[];
+  cloture: boolean;
+}
+
+export interface PosCloture {
+  date: string;
+  nombre_ventes: number;
+  montant_ht: number;
+  montant_ttc: number;
+  cloture_par: string | null;
+  cloture_le: string;
+}
+
 export class PosService {
   async vendre(data: PosVenteData): Promise<ApiResponse<PosVenteResult>> {
     return apiClient.post<PosVenteResult>("/pos/vendre", data);
+  }
+
+  async journal(date?: string): Promise<ApiResponse<PosJournal>> {
+    return apiClient.get<PosJournal>(`/pos/journal${date ? `?date=${date}` : ""}`);
+  }
+
+  async cloturer(date?: string): Promise<ApiResponse<PosCloture>> {
+    return apiClient.post<PosCloture>("/pos/cloturer", date ? { date } : {});
+  }
+
+  async reouvrir(): Promise<ApiResponse<null>> {
+    return apiClient.post<null>("/pos/reouvrir", {});
   }
 }
 

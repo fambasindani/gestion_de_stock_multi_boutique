@@ -1,4 +1,6 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -181,7 +183,7 @@ function FacturesPage() {
       label: "Montant TTC",
       render: (item: EcritureComptable) => (
         <span className="font-medium">
-          {Number(item.montant_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+          {Number(item.montant_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
         </span>
       ),
     },
@@ -291,7 +293,7 @@ function FacturesPage() {
         <CardHeader className="pb-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              {data?.total ?? 0} facture(s)
+              {pagination.total} facture(s)
             </CardTitle>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">Afficher</span>
@@ -318,7 +320,7 @@ function FacturesPage() {
                 <Input
                   placeholder="Rechercher par référence, partenaire..."
                   value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={(e) => { const v = e.target.value; setSearchInput(v); liveSearch(() => { setSearch(v); setPage(1); }); }}
                   onKeyDown={handleKeyDown}
                   className="pl-9"
                 />
@@ -344,7 +346,6 @@ function FacturesPage() {
                   <SelectItem value="all">Tous les types</SelectItem>
                   <SelectItem value="facture_client">Factures client</SelectItem>
                   <SelectItem value="avoir_client">Avoirs client</SelectItem>
-                  <SelectItem value="facture_fournisseur">Factures fournisseur</SelectItem>
                   <SelectItem value="avoir_fournisseur">Avoirs fournisseur</SelectItem>
                 </SelectContent>
               </Select>

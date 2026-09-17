@@ -44,7 +44,7 @@ function NouvelUtilisateurPage() {
   const { data: rolesList } = useQuery({
     queryKey: ["roles-list"],
     queryFn: async () => {
-      const response = await rolesService.getAll();
+      const response = await rolesService.getAll({ assignables: true });
       const roles = response.data;
       return Array.isArray(roles) ? roles : (roles as any)?.data ?? [];
     },

@@ -1,4 +1,5 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
 
 import React, { useState, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -217,7 +218,7 @@ function TracabilitePage() {
                 <Input
                   placeholder="Rechercher..."
                   value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={(e) => { const v = e.target.value; setSearchInput(v); liveSearch(() => { setSearch(v); setPage(1); }); }}
                   onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
                   className="pl-9"
                 />

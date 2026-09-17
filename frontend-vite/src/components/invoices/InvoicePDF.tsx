@@ -1,8 +1,10 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React from "react";
-import { Document, Page, Text, View, StyleSheet, Font } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, Font, Image } from "@react-pdf/renderer";
 import { formatDateLong } from "../../lib/utils/format";
+import { resolveMediaUrl } from "../../lib/utils/assets";
 
 Font.register({
   family: "Helvetica",
@@ -29,6 +31,12 @@ const styles = StyleSheet.create({
   },
   companyInfo: {
     flex: 1,
+  },
+  companyLogo: {
+    width: 110,
+    height: 46,
+    objectFit: "contain",
+    marginBottom: 6,
   },
   companyName: {
     fontSize: 18,
@@ -220,6 +228,11 @@ interface InvoicePDFProps {
   montant_restant?: number;
   mode_paiement?: string | null;
   notes?: string | null;
+  societe_nom?: string | null;
+  societe_logo?: string | null;
+  societe_adresse?: string | null;
+  societe_telephone?: string | null;
+  tva_taux?: number | null;
 }
 
 export function InvoicePDF({
@@ -241,7 +254,25 @@ export function InvoicePDF({
   montant_restant,
   mode_paiement,
   notes,
+  societe_nom,
+  societe_logo,
+  societe_adresse,
+  societe_telephone,
+  tva_taux,
 }: InvoicePDFProps) {
+  const logo = resolveMediaUrl(societe_logo);
+
+  // TVA : priorité au paramètre de la société (sinon taux enregistrés par ligne)
+  const hasParamTva = tva_taux !== undefined && tva_taux !== null;
+  const tvaCalc = hasParamTva
+    ? Number(montant_ht) * (Number(tva_taux) / 100)
+    : Number(montant_tva);
+  const ttcCalc = hasParamTva
+    ? Number(montant_ht) + tvaCalc
+    : Number(montant_ttc);
+  const restantCalc = hasParamTva
+    ? Math.max(0, ttcCalc - Number(montant_paye ?? 0))
+    : Number(montant_restant ?? 0);
   const ttcParTaux = lignes.reduce((acc, l) => {
     const key = `${l.taux_tva}%`;
     if (!acc[key]) acc[key] = { ht: 0, tva: 0, ttc: 0 };
@@ -256,12 +287,19 @@ export function InvoicePDF({
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <View style={styles.companyInfo}>
-            <Text style={styles.companyName}>GS Stock</Text>
-            <Text style={styles.companyDetails}>123 rue de l'Entreprise</Text>
-            <Text style={styles.companyDetails}>75000 Paris, France</Text>
-            <Text style={styles.companyDetails}>TVA : FR12345678901</Text>
-            <Text style={styles.companyDetails}>SIRET : 12345678900012</Text>
-            <Text style={styles.companyDetails}>contact@gsstock.fr</Text>
+            {logo && <Image src={logo} style={styles.companyLogo} />}
+            <Text style={styles.companyName}>{societe_nom || "GS Stock"}</Text>
+            {societe_adresse ? (
+              <Text style={styles.companyDetails}>{societe_adresse}</Text>
+            ) : (
+              <>
+                <Text style={styles.companyDetails}>123 rue de l'Entreprise</Text>
+                <Text style={styles.companyDetails}>75000 Paris, France</Text>
+              </>
+            )}
+            {societe_telephone && (
+              <Text style={styles.companyDetails}>Tél : {societe_telephone}</Text>
+            )}
           </View>
           <View>
             <Text style={styles.invoiceTitle}>FACTURE</Text>
@@ -299,11 +337,13 @@ export function InvoicePDF({
               </Text>
               <Text style={[styles.cellText, styles.colQuantity]}>{ligne.quantite}</Text>
               <Text style={[styles.cellText, styles.colPrice]}>
-                {Number(ligne.prix_unitaire_ht).toFixed(2)} CDF
+                {Number(ligne.prix_unitaire_ht).toFixed(2)} {DEVISE}
               </Text>
-              <Text style={[styles.cellText, styles.colTva]}>{ligne.taux_tva}%</Text>
+              <Text style={[styles.cellText, styles.colTva]}>
+                {hasParamTva ? `${Number(tva_taux)}%` : `${ligne.taux_tva}%`}
+              </Text>
               <Text style={[styles.cellText, styles.colTotal]}>
-                {Number(ligne.montant_ht).toFixed(2)} CDF
+                {Number(ligne.montant_ht).toFixed(2)} {DEVISE}
               </Text>
             </View>
           ))}
@@ -311,34 +351,43 @@ export function InvoicePDF({
 
         <View style={styles.totalsSection}>
           <View style={styles.totalsBox}>
-            {Object.entries(ttcParTaux).map(([taux, vals]) => (
-              <View key={taux} style={styles.totalRow}>
-                <Text style={styles.totalLabel}>Dont TVA {taux}</Text>
-                <Text style={styles.totalValue}>{Number(vals.tva).toFixed(2)} CDF</Text>
+            {hasParamTva ? (
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>Dont TVA {Number(tva_taux)}%</Text>
+                <Text style={styles.totalValue}>{tvaCalc.toFixed(2)} {DEVISE}</Text>
               </View>
-            ))}
+            ) : (
+              Object.entries(ttcParTaux).map(([taux, vals]) => (
+                <View key={taux} style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>Dont TVA {taux}</Text>
+                  <Text style={styles.totalValue}>{Number(vals.tva).toFixed(2)} {DEVISE}</Text>
+                </View>
+              ))
+            )}
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Total HT</Text>
-              <Text style={styles.totalValue}>{Number(montant_ht).toFixed(2)} CDF</Text>
+              <Text style={styles.totalValue}>{Number(montant_ht).toFixed(2)} {DEVISE}</Text>
             </View>
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total TVA</Text>
-              <Text style={styles.totalValue}>{Number(montant_tva).toFixed(2)} CDF</Text>
+              <Text style={styles.totalLabel}>
+                Total TVA{hasParamTva ? ` (${Number(tva_taux)}%)` : ""}
+              </Text>
+              <Text style={styles.totalValue}>{tvaCalc.toFixed(2)} {DEVISE}</Text>
             </View>
             <View style={styles.totalFinalRow}>
               <Text style={styles.totalFinalLabel}>Total TTC</Text>
-              <Text style={styles.totalFinalValue}>{Number(montant_ttc).toFixed(2)} CDF</Text>
+              <Text style={styles.totalFinalValue}>{ttcCalc.toFixed(2)} {DEVISE}</Text>
             </View>
             {montant_paye !== undefined && montant_paye > 0 && (
               <View style={styles.totalRow}>
                 <Text style={styles.totalLabel}>Déjà payé</Text>
-                <Text style={{ ...styles.totalValue, color: "#16a34a" }}>{Number(montant_paye).toFixed(2)} CDF</Text>
+                <Text style={{ ...styles.totalValue, color: "#16a34a" }}>{Number(montant_paye).toFixed(2)} {DEVISE}</Text>
               </View>
             )}
-            {montant_restant !== undefined && montant_restant > 0 && (
+            {restantCalc > 0 && (
               <View style={styles.totalRow}>
                 <Text style={{ ...styles.totalLabel, fontWeight: "bold" }}>Restant dû</Text>
-                <Text style={{ ...styles.totalValue, color: "#dc2626" }}>{Number(montant_restant).toFixed(2)} CDF</Text>
+                <Text style={{ ...styles.totalValue, color: "#dc2626" }}>{restantCalc.toFixed(2)} {DEVISE}</Text>
               </View>
             )}
           </View>
@@ -363,9 +412,14 @@ export function InvoicePDF({
         </View>
 
         <View style={styles.footer}>
-          <Text>GS Stock - 123 rue de l'Entreprise, 75000 Paris</Text>
-          <Text>contact@gsstock.fr | TVA : FR12345678901 | SIRET : 12345678900012</Text>
-          <Text>Page 1 / 1</Text>
+          <Text>
+            {societe_nom || "GS Stock"}
+            {societe_adresse ? ` — ${societe_adresse}` : ""}
+          </Text>
+          {societe_telephone ? <Text>Tél : {societe_telephone}</Text> : null}
+          <Text
+            render={({ pageNumber, totalPages }) => `Page ${pageNumber} / ${totalPages}`}
+          />
         </View>
       </Page>
     </Document>

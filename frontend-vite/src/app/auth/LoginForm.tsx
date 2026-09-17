@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -143,6 +144,11 @@ export function LoginForm() {
             <div className="text-right">
               <button
                 type="button"
+                onClick={() =>
+                  toast.info(
+                    "Réinitialisation du mot de passe : contactez l'administrateur de votre boutique."
+                  )
+                }
                 className="text-sm text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400"
                 disabled={isLoggingIn}
               >

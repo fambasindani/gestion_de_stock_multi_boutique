@@ -1,9 +1,17 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { dashboardService } from "@/lib/api/services/dashboard.service";
-import { formatDateShort, formatDateTime } from "@/lib/utils/format";
+import { formatDateShort, formatDateTime, formatCompact, formatDateInput } from "@/lib/utils/format";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -11,7 +19,7 @@ import { SkeletonCard, SkeletonTable } from "@/components/ui/skeleton";
 import {
   Users, ShoppingCart, Package, DollarSign,
   TrendingUp, TrendingDown, Clock, CheckCircle,
-  AlertCircle, ChevronRight, Eye, EyeOff,
+  AlertCircle, ChevronRight, CalendarDays,
   Truck, Store, ArrowLeftRight, FileText,
   Building2, UserCog, Calendar, Activity,
   BarChart3, LineChart, PieChart, Sparkles,
@@ -19,7 +27,7 @@ import {
   Wallet, Percent, ClipboardList, Boxes,
   UserPlus, RefreshCw
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 interface DashboardStats {
   stats_generales: {
@@ -145,14 +153,48 @@ function MiniProgressBar({ value, max, color = "bg-emerald-500" }: { value: numb
   );
 }
 
+type Periode = "jour" | "semaine" | "mois" | "annee" | "tout";
+
+const PERIODE_LABELS: Record<Periode, string> = {
+  jour: "Aujourd'hui",
+  semaine: "Cette semaine",
+  mois: "Ce mois",
+  annee: "Cette année",
+  tout: "Tout",
+};
+
 export default function DashboardPage() {
   const { currentUser, isLoadingUser: isUserLoading, societe } = useAuth();
-  const [showStats, setShowStats] = useState(true);
+  const [periode, setPeriode] = useState<Periode>("mois");
+
+  const range = useMemo(() => {
+    const now = new Date();
+    const start = new Date(now);
+    if (periode === "jour") {
+      start.setHours(0, 0, 0, 0);
+    } else if (periode === "semaine") {
+      const jour = (now.getDay() + 6) % 7;
+      start.setDate(now.getDate() - jour);
+      start.setHours(0, 0, 0, 0);
+    } else if (periode === "mois") {
+      start.setDate(1);
+      start.setHours(0, 0, 0, 0);
+    } else if (periode === "annee") {
+      start.setMonth(0, 1);
+      start.setHours(0, 0, 0, 0);
+    } else {
+      start.setFullYear(now.getFullYear() - 10);
+    }
+    return {
+      date_debut: formatDateInput(start),
+      date_fin: formatDateInput(now),
+    };
+  }, [periode]);
 
   const { data: stats, isLoading: isDashboardLoading } = useQuery({
-    queryKey: ["dashboard-stats"],
+    queryKey: ["dashboard-stats", range.date_debut, range.date_fin],
     queryFn: async () => {
-      const response = await dashboardService.getStats();
+      const response = await dashboardService.getStats(range.date_debut, range.date_fin);
       return (response.success && response.data) ? (response.data as DashboardStats) : null;
     },
     staleTime: 2 * 60 * 1000,
@@ -249,24 +291,26 @@ export default function DashboardPage() {
           .join(" · ")}
         icon={<BarChart3 className="h-5 w-5" />}
         actions={
-          <Button
-            variant="outline"
-            className="whitespace-nowrap"
-            onClick={() => setShowStats(!showStats)}
-          >
-            {showStats ? (
-              <EyeOff className="mr-2 h-4 w-4" />
-            ) : (
-              <Eye className="mr-2 h-4 w-4" />
-            )}
-            {showStats ? "Masquer les montants" : "Afficher les montants"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+            <Select value={periode} onValueChange={(v) => setPeriode(v as Periode)}>
+              <SelectTrigger className="h-9 w-[160px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(Object.keys(PERIODE_LABELS) as Periode[]).map((p) => (
+                  <SelectItem key={p} value={p}>
+                    {PERIODE_LABELS[p]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         }
       />
 
       {/* Stats Grid */}
-      {showStats && (
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {STATS_CONFIG.map((stat) => (
             <div
               key={stat.title}
@@ -278,7 +322,7 @@ export default function DashboardPage() {
                     {stat.title}
                   </p>
                   <p className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    {typeof stat.value === 'number' ? stat.value.toLocaleString('fr-FR') : stat.value}
+                    {typeof stat.value === 'number' ? formatCompact(stat.value) : stat.value}
                   </p>
                   <div className="flex items-center gap-1.5">
                     {stat.changeUp ? (
@@ -297,8 +341,7 @@ export default function DashboardPage() {
               </div>
             </div>
           ))}
-        </div>
-      )}
+      </div>
 
       {/* Chiffres d'affaires */}
       {stats?.chiffres_affaires && (
@@ -310,7 +353,7 @@ export default function DashboardPage() {
               </div>
               <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">CA Clients</p>
             </div>
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.chiffres_affaires.ca_clients} CDF</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white">{formatCompact(stats.chiffres_affaires.ca_clients)} {DEVISE}</p>
           </div>
           <div className="bg-white dark:bg-slate-900/80 rounded-2xl p-5 border border-slate-200/50 dark:border-slate-700/50 hover:shadow-lg transition-all">
             <div className="flex items-center gap-3 mb-3">
@@ -319,7 +362,7 @@ export default function DashboardPage() {
               </div>
               <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">CA Fournisseurs</p>
             </div>
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.chiffres_affaires.ca_fournisseurs} CDF</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white">{formatCompact(stats.chiffres_affaires.ca_fournisseurs)} {DEVISE}</p>
           </div>
           <div className="bg-white dark:bg-slate-900/80 rounded-2xl p-5 border border-slate-200/50 dark:border-slate-700/50 hover:shadow-lg transition-all">
             <div className="flex items-center gap-3 mb-3">
@@ -328,7 +371,7 @@ export default function DashboardPage() {
               </div>
               <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">Impayées</p>
             </div>
-            <p className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.chiffres_affaires.factures_impayees} CDF</p>
+            <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCompact(stats.chiffres_affaires.factures_impayees)} {DEVISE}</p>
           </div>
           <div className="bg-white dark:bg-slate-900/80 rounded-2xl p-5 border border-slate-200/50 dark:border-slate-700/50 hover:shadow-lg transition-all">
             <div className="flex items-center gap-3 mb-3">
@@ -516,7 +559,7 @@ export default function DashboardPage() {
                       <span className={`w-1.5 h-1.5 rounded-full ${getStatusColor(facture.statut).dot}`} />
                       {getStatusLabel(facture.statut)}
                     </span>
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">{facture.montant_ttc} CDF</span>
+                    <span className="text-sm font-bold text-slate-900 dark:text-white">{formatCompact(facture.montant_ttc)} {DEVISE}</span>
                   </div>
                 </div>
               ))}

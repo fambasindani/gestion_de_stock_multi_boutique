@@ -12,7 +12,7 @@ import { FormCheckbox } from "@/components/common/FormCheckbox";
 import { rolesService } from "@/lib/api/services/roles.service";
 import { permissionsService } from "@/lib/api/services/permissions.service";
 import { Permission } from "@/lib/api/typess";
-import { ArrowLeft, Save, Loader2, Shield, Key } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Shield, Key, CheckCircle, XCircle } from "lucide-react";
 
 export default function NouveauRolePageWrapper() {
   return (
@@ -198,9 +198,32 @@ function NouveauRolePage() {
             {permissionsList && permissionsList.length > 0 && (
               <Card>
                 <CardContent className="p-6">
-                  <h5 className="text-lg font-semibold text-blue-600 flex items-center gap-2 mb-4">
-                    <Key /> Permissions
-                  </h5>
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <h5 className="text-lg font-semibold text-blue-600 flex items-center gap-2">
+                      <Key /> Permissions
+                      <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                        {selectedPermissions.length} / {permissionsList.length}
+                      </span>
+                    </h5>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedPermissions(permissionsList.map((p: Permission) => p.id))}
+                      >
+                        <CheckCircle className="mr-1.5 h-3.5 w-3.5" /> Tout sélectionner
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedPermissions([])}
+                      >
+                        <XCircle className="mr-1.5 h-3.5 w-3.5" /> Tout désélectionner
+                      </Button>
+                    </div>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     {permissionsList.map((perm: Permission) => (
                       <FormCheckbox

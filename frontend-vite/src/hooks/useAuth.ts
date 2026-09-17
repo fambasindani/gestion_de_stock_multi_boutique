@@ -92,6 +92,9 @@ export function useAuth() {
     },
     onSuccess: (data) => {
       if (data.access_token && data.utilisateur) {
+        // Vider le cache : évite de réutiliser les données d'un autre compte
+        // (rôles, permissions, listes) quand on change d'utilisateur.
+        queryClient.clear();
         Cookies.set(AUTH_TOKEN_KEY, data.access_token, 7);
         queryClient.setQueryData(AUTH_KEYS.currentUser, data);
         router.replace('/dashboard');
@@ -116,8 +119,9 @@ export function useAuth() {
     },
     onSuccess: () => {
       Cookies.remove(AUTH_TOKEN_KEY);
+      // Vider le cache pour ne rien laisser à l'utilisateur suivant.
+      queryClient.clear();
       queryClient.setQueryData(AUTH_KEYS.currentUser, null);
-      queryClient.invalidateQueries({ queryKey: AUTH_KEYS.currentUser });
       router.replace('/auth/login');
     },
   });

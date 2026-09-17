@@ -22,6 +22,21 @@ export class ProduitsService {
     return apiClient.get<ProduitModele>(`/produits/${id}`);
   }
 
+  /**
+   * Recherche un produit (variante) par code-barres / QR / code interne.
+   * Utilisé par la douchette (saisie clavier) et le scan caméra.
+   */
+  async scan(code: string): Promise<
+    ApiResponse<{
+      id: number;
+      nom: string;
+      code_interne: string | null;
+      prix_vente: number;
+    }>
+  > {
+    return apiClient.get(`/produits/scan/${encodeURIComponent(code)}`);
+  }
+
   async create(data: Partial<ProduitModele> & { variantes?: Partial<VarianteProduit>[] }): Promise<ApiResponse<ProduitModele>> {
     return apiClient.post<ProduitModele>('/produits', data);
   }

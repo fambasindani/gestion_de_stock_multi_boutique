@@ -33,4 +33,9 @@ class AuditLog extends Model
     {
         return $this->belongsTo(Utilisateur::class);
     }
+
+    public function societe()
+    {
+        return $this->belongsTo(Societe::class, 'societe_id');
+    }
 }

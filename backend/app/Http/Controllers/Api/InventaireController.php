@@ -7,6 +7,7 @@ use App\Models\Inventaire;
 use App\Models\LigneInventaire;
 use App\Models\QuantiteStock;
 use App\Models\EmplacementStock;
+use App\Models\VarianteProduit;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
@@ -482,6 +483,8 @@ class InventaireController extends Controller
         }
 
         $ajoutees = 0;
+        $produitsVus = [];
+
         foreach ($query->get() as $stock) {
             $ligne = LigneInventaire::firstOrCreate(
                 [
@@ -492,6 +495,31 @@ class InventaireController extends Controller
                 [
                     'quantite_theorique' => $stock->quantite_disponible,
                     'quantite_physique' => $stock->quantite_disponible,
+                    'ecart' => 0,
+                ]
+            );
+            $produitsVus[$stock->produit_id] = true;
+            if ($ligne->wasRecentlyCreated) {
+                $ajoutees++;
+            }
+        }
+
+        // Inclure aussi les produits actifs sans stock (quantité théorique = 0)
+        $emplacementId = $inventaire->emplacement_id;
+        $produits = VarianteProduit::where('actif', true)
+            ->whereNotIn('id', array_keys($produitsVus) ?: [0])
+            ->get();
+
+        foreach ($produits as $produit) {
+            $ligne = LigneInventaire::firstOrCreate(
+                [
+                    'inventaire_id' => $inventaire->id,
+                    'produit_id' => $produit->id,
+                    'emplacement_id' => $emplacementId,
+                ],
+                [
+                    'quantite_theorique' => 0,
+                    'quantite_physique' => 0,
                     'ecart' => 0,
                 ]
             );

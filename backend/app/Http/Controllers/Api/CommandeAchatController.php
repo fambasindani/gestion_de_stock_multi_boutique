@@ -138,6 +138,7 @@ class CommandeAchatController extends Controller
                 'lignes.*.prix_unitaire_ht' => 'required|numeric|min:0',
                 'lignes.*.taux_remise' => 'nullable|numeric|min:0|max:100',
                 'lignes.*.taux_tva' => 'nullable|numeric|min:0|max:100',
+                'lignes.*.seuil_minimum' => 'nullable|numeric|min:0',
                 'lignes.*.date_livraison_prevue' => 'nullable|date',
                 'lignes.*.notes' => 'nullable|string',
             ]);
@@ -217,6 +218,8 @@ class CommandeAchatController extends Controller
                     'date_livraison_prevue' => $ligneData['date_livraison_prevue'] ?? null,
                     'notes' => $ligneData['notes'] ?? null,
                 ]);
+
+                $this->appliquerSeuilMinimum($ligneData['produit_id'], $ligneData['seuil_minimum'] ?? null);
             }
 
             DB::commit();
@@ -284,6 +287,7 @@ class CommandeAchatController extends Controller
                 'lignes.*.prix_unitaire_ht' => 'required|numeric|min:0',
                 'lignes.*.taux_remise' => 'nullable|numeric|min:0|max:100',
                 'lignes.*.taux_tva' => 'nullable|numeric|min:0|max:100',
+                'lignes.*.seuil_minimum' => 'nullable|numeric|min:0',
                 'lignes.*.date_livraison_prevue' => 'nullable|date',
                 'lignes.*.notes' => 'nullable|string',
             ]);
@@ -358,6 +362,8 @@ class CommandeAchatController extends Controller
                         ));
                         $updatedIds[] = $newLigne->id;
                     }
+
+                    $this->appliquerSeuilMinimum($ligneData['produit_id'], $ligneData['seuil_minimum'] ?? null);
                 }
 
                 $toDelete = array_diff($existingIds, $updatedIds);
@@ -448,6 +454,35 @@ class CommandeAchatController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Appliquer un seuil minimum (alerte stock bas) à un produit
+     */
+    private function appliquerSeuilMinimum($produitId, $seuil)
+    {
+        if ($seuil === null || $seuil === '') {
+            return;
+        }
+
+        $emplacement = EmplacementStock::where('usage', 'interne')->orderBy('id')->first()
+            ?? EmplacementStock::orderBy('id')->first();
+
+        $stock = QuantiteStock::firstOrNew([
+            'produit_id' => $produitId,
+            'emplacement_id' => $emplacement ? $emplacement->id : 1,
+            'lot_id' => null,
+        ]);
+
+        if (!$stock->exists) {
+            $stock->quantite_disponible = 0;
+            $stock->quantite_reservee = 0;
+            $stock->quantite_commande = 0;
+            $stock->quantite_controlee = 0;
+        }
+
+        $stock->seuil_minimum = $seuil;
+        $stock->save();
     }
 
     /**
@@ -588,6 +623,7 @@ class CommandeAchatController extends Controller
                 'prix_unitaire_ht' => 'required|numeric|min:0',
                 'taux_remise' => 'nullable|numeric|min:0|max:100',
                 'taux_tva' => 'nullable|numeric|min:0|max:100',
+                'seuil_minimum' => 'nullable|numeric|min:0',
                 'date_livraison_prevue' => 'nullable|date',
                 'notes' => 'nullable|string',
             ]);
@@ -619,6 +655,8 @@ class CommandeAchatController extends Controller
                 'date_livraison_prevue' => $validated['date_livraison_prevue'] ?? null,
                 'notes' => $validated['notes'] ?? null,
             ]);
+
+            $this->appliquerSeuilMinimum($validated['produit_id'], $validated['seuil_minimum'] ?? null);
 
             $this->recalculerTotaux($commande->id);
 

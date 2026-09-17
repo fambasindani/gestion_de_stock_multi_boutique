@@ -42,6 +42,14 @@ class PosController extends Controller
                 'notes' => 'nullable|string',
             ]);
 
+            // Caisse déjà clôturée pour aujourd'hui ?
+            if (Parametre::get('caisse_cloture_date') === now()->toDateString()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "La caisse est clôturée pour aujourd'hui. Contactez un responsable.",
+                ], 422);
+            }
+
             $tvaDefaut = (float) Parametre::get('tva_taux', 16);
             $emplacementId = $validated['emplacement_id'] ?? null;
 
@@ -110,6 +118,7 @@ class PosController extends Controller
                 'reference' => $reference,
                 'partenaire_id' => $partenaire->id,
                 'client_nom' => $validated['client_nom'] ?? null,
+                'source' => 'pos',
                 'date_commande' => now()->toDateString(),
                 'etat' => 'termine',
                 'mode_paiement' => $validated['mode_paiement'] ?? 'especes',
@@ -223,6 +232,144 @@ class PosController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage() ?: 'Erreur lors de la vente',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Journal des ventes comptoir du jour (ou d'une date donnée).
+     */
+    public function journal(Request $request)
+    {
+        try {
+            $date = $request->input('date', now()->toDateString());
+
+            $commandes = CommandeVente::where('source', 'pos')
+                ->whereDate('date_commande', $date)
+                ->with('creePar:id,nom')
+                ->orderByDesc('id')
+                ->get();
+
+            $parMode = $commandes->groupBy('mode_paiement')->map(function ($g, $mode) {
+                return [
+                    'mode' => $mode ?: 'non précisé',
+                    'nombre' => $g->count(),
+                    'montant' => round((float) $g->sum('montant_total_ttc'), 2),
+                ];
+            })->values();
+
+            $parVendeur = $commandes->groupBy('cree_par_utilisateur_id')->map(function ($g) {
+                return [
+                    'vendeur' => $g->first()->creePar->nom ?? 'N/A',
+                    'nombre' => $g->count(),
+                    'montant' => round((float) $g->sum('montant_total_ttc'), 2),
+                ];
+            })->values();
+
+            $ventes = $commandes->map(function ($c) {
+                return [
+                    'id' => $c->id,
+                    'reference' => $c->reference,
+                    'client' => $c->client_nom ?: ($c->partenaire->nom ?? 'Comptoir'),
+                    'mode_paiement' => $c->mode_paiement,
+                    'vendeur' => $c->creePar->nom ?? null,
+                    'montant_ttc' => round((float) $c->montant_total_ttc, 2),
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'date' => $date,
+                    'totaux' => [
+                        'nombre_ventes' => $commandes->count(),
+                        'montant_ht' => round((float) $commandes->sum('montant_total_ht'), 2),
+                        'montant_ttc' => round((float) $commandes->sum('montant_total_ttc'), 2),
+                    ],
+                    'par_mode_paiement' => $parMode,
+                    'par_vendeur' => $parVendeur,
+                    'ventes' => $ventes,
+                    'cloture' => Parametre::get('caisse_cloture_date') === $date,
+                ],
+                'message' => 'Journal de caisse récupéré',
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la récupération du journal',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Clôture de caisse du jour (bloque les ventes du jour).
+     */
+    public function cloturer(Request $request)
+    {
+        try {
+            $date = $request->input('date', now()->toDateString());
+
+            $commandes = CommandeVente::where('source', 'pos')
+                ->whereDate('date_commande', $date)
+                ->get();
+
+            $resume = [
+                'date' => $date,
+                'nombre_ventes' => $commandes->count(),
+                'montant_ht' => round((float) $commandes->sum('montant_total_ht'), 2),
+                'montant_ttc' => round((float) $commandes->sum('montant_total_ttc'), 2),
+                'cloture_par' => auth()->user()->nom ?? null,
+                'cloture_le' => now()->toDateTimeString(),
+            ];
+
+            Parametre::updateOrCreate(
+                ['cle' => 'caisse_cloture_date'],
+                ['valeur' => $date, 'description' => 'Date de dernière clôture de caisse']
+            );
+            Parametre::updateOrCreate(
+                ['cle' => 'caisse_cloture_resume'],
+                ['valeur' => json_encode($resume), 'description' => 'Résumé de la dernière clôture']
+            );
+
+            $this->logActivity('cloture_caisse', 'Pos', null, "Clôture de caisse du {$date}");
+
+            return response()->json([
+                'success' => true,
+                'data' => $resume,
+                'message' => 'Caisse clôturée avec succès',
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la clôture de caisse',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Réouvrir la caisse (annule la clôture du jour).
+     */
+    public function reouvrir(Request $request)
+    {
+        try {
+            Parametre::whereIn('cle', ['caisse_cloture_date', 'caisse_cloture_resume'])->delete();
+
+            $this->logActivity('reouverture_caisse', 'Pos', null, 'Réouverture de la caisse');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Caisse réouverte avec succès',
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la réouverture de caisse',
                 'error' => $e->getMessage(),
             ], 500);
         }

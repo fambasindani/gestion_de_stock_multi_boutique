@@ -1,4 +1,5 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -266,8 +267,11 @@ export default function SocietesPage() {
               className="w-full sm:w-72"
               value={search}
               onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
+                const v = e.target.value;
+                liveSearch(() => {
+                  setSearch(v);
+                  setPage(1);
+                });
               }}
             />
           </div>

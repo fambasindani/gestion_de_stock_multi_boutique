@@ -145,8 +145,15 @@ export class DashboardService {
   /**
    * Récupérer les statistiques du dashboard
    */
-  async getStats(): Promise<ApiResponse<DashboardStats>> {
-    return apiClient.get<DashboardStats>('/dashboard');
+  async getStats(dateDebut?: string, dateFin?: string): Promise<ApiResponse<DashboardStats>> {
+    let url = '/dashboard';
+    if (dateDebut || dateFin) {
+      const params = new URLSearchParams();
+      if (dateDebut) params.append('date_debut', dateDebut);
+      if (dateFin) params.append('date_fin', dateFin);
+      url += `?${params.toString()}`;
+    }
+    return apiClient.get<DashboardStats>(url);
   }
 
   /**

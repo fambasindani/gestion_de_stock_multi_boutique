@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import { useSearchParams } from "next/navigation";
 import { useParams, useRouter } from "next/navigation";
@@ -13,7 +14,7 @@ import { rapportsService } from "@/lib/api/services/rapports.service";
 import { exportToExcel, type ExcelColumn } from "@/lib/utils/exportExcel";
 import { saveElementAsPdf } from "@/lib/utils/exportPdf";
 import { RapportTablePDF } from "@/components/pdf/RapportTablePDF";
-import { formatDateShort } from "@/lib/utils/format";
+import { formatDateShort, formatCompact } from "@/lib/utils/format";
 import {
   Users,
   Receipt,
@@ -49,7 +50,10 @@ const etatLabel: Record<string, string> = {
   annule: "Annulée",
 };
 
+import { useAuth } from "@/hooks/useAuth";
+
 export default function VendeurDetailsPage() {
+  const { societe } = useAuth();
   const params = useParams<{ id: string }>();
   const id = Number(params.id);
   const router = useRouter();
@@ -104,7 +108,7 @@ export default function VendeurDetailsPage() {
       className: "text-right",
       render: (l) => (
         <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
-          {money(l.total_ttc)} CDF
+          {money(l.total_ttc)} {DEVISE}
         </span>
       ),
     },
@@ -164,7 +168,7 @@ export default function VendeurDetailsPage() {
       <RapportTablePDF
         title="Détail des ventes du vendeur"
         subtitle={vendeur?.nom}
-        company="GS Stock ERP"
+        company={societe?.nom || "GS Stock"}
         columns={[
           { header: "Référence", flex: 1.3, value: (l: VenteLigne) => l.reference },
           {
@@ -242,13 +246,13 @@ export default function VendeurDetailsPage() {
         />
         <StatCard
           title="Total HT"
-          value={`${money(totaux?.total_ht)} CDF`}
+          value={`${money(totaux?.total_ht)} ${DEVISE}`}
           icon={<Users className="h-5 w-5" />}
           color="emerald"
         />
         <StatCard
           title="Total TTC"
-          value={`${money(totaux?.total_ttc)} CDF`}
+          value={`${formatCompact(totaux?.total_ttc)} ${DEVISE}`}
           icon={<Wallet className="h-5 w-5" />}
           color="violet"
         />

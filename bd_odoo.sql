@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `audit_logs` (
   KEY `audit_logs_user_id_index` (`user_id`),
   KEY `audit_logs_societe_id_index` (`societe_id`),
   CONSTRAINT `audit_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=126 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=220 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.audit_logs : ~87 rows (environ)
 INSERT INTO `audit_logs` (`id`, `user_id`, `societe_id`, `action`, `entity_type`, `entity_id`, `description`, `old_values`, `new_values`, `ip_address`, `user_agent`, `created_at`, `updated_at`) VALUES
@@ -168,7 +168,101 @@ INSERT INTO `audit_logs` (`id`, `user_id`, `societe_id`, `action`, `entity_type`
 	(122, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-16 19:44:07', '2026-09-16 19:44:07'),
 	(123, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-16 19:44:10', '2026-09-16 19:44:10'),
 	(124, 1, 1, 'vente_comptoir', 'CommandeVente', 6, 'Vente comptoir SO-2026-00005', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-16 19:55:20', '2026-09-16 19:55:20'),
-	(125, 1, 1, 'vente_comptoir', 'CommandeVente', 7, 'Vente comptoir SO-2026-00006', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36 Edg/153.0.0.0', '2026-09-16 19:59:12', '2026-09-16 19:59:12');
+	(125, 1, 1, 'vente_comptoir', 'CommandeVente', 7, 'Vente comptoir SO-2026-00006', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36 Edg/153.0.0.0', '2026-09-16 19:59:12', '2026-09-16 19:59:12'),
+	(126, 1, 1, 'vente_comptoir', 'CommandeVente', 8, 'Vente comptoir SO-2026-00005', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-16 20:44:42', '2026-09-16 20:44:42'),
+	(127, 1, 1, 'vente_comptoir', 'CommandeVente', 9, 'Vente comptoir SO-2026-00006', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-16 20:45:37', '2026-09-16 20:45:37'),
+	(128, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-17 07:52:49', '2026-09-17 07:52:49'),
+	(129, NULL, NULL, 'login', 'Utilisateur', 11, 'Connexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-17 07:54:33', '2026-09-17 07:54:33'),
+	(130, 11, NULL, 'logout', 'Utilisateur', 11, 'Déconnexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-17 07:56:51', '2026-09-17 07:56:51'),
+	(131, NULL, NULL, 'login', 'Utilisateur', 11, 'Connexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-17 07:57:04', '2026-09-17 07:57:04'),
+	(132, 11, NULL, 'logout', 'Utilisateur', 11, 'Déconnexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-17 08:02:09', '2026-09-17 08:02:09'),
+	(133, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-17 08:02:32', '2026-09-17 08:02:32'),
+	(134, 1, 1, 'create', 'Retour', 1, 'Retour RET-202609-0001 (fournisseur)', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:18:36', '2026-09-17 08:18:36'),
+	(135, 1, 1, 'delete', 'Retour', 1, 'Suppression retour RET-202609-0001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:18:47', '2026-09-17 08:18:47'),
+	(136, 1, 1, 'create', 'Retour', 2, 'Retour RET-202609-0001 (client)', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:18:48', '2026-09-17 08:18:48'),
+	(137, 1, 1, 'delete', 'Retour', 2, 'Suppression retour RET-202609-0001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:18:49', '2026-09-17 08:18:49'),
+	(138, 1, 1, 'create', 'Retour', 3, 'Retour RET-202609-0001 (fournisseur)', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:19:23', '2026-09-17 08:19:23'),
+	(139, 1, 1, 'delete', 'Retour', 3, 'Suppression retour RET-202609-0001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:19:30', '2026-09-17 08:19:30'),
+	(140, 1, 1, 'create', 'Retour', 4, 'Retour RET-202609-0001 (casse)', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 08:50:36', '2026-09-17 08:50:36'),
+	(141, 1, 1, 'create', 'Retour', 5, 'Création retour RET-202609-0002 (fournisseur) — en attente de validation', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:53:12', '2026-09-17 08:53:12'),
+	(142, 1, 1, 'valider', 'Retour', 5, 'Validation retour RET-202609-0002', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:53:13', '2026-09-17 08:53:13'),
+	(143, 1, 1, 'delete', 'Retour', 5, 'Suppression retour RET-202609-0002', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:53:14', '2026-09-17 08:53:14'),
+	(144, 1, 1, 'valider', 'Retour', 4, 'Validation retour RET-202609-0001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 08:54:43', '2026-09-17 08:54:43'),
+	(145, 1, 1, 'delete', 'Retour', 4, 'Suppression retour RET-202609-0001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 08:54:52', '2026-09-17 08:54:52'),
+	(146, 1, 1, 'create', 'Retour', 6, 'Création retour RET-202609-0001 (casse) — en attente de validation', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:56:36', '2026-09-17 08:56:36'),
+	(147, 1, 1, 'delete', 'Retour', 6, 'Suppression retour RET-202609-0001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:56:36', '2026-09-17 08:56:36'),
+	(148, 1, 1, 'create', 'Retour', 7, 'Création retour RET-202609-0001 (casse) — en attente de validation', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:56:36', '2026-09-17 08:56:36'),
+	(149, 1, 1, 'valider', 'Retour', 7, 'Validation retour RET-202609-0001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 08:56:37', '2026-09-17 08:56:37'),
+	(150, 1, 1, 'create', 'Retour', 8, 'Création retour RET-202609-0001 (casse) — en attente de validation', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 08:58:18', '2026-09-17 08:58:18'),
+	(151, 1, 1, 'valider', 'Retour', 8, 'Validation retour RET-202609-0001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 09:02:11', '2026-09-17 09:02:11'),
+	(152, 1, 1, 'create', 'Produit', 4, 'Création du produit Tomate', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 09:07:02', '2026-09-17 09:07:02'),
+	(153, 1, 1, 'create', 'CommandeAchat', 3, 'Création commande achat PO-2026-00003', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 09:18:15', '2026-09-17 09:18:15'),
+	(154, 1, 1, 'changer_etat', 'CommandeAchat', 3, 'Changement état commande achat PO-2026-00003: brouillon → confirme', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 09:18:32', '2026-09-17 09:18:32'),
+	(155, 1, 1, 'changer_etat', 'CommandeAchat', 3, 'Changement état commande achat PO-2026-00003: confirme → envoye', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 09:18:39', '2026-09-17 09:18:39'),
+	(156, 1, 1, 'changer_etat', 'CommandeAchat', 3, 'Changement état commande achat PO-2026-00003: envoye → recu', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 09:18:47', '2026-09-17 09:18:47'),
+	(157, 1, 1, 'changer_etat', 'CommandeAchat', 3, 'Changement état commande achat PO-2026-00003: recu → termine', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 09:18:53', '2026-09-17 09:18:53'),
+	(158, 1, 1, 'vente_comptoir', 'CommandeVente', 10, 'Vente comptoir SO-2026-00006', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 09:30:30', '2026-09-17 09:30:30'),
+	(159, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:15:08', '2026-09-17 10:15:08'),
+	(160, NULL, NULL, 'login', 'Utilisateur', 11, 'Connexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:15:19', '2026-09-17 10:15:19'),
+	(161, 11, NULL, 'logout', 'Utilisateur', 11, 'Déconnexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:17:05', '2026-09-17 10:17:05'),
+	(162, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:17:12', '2026-09-17 10:17:12'),
+	(163, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:19:18', '2026-09-17 10:19:18'),
+	(164, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:19:26', '2026-09-17 10:19:26'),
+	(165, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:19:33', '2026-09-17 10:19:33'),
+	(166, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:19:49', '2026-09-17 10:19:49'),
+	(167, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:20:03', '2026-09-17 10:20:03'),
+	(168, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:20:24', '2026-09-17 10:20:24'),
+	(169, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:22:22', '2026-09-17 10:22:22'),
+	(170, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:22:30', '2026-09-17 10:22:30'),
+	(171, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:23:49', '2026-09-17 10:23:49'),
+	(172, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:24:18', '2026-09-17 10:24:18'),
+	(173, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:24:50', '2026-09-17 10:24:50'),
+	(174, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:24:52', '2026-09-17 10:24:52'),
+	(175, 1, 1, 'cloture_caisse', 'Pos', NULL, 'Clôture de caisse du 2026-09-17', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 10:35:13', '2026-09-17 10:35:13'),
+	(176, 1, 1, 'create', 'CommandeAchat', 4, 'Création commande achat PO-2026-00004', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 10:48:43', '2026-09-17 10:48:43'),
+	(177, 1, 1, 'delete', 'CommandeAchat', 4, 'Suppression commande achat #4', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 10:48:44', '2026-09-17 10:48:44'),
+	(178, 1, 1, 'cloture_caisse', 'Pos', NULL, 'Clôture de caisse du 2026-09-17', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 10:52:15', '2026-09-17 10:52:15'),
+	(179, 1, 1, 'reouverture_caisse', 'Pos', NULL, 'Réouverture de la caisse', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-17 10:52:16', '2026-09-17 10:52:16'),
+	(180, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:55:26', '2026-09-17 10:55:26'),
+	(181, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:55:33', '2026-09-17 10:55:33'),
+	(182, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:56:01', '2026-09-17 10:56:01'),
+	(183, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:56:05', '2026-09-17 10:56:05'),
+	(184, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:56:20', '2026-09-17 10:56:20'),
+	(185, NULL, NULL, 'login', 'Utilisateur', 11, 'Connexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:56:27', '2026-09-17 10:56:27'),
+	(186, 11, NULL, 'logout', 'Utilisateur', 11, 'Déconnexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:56:48', '2026-09-17 10:56:48'),
+	(187, NULL, NULL, 'login', 'Utilisateur', 11, 'Connexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:57:10', '2026-09-17 10:57:10'),
+	(188, 11, NULL, 'logout', 'Utilisateur', 11, 'Déconnexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:57:35', '2026-09-17 10:57:35'),
+	(189, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:57:41', '2026-09-17 10:57:41'),
+	(190, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:59:40', '2026-09-17 10:59:40'),
+	(191, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 10:59:45', '2026-09-17 10:59:45'),
+	(192, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:00:32', '2026-09-17 11:00:32'),
+	(193, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:01:12', '2026-09-17 11:01:12'),
+	(194, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:01:23', '2026-09-17 11:01:23'),
+	(195, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:02:49', '2026-09-17 11:02:49'),
+	(196, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:05:13', '2026-09-17 11:05:13'),
+	(197, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:06:04', '2026-09-17 11:06:04'),
+	(198, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:08:14', '2026-09-17 11:08:14'),
+	(199, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:08:31', '2026-09-17 11:08:31'),
+	(200, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:15:00', '2026-09-17 11:15:00'),
+	(201, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:15:07', '2026-09-17 11:15:07'),
+	(202, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:23:23', '2026-09-17 11:23:23'),
+	(203, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:23:25', '2026-09-17 11:23:25'),
+	(204, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:26:12', '2026-09-17 11:26:12'),
+	(205, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:26:15', '2026-09-17 11:26:15'),
+	(206, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:33:55', '2026-09-17 11:33:55'),
+	(207, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:34:03', '2026-09-17 11:34:03'),
+	(208, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:36:02', '2026-09-17 11:36:02'),
+	(209, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:36:08', '2026-09-17 11:36:08'),
+	(210, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:38:14', '2026-09-17 11:38:14'),
+	(211, NULL, NULL, 'login', 'Utilisateur', 11, 'Connexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:38:55', '2026-09-17 11:38:55'),
+	(212, 11, NULL, 'logout', 'Utilisateur', 11, 'Déconnexion de plateforme@gs-stock.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:39:05', '2026-09-17 11:39:05'),
+	(213, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:39:10', '2026-09-17 11:39:10'),
+	(214, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:40:09', '2026-09-17 11:40:09'),
+	(215, NULL, 4, 'login', 'Utilisateur', 14, 'Connexion de kakule@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:40:13', '2026-09-17 11:40:13'),
+	(216, 14, 4, 'logout', 'Utilisateur', 14, 'Déconnexion de kakule@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:40:38', '2026-09-17 11:40:38'),
+	(217, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:40:47', '2026-09-17 11:40:47'),
+	(218, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:42:13', '2026-09-17 11:42:13'),
+	(219, NULL, 4, 'login', 'Utilisateur', 14, 'Connexion de kakule@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:42:21', '2026-09-17 11:42:21');
 
 -- Listage de la structure de table bd_odoo. categorie_produit
 CREATE TABLE IF NOT EXISTS `categorie_produit` (
@@ -231,12 +325,13 @@ CREATE TABLE IF NOT EXISTS `commande_achat` (
   CONSTRAINT `commande_achat_cree_par_utilisateur_id_foreign` FOREIGN KEY (`cree_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `commande_achat_modifie_par_utilisateur_id_foreign` FOREIGN KEY (`modifie_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `commande_achat_partenaire_id_foreign` FOREIGN KEY (`partenaire_id`) REFERENCES `partenaire` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.commande_achat : ~2 rows (environ)
 INSERT INTO `commande_achat` (`id`, `reference`, `partenaire_id`, `date_commande`, `date_livraison_prevue`, `date_livraison_reelle`, `etat`, `montant_total_ht`, `montant_total_ttc`, `montant_remise`, `taux_remise`, `frais_livraison`, `notes`, `adresse_livraison`, `adresse_facturation`, `mode_paiement`, `reference_commande_fournisseur`, `cree_par_utilisateur_id`, `modifie_par_utilisateur_id`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(1, 'PO-2026-00001', 4, '2026-07-12', '2026-07-12', '2026-07-14', 'termine', 12000.00, 12000.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-07-12 07:01:04', '2026-07-14 09:48:09', 1),
-	(2, 'PO-2026-00002', 3, '2026-07-14', '2026-07-09', '2026-07-14', 'termine', 21000.00, 21000.00, 0.00, 0.00, 0.00, NULL, 'Mongaka 12', NULL, NULL, NULL, 1, 1, 1, '2026-07-14 09:40:07', '2026-07-14 10:56:26', 1);
+	(2, 'PO-2026-00002', 3, '2026-07-14', '2026-07-09', '2026-07-14', 'termine', 21000.00, 21000.00, 0.00, 0.00, 0.00, NULL, 'Mongaka 12', NULL, NULL, NULL, 1, 1, 1, '2026-07-14 09:40:07', '2026-07-14 10:56:26', 1),
+	(3, 'PO-2026-00003', 3, '2026-09-17', '2026-09-19', '2026-09-17', 'termine', 301200.00, 346380.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-09-17 09:18:15', '2026-09-17 09:18:53', 1);
 
 -- Listage de la structure de table bd_odoo. commande_vente
 CREATE TABLE IF NOT EXISTS `commande_vente` (
@@ -249,6 +344,7 @@ CREATE TABLE IF NOT EXISTS `commande_vente` (
   `date_livraison_prevue` date DEFAULT NULL,
   `date_livraison_reelle` date DEFAULT NULL,
   `etat` enum('brouillon','confirme','en_cours','termine','annule') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'brouillon',
+  `source` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `montant_total_ht` decimal(16,2) NOT NULL DEFAULT '0.00',
   `montant_total_ttc` decimal(16,2) NOT NULL DEFAULT '0.00',
   `montant_remise` decimal(16,2) NOT NULL DEFAULT '0.00',
@@ -277,15 +373,16 @@ CREATE TABLE IF NOT EXISTS `commande_vente` (
   CONSTRAINT `commande_vente_cree_par_utilisateur_id_foreign` FOREIGN KEY (`cree_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `commande_vente_modifie_par_utilisateur_id_foreign` FOREIGN KEY (`modifie_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `commande_vente_partenaire_id_foreign` FOREIGN KEY (`partenaire_id`) REFERENCES `partenaire` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.commande_vente : ~3 rows (environ)
-INSERT INTO `commande_vente` (`id`, `reference`, `partenaire_id`, `client_nom`, `date_commande`, `date_livraison_souhaitee`, `date_livraison_prevue`, `date_livraison_reelle`, `etat`, `montant_total_ht`, `montant_total_ttc`, `montant_remise`, `taux_remise`, `frais_livraison`, `notes`, `adresse_livraison`, `adresse_facturation`, `mode_paiement`, `reference_commande_client`, `cree_par_utilisateur_id`, `modifie_par_utilisateur_id`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
-	(1, 'SO-2026-00001', 2, NULL, '2026-07-12', '2026-07-12', NULL, '2026-07-12', 'termine', 7050.00, 7050.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-07-12 07:17:06', '2026-07-12 07:18:00', 1),
-	(2, 'SO-2026-00002', 6, NULL, '2026-07-14', '2026-07-16', NULL, '2026-07-14', 'termine', 1410.00, 1410.00, 0.00, 0.00, 0.00, NULL, 'Kwalo 12', NULL, NULL, NULL, 1, 1, 1, '2026-07-14 09:12:16', '2026-07-14 09:27:10', 1),
-	(3, 'SO-2026-00003', 1, NULL, '2026-07-14', '2026-07-14', NULL, '2026-07-14', 'termine', 1590.00, 1590.00, 0.00, 0.00, 0.00, NULL, 'Paris 12', NULL, NULL, NULL, 1, 1, 1, '2026-07-14 09:35:11', '2026-07-14 09:36:19', 1),
-	(4, 'SO-2026-00004', 6, NULL, '2026-09-16', NULL, NULL, '2026-09-16', 'termine', 710.00, 710.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-09-16 18:58:45', '2026-09-16 18:59:23', 1),
-	(6, 'SO-2026-00005', 7, NULL, '2026-09-16', NULL, NULL, NULL, 'termine', 1060.00, 1229.60, 0.00, 0.00, 0.00, 'Vente comptoir', NULL, NULL, 'especes', NULL, 1, NULL, 1, '2026-09-16 19:55:20', '2026-09-16 19:55:20', 1);
+INSERT INTO `commande_vente` (`id`, `reference`, `partenaire_id`, `client_nom`, `date_commande`, `date_livraison_souhaitee`, `date_livraison_prevue`, `date_livraison_reelle`, `etat`, `source`, `montant_total_ht`, `montant_total_ttc`, `montant_remise`, `taux_remise`, `frais_livraison`, `notes`, `adresse_livraison`, `adresse_facturation`, `mode_paiement`, `reference_commande_client`, `cree_par_utilisateur_id`, `modifie_par_utilisateur_id`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
+	(1, 'SO-2026-00001', 2, NULL, '2026-07-12', '2026-07-12', NULL, '2026-07-12', 'termine', NULL, 7050.00, 7050.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-07-12 07:17:06', '2026-07-12 07:18:00', 1),
+	(2, 'SO-2026-00002', 6, NULL, '2026-07-14', '2026-07-16', NULL, '2026-07-14', 'termine', NULL, 1410.00, 1410.00, 0.00, 0.00, 0.00, NULL, 'Kwalo 12', NULL, NULL, NULL, 1, 1, 1, '2026-07-14 09:12:16', '2026-07-14 09:27:10', 1),
+	(3, 'SO-2026-00003', 1, NULL, '2026-07-14', '2026-07-14', NULL, '2026-07-14', 'termine', NULL, 1590.00, 1590.00, 0.00, 0.00, 0.00, NULL, 'Paris 12', NULL, NULL, NULL, 1, 1, 1, '2026-07-14 09:35:11', '2026-07-14 09:36:19', 1),
+	(4, 'SO-2026-00004', 6, NULL, '2026-09-16', NULL, NULL, '2026-09-16', 'termine', NULL, 710.00, 710.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-09-16 18:58:45', '2026-09-16 18:59:23', 1),
+	(8, 'SO-2026-00005', 7, NULL, '2026-09-16', NULL, NULL, NULL, 'termine', 'pos', 1750.00, 2030.00, 0.00, 0.00, 0.00, 'Vente comptoir', NULL, NULL, 'especes', NULL, 1, NULL, 1, '2026-09-16 20:44:41', '2026-09-16 20:44:41', 1),
+	(10, 'SO-2026-00006', 7, NULL, '2026-09-17', NULL, NULL, NULL, 'termine', 'pos', 20700.00, 23805.00, 0.00, 0.00, 0.00, 'Vente comptoir', NULL, NULL, 'especes', NULL, 1, NULL, 1, '2026-09-17 09:30:30', '2026-09-17 09:30:30', 1);
 
 -- Listage de la structure de table bd_odoo. ecriture_comptable
 CREATE TABLE IF NOT EXISTS `ecriture_comptable` (
@@ -340,14 +437,15 @@ CREATE TABLE IF NOT EXISTS `ecriture_comptable` (
   CONSTRAINT `ecriture_comptable_modifie_par_utilisateur_id_foreign` FOREIGN KEY (`modifie_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `ecriture_comptable_partenaire_id_foreign` FOREIGN KEY (`partenaire_id`) REFERENCES `partenaire` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `ecriture_comptable_transfert_id_foreign` FOREIGN KEY (`transfert_id`) REFERENCES `transfert_stock` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.ecriture_comptable : ~3 rows (environ)
 INSERT INTO `ecriture_comptable` (`id`, `reference`, `numero_facture`, `partenaire_id`, `type`, `date_emission`, `date_echeance`, `date_paiement`, `montant_ht`, `montant_tva`, `montant_ttc`, `montant_remise`, `taux_remise`, `montant_paye`, `montant_restant`, `devise`, `taux_change`, `commande_vente_id`, `commande_achat_id`, `transfert_id`, `statut`, `mode_paiement`, `notes`, `adresse_facturation`, `adresse_livraison`, `societe_id`, `cree_par_utilisateur_id`, `modifie_par_utilisateur_id`, `actif`, `created_at`, `updated_at`) VALUES
 	(1, 'INV-2026-00001', 'FACT-2026-00001', 2, 'facture_client', '2026-07-12', '2026-08-11', '2026-07-12', 7050.00, 0.00, 7050.00, 0.00, 0.00, 7050.00, 0.00, 'EUR', 1.0000, 1, NULL, NULL, 'annulee', NULL, 'Paiement partiel de 7,050.00 € le 2026-07-12', NULL, NULL, 1, 1, 1, 1, '2026-07-12 07:18:56', '2026-07-13 14:03:33'),
 	(2, 'INV-2026-00002', 'FACT-2026-00002', 6, 'facture_client', '2026-07-14', '2026-08-13', '2026-07-14', 1410.00, 282.00, 1692.00, 0.00, 0.00, 1692.00, 0.00, 'EUR', 1.0000, 2, NULL, NULL, 'payee', NULL, 'Paiement partiel de 1,410.00 € le 2026-07-14\nPaiement partiel de 282.00 € le 2026-07-14', NULL, NULL, 1, 1, 1, 1, '2026-07-14 09:27:20', '2026-07-14 09:27:54'),
 	(3, 'INV-2026-00003', 'FACT-2026-00003', 1, 'facture_client', '2026-07-14', '2026-08-13', '2026-07-14', 1590.00, 318.00, 1908.00, 0.00, 0.00, 1908.00, 0.00, 'EUR', 1.0000, 3, NULL, NULL, 'payee', NULL, 'Paiement partiel de 1,590.00 € le 2026-07-14\nPaiement partiel de 318.00 € le 2026-07-14', NULL, NULL, 1, 1, 1, 1, '2026-07-14 09:36:23', '2026-07-14 09:51:15'),
-	(5, 'INV-2026-00004', 'FACT-2026-00004', 7, 'facture_client', '2026-09-16', NULL, '2026-09-16', 1060.00, 169.60, 1229.60, 0.00, 0.00, 1229.60, 0.00, 'EUR', 1.0000, 6, NULL, NULL, 'payee', 'especes', 'Vente comptoir SO-2026-00005', NULL, NULL, 1, 1, NULL, 1, '2026-09-16 19:55:20', '2026-09-16 19:55:20');
+	(7, 'INV-2026-00004', 'FACT-2026-00004', 7, 'facture_client', '2026-09-16', NULL, '2026-09-16', 1750.00, 280.00, 2030.00, 0.00, 0.00, 2030.00, 0.00, 'EUR', 1.0000, 8, NULL, NULL, 'payee', 'especes', 'Vente comptoir SO-2026-00005', NULL, NULL, 1, 1, NULL, 1, '2026-09-16 20:44:41', '2026-09-16 20:44:41'),
+	(9, 'INV-2026-00005', 'FACT-2026-00005', 7, 'facture_client', '2026-09-17', NULL, '2026-09-17', 20700.00, 3105.00, 23805.00, 0.00, 0.00, 23805.00, 0.00, 'EUR', 1.0000, 10, NULL, NULL, 'payee', 'especes', 'Vente comptoir SO-2026-00006', NULL, NULL, 1, 1, NULL, 1, '2026-09-17 09:30:30', '2026-09-17 09:30:30');
 
 -- Listage de la structure de table bd_odoo. emplacement_stock
 CREATE TABLE IF NOT EXISTS `emplacement_stock` (
@@ -406,11 +504,12 @@ CREATE TABLE IF NOT EXISTS `inventaires` (
   KEY `inventaires_date_inventaire_index` (`date_inventaire`),
   KEY `inventaires_societe_id_index` (`societe_id`),
   CONSTRAINT `inventaires_emplacement_id_foreign` FOREIGN KEY (`emplacement_id`) REFERENCES `emplacement_stock` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.inventaires : ~1 rows (environ)
 INSERT INTO `inventaires` (`id`, `reference`, `date_inventaire`, `emplacement_id`, `statut`, `notes`, `utilisateur_id`, `date_cloture`, `created_at`, `updated_at`, `societe_id`) VALUES
-	(5, 'INV-202609-0001', '2026-09-16', NULL, 'cloture', NULL, 1, '2026-09-16 18:24:33', '2026-09-16 18:22:19', '2026-09-16 18:24:33', 1);
+	(5, 'INV-202609-0001', '2026-09-16', NULL, 'cloture', NULL, 1, '2026-09-16 18:24:33', '2026-09-16 18:22:19', '2026-09-16 18:24:33', 1),
+	(13, 'INV-202609-0002', '2026-09-17', NULL, 'cloture', NULL, 1, '2026-09-17 09:23:28', '2026-09-17 09:22:54', '2026-09-17 09:23:28', 1);
 
 -- Listage de la structure de table bd_odoo. ligne_commande_achat
 CREATE TABLE IF NOT EXISTS `ligne_commande_achat` (
@@ -440,12 +539,14 @@ CREATE TABLE IF NOT EXISTS `ligne_commande_achat` (
   KEY `ligne_commande_achat_code_produit_index` (`code_produit`),
   CONSTRAINT `ligne_commande_achat_commande_achat_id_foreign` FOREIGN KEY (`commande_achat_id`) REFERENCES `commande_achat` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ligne_commande_achat_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.ligne_commande_achat : ~0 rows (environ)
 INSERT INTO `ligne_commande_achat` (`id`, `commande_achat_id`, `produit_id`, `code_produit`, `nom_produit`, `description`, `quantite`, `quantite_recue`, `prix_unitaire_ht`, `prix_unitaire_ttc`, `taux_remise`, `montant_remise`, `montant_total_ht`, `montant_total_ttc`, `taux_tva`, `date_livraison_prevue`, `delai_livraison`, `notes`, `created_at`, `updated_at`) VALUES
 	(1, 1, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', NULL, 100.00, 100.00, 120.00, 120.00, 0.00, 0.00, 12000.00, 12000.00, 0.00, NULL, NULL, NULL, '2026-07-12 07:01:04', '2026-07-12 07:02:23'),
-	(2, 2, 3, 'Code-video', 'hp-video', NULL, 70.00, 70.00, 300.00, 300.00, 0.00, 0.00, 21000.00, 21000.00, 0.00, NULL, NULL, NULL, '2026-07-14 09:40:07', '2026-07-14 09:45:17');
+	(2, 2, 3, 'Code-video', 'hp-video', NULL, 70.00, 70.00, 300.00, 300.00, 0.00, 0.00, 21000.00, 21000.00, 0.00, NULL, NULL, NULL, '2026-07-14 09:40:07', '2026-07-14 09:45:17'),
+	(3, 3, 4, 'REF-414', 'Salsa', NULL, 100.00, 100.00, 3000.00, 3450.00, 0.00, 0.00, 300000.00, 345000.00, 15.00, NULL, NULL, NULL, '2026-09-17 09:18:15', '2026-09-17 09:18:47'),
+	(4, 3, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', NULL, 10.00, 10.00, 120.00, 138.00, 0.00, 0.00, 1200.00, 1380.00, 15.00, NULL, NULL, NULL, '2026-09-17 09:18:15', '2026-09-17 09:18:47');
 
 -- Listage de la structure de table bd_odoo. ligne_commande_vente
 CREATE TABLE IF NOT EXISTS `ligne_commande_vente` (
@@ -475,7 +576,7 @@ CREATE TABLE IF NOT EXISTS `ligne_commande_vente` (
   KEY `ligne_commande_vente_code_produit_index` (`code_produit`),
   CONSTRAINT `ligne_commande_vente_commande_vente_id_foreign` FOREIGN KEY (`commande_vente_id`) REFERENCES `commande_vente` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ligne_commande_vente_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.ligne_commande_vente : ~6 rows (environ)
 INSERT INTO `ligne_commande_vente` (`id`, `commande_vente_id`, `produit_id`, `code_produit`, `nom_produit`, `description`, `quantite`, `quantite_livree`, `prix_unitaire_ht`, `prix_unitaire_ttc`, `taux_remise`, `montant_remise`, `montant_total_ht`, `montant_total_ttc`, `taux_tva`, `date_livraison_souhaitee`, `delai_livraison`, `notes`, `created_at`, `updated_at`) VALUES
@@ -487,9 +588,10 @@ INSERT INTO `ligne_commande_vente` (`id`, `commande_vente_id`, `produit_id`, `co
 	(6, 3, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', NULL, 3.00, 0.00, 180.00, 180.00, 0.00, 0.00, 540.00, 540.00, 0.00, NULL, NULL, NULL, '2026-07-14 09:35:11', '2026-07-14 09:35:11'),
 	(7, 4, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', NULL, 2.00, 0.00, 180.00, 180.00, 0.00, 0.00, 360.00, 360.00, 0.00, NULL, NULL, NULL, '2026-09-16 18:58:45', '2026-09-16 18:58:45'),
 	(8, 4, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 1.00, 0.00, 350.00, 350.00, 0.00, 0.00, 350.00, 350.00, 0.00, NULL, NULL, NULL, '2026-09-16 18:58:45', '2026-09-16 18:58:45'),
-	(10, 6, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', NULL, 2.00, 0.00, 180.00, 208.80, 0.00, 0.00, 360.00, 417.60, 16.00, NULL, NULL, NULL, '2026-09-16 19:55:20', '2026-09-16 19:55:20'),
-	(11, 6, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 1.00, 0.00, 350.00, 406.00, 0.00, 0.00, 350.00, 406.00, 16.00, NULL, NULL, NULL, '2026-09-16 19:55:20', '2026-09-16 19:55:20'),
-	(12, 6, 3, 'Code-video', 'hp-video', NULL, 1.00, 0.00, 350.00, 406.00, 0.00, 0.00, 350.00, 406.00, 16.00, NULL, NULL, NULL, '2026-09-16 19:55:20', '2026-09-16 19:55:20');
+	(14, 8, 3, 'Code-video', 'hp-video', NULL, 2.00, 0.00, 350.00, 406.00, 0.00, 0.00, 700.00, 812.00, 16.00, NULL, NULL, NULL, '2026-09-16 20:44:41', '2026-09-16 20:44:41'),
+	(15, 8, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 3.00, 0.00, 350.00, 406.00, 0.00, 0.00, 1050.00, 1218.00, 16.00, NULL, NULL, NULL, '2026-09-16 20:44:41', '2026-09-16 20:44:41'),
+	(17, 10, 4, 'REF-414', 'Salsa', NULL, 4.00, 0.00, 5000.00, 5750.00, 0.00, 0.00, 20000.00, 23000.00, 15.00, NULL, NULL, NULL, '2026-09-17 09:30:30', '2026-09-17 09:30:30'),
+	(18, 10, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 2.00, 0.00, 350.00, 402.50, 0.00, 0.00, 700.00, 805.00, 15.00, NULL, NULL, NULL, '2026-09-17 09:30:30', '2026-09-17 09:30:30');
 
 -- Listage de la structure de table bd_odoo. ligne_ecriture_comptable
 CREATE TABLE IF NOT EXISTS `ligne_ecriture_comptable` (
@@ -519,7 +621,7 @@ CREATE TABLE IF NOT EXISTS `ligne_ecriture_comptable` (
   KEY `ligne_ecriture_comptable_code_produit_index` (`code_produit`),
   CONSTRAINT `ligne_ecriture_comptable_ecriture_comptable_id_foreign` FOREIGN KEY (`ecriture_comptable_id`) REFERENCES `ecriture_comptable` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ligne_ecriture_comptable_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.ligne_ecriture_comptable : ~6 rows (environ)
 INSERT INTO `ligne_ecriture_comptable` (`id`, `ecriture_comptable_id`, `produit_id`, `code_produit`, `nom_produit`, `description`, `quantite`, `prix_unitaire_ht`, `prix_unitaire_ttc`, `taux_remise`, `montant_remise`, `montant_ht`, `montant_tva`, `montant_ttc`, `taux_tva`, `compte_comptable`, `compte_tva`, `notes`, `created_at`, `updated_at`) VALUES
@@ -529,9 +631,10 @@ INSERT INTO `ligne_ecriture_comptable` (`id`, `ecriture_comptable_id`, `produit_
 	(4, 2, 2, NULL, 'Dell S2722QC 4K', NULL, 3.00, 350.00, 420.00, 0.00, 0.00, 1050.00, 210.00, 1260.00, 20.00, NULL, NULL, NULL, '2026-07-14 09:27:20', '2026-07-14 09:27:20'),
 	(5, 3, 1, NULL, 'Corsair K70 RGB', NULL, 3.00, 180.00, 216.00, 0.00, 0.00, 540.00, 108.00, 648.00, 20.00, NULL, NULL, NULL, '2026-07-14 09:36:23', '2026-07-14 09:36:23'),
 	(6, 3, 2, NULL, 'Dell S2722QC 4K', NULL, 3.00, 350.00, 420.00, 0.00, 0.00, 1050.00, 210.00, 1260.00, 20.00, NULL, NULL, NULL, '2026-07-14 09:36:23', '2026-07-14 09:36:23'),
-	(8, 5, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', NULL, 2.00, 180.00, 208.80, 0.00, 0.00, 360.00, 57.60, 417.60, 16.00, '411', '4457', NULL, '2026-09-16 19:55:20', '2026-09-16 19:55:20'),
-	(9, 5, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 1.00, 350.00, 406.00, 0.00, 0.00, 350.00, 56.00, 406.00, 16.00, '411', '4457', NULL, '2026-09-16 19:55:20', '2026-09-16 19:55:20'),
-	(10, 5, 3, 'Code-video', 'hp-video', NULL, 1.00, 350.00, 406.00, 0.00, 0.00, 350.00, 56.00, 406.00, 16.00, '411', '4457', NULL, '2026-09-16 19:55:20', '2026-09-16 19:55:20');
+	(12, 7, 3, 'Code-video', 'hp-video', NULL, 2.00, 350.00, 406.00, 0.00, 0.00, 700.00, 112.00, 812.00, 16.00, '411', '4457', NULL, '2026-09-16 20:44:41', '2026-09-16 20:44:41'),
+	(13, 7, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 3.00, 350.00, 406.00, 0.00, 0.00, 1050.00, 168.00, 1218.00, 16.00, '411', '4457', NULL, '2026-09-16 20:44:41', '2026-09-16 20:44:41'),
+	(15, 9, 4, 'REF-414', 'Salsa', NULL, 4.00, 5000.00, 5750.00, 0.00, 0.00, 20000.00, 3000.00, 23000.00, 15.00, '411', '4457', NULL, '2026-09-17 09:30:30', '2026-09-17 09:30:30'),
+	(16, 9, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 2.00, 350.00, 402.50, 0.00, 0.00, 700.00, 105.00, 805.00, 15.00, '411', '4457', NULL, '2026-09-17 09:30:30', '2026-09-17 09:30:30');
 
 -- Listage de la structure de table bd_odoo. ligne_inventaires
 CREATE TABLE IF NOT EXISTS `ligne_inventaires` (
@@ -554,13 +657,17 @@ CREATE TABLE IF NOT EXISTS `ligne_inventaires` (
   CONSTRAINT `ligne_inventaires_emplacement_id_foreign` FOREIGN KEY (`emplacement_id`) REFERENCES `emplacement_stock` (`id`) ON DELETE SET NULL,
   CONSTRAINT `ligne_inventaires_inventaire_id_foreign` FOREIGN KEY (`inventaire_id`) REFERENCES `inventaires` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ligne_inventaires_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.ligne_inventaires : ~3 rows (environ)
 INSERT INTO `ligne_inventaires` (`id`, `inventaire_id`, `produit_id`, `emplacement_id`, `quantite_theorique`, `quantite_physique`, `ecart`, `ajuste`, `notes`, `created_at`, `updated_at`) VALUES
 	(13, 5, 1, 1, 85.00, 85.00, 0.00, 1, NULL, '2026-09-16 18:22:19', '2026-09-16 18:24:33'),
 	(14, 5, 2, 1, 164.00, 164.00, 0.00, 1, NULL, '2026-09-16 18:22:19', '2026-09-16 18:24:33'),
-	(15, 5, 3, 1, 70.00, 70.00, 0.00, 1, NULL, '2026-09-16 18:22:19', '2026-09-16 18:24:33');
+	(15, 5, 3, 1, 70.00, 70.00, 0.00, 1, NULL, '2026-09-16 18:22:19', '2026-09-16 18:24:33'),
+	(37, 13, 1, 1, 89.00, 85.00, -4.00, 1, NULL, '2026-09-17 09:22:54', '2026-09-17 09:23:28'),
+	(38, 13, 2, 1, 160.00, 160.00, 0.00, 1, NULL, '2026-09-17 09:22:54', '2026-09-17 09:23:28'),
+	(39, 13, 3, 1, 68.00, 68.00, 0.00, 1, NULL, '2026-09-17 09:22:54', '2026-09-17 09:23:28'),
+	(40, 13, 4, 1, 100.00, 100.00, 0.00, 1, NULL, '2026-09-17 09:22:54', '2026-09-17 09:23:28');
 
 -- Listage de la structure de table bd_odoo. ligne_operation_stock
 CREATE TABLE IF NOT EXISTS `ligne_operation_stock` (
@@ -597,6 +704,28 @@ CREATE TABLE IF NOT EXISTS `ligne_operation_stock` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.ligne_operation_stock : ~0 rows (environ)
+
+-- Listage de la structure de table bd_odoo. ligne_retours
+CREATE TABLE IF NOT EXISTS `ligne_retours` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `retour_id` bigint unsigned NOT NULL,
+  `produit_id` bigint unsigned NOT NULL,
+  `quantite` decimal(16,2) NOT NULL,
+  `prix_unitaire_ht` decimal(16,2) NOT NULL DEFAULT '0.00',
+  `montant_ht` decimal(16,2) NOT NULL DEFAULT '0.00',
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ligne_retours_produit_id_foreign` (`produit_id`),
+  KEY `ligne_retours_retour_id_index` (`retour_id`),
+  CONSTRAINT `ligne_retours_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `ligne_retours_retour_id_foreign` FOREIGN KEY (`retour_id`) REFERENCES `retours` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Listage des données de la table bd_odoo.ligne_retours : ~1 rows (environ)
+INSERT INTO `ligne_retours` (`id`, `retour_id`, `produit_id`, `quantite`, `prix_unitaire_ht`, `montant_ht`, `notes`, `created_at`, `updated_at`) VALUES
+	(8, 8, 1, 2.00, 180.00, 360.00, NULL, '2026-09-17 08:58:18', '2026-09-17 08:58:18');
 
 -- Listage de la structure de table bd_odoo. lot_tracabilite
 CREATE TABLE IF NOT EXISTS `lot_tracabilite` (
@@ -647,7 +776,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.migrations : ~0 rows (environ)
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
@@ -682,7 +811,15 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(29, '2026_09_16_000005_create_parametres_table_and_pos_fields', 5),
 	(30, '2026_09_16_000006_restrict_societe_permission', 6),
 	(31, '2026_09_16_000007_add_societe_to_audit_logs', 7),
-	(32, '2026_09_16_000008_seed_parametres_for_societes', 8);
+	(32, '2026_09_16_000008_seed_parametres_for_societes', 8),
+	(33, '2026_09_16_000009_add_source_to_commande_vente', 9),
+	(34, '2026_09_16_000010_create_retours_tables', 10),
+	(35, '2026_09_16_000011_add_statut_to_retours_and_permissions', 11),
+	(36, '2026_09_16_000012_add_module_permissions', 12),
+	(37, '2026_09_17_000013_add_responsable_boutique_role', 13),
+	(38, '2026_09_17_000014_grant_roles_permissions_to_responsable_boutique', 14),
+	(39, '2026_09_17_000015_roles_par_societe', 15),
+	(40, '2026_09_17_000016_reparer_permissions_roles_societe', 16);
 
 -- Listage de la structure de table bd_odoo. mouvement_stock
 CREATE TABLE IF NOT EXISTS `mouvement_stock` (
@@ -743,11 +880,11 @@ CREATE TABLE IF NOT EXISTS `parametres` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_parametre_societe` (`societe_id`,`cle`),
   KEY `parametres_societe_id_index` (`societe_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.parametres : ~0 rows (environ)
 INSERT INTO `parametres` (`id`, `societe_id`, `cle`, `valeur`, `description`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'tva_taux', '16', 'Taux de TVA par défaut (%)', '2026-09-16 19:04:50', '2026-09-16 19:04:50'),
+	(1, 1, 'tva_taux', '15', 'Taux de TVA par défaut (%)', '2026-09-16 19:04:50', '2026-09-17 08:05:25'),
 	(2, 1, 'entreprise_nom', '', 'Nom affiché sur le ticket', '2026-09-16 19:04:50', '2026-09-16 19:04:50'),
 	(3, 1, 'entreprise_adresse', '', 'Adresse affichée sur le ticket', '2026-09-16 19:04:50', '2026-09-16 19:04:50'),
 	(4, 1, 'entreprise_telephone', '', 'Téléphone affiché sur le ticket', '2026-09-16 19:04:50', '2026-09-16 19:04:50'),
@@ -756,7 +893,14 @@ INSERT INTO `parametres` (`id`, `societe_id`, `cle`, `valeur`, `description`, `c
 	(7, 4, 'entreprise_nom', 'ALIMA', 'Nom affiché sur le ticket', '2026-09-16 19:51:40', '2026-09-16 19:51:40'),
 	(8, 4, 'entreprise_adresse', '', 'Adresse affichée sur le ticket', '2026-09-16 19:51:40', '2026-09-16 19:51:40'),
 	(9, 4, 'entreprise_telephone', '', 'Téléphone affiché sur le ticket', '2026-09-16 19:51:40', '2026-09-16 19:51:40'),
-	(10, 4, 'ticket_message', 'Merci de votre visite !', 'Message de bas de ticket', '2026-09-16 19:51:40', '2026-09-16 19:51:40');
+	(10, 4, 'ticket_message', 'Merci de votre visite !', 'Message de bas de ticket', '2026-09-16 19:51:40', '2026-09-16 19:51:40'),
+	(15, 1, 'devise', 'CDF', NULL, '2026-09-17 11:13:50', '2026-09-17 11:13:50'),
+	(16, 6, 'tva_taux', '16', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07'),
+	(17, 6, 'devise', 'CDF', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07'),
+	(18, 6, 'entreprise_nom', 'TEST ZZZ Boutique', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07'),
+	(19, 6, 'entreprise_adresse', '', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07'),
+	(20, 6, 'entreprise_telephone', '', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07'),
+	(21, 6, 'ticket_message', 'Merci de votre visite !', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07');
 
 -- Listage de la structure de table bd_odoo. partenaire
 CREATE TABLE IF NOT EXISTS `partenaire` (
@@ -795,11 +939,11 @@ CREATE TABLE IF NOT EXISTS `partenaire` (
 INSERT INTO `partenaire` (`id`, `nom`, `code`, `est_client`, `est_fournisseur`, `email`, `telephone`, `mobile`, `adresse`, `ville`, `code_postal`, `pays`, `numero_tva`, `siret`, `site_web`, `notes`, `remise`, `delai_paiement`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(1, 'Jean Dupont', NULL, 1, 0, 'jean.dupont@email.com', '0123456789', NULL, '12 rue de la Paix', 'Paris', '75001', 'France', NULL, NULL, NULL, 'Client fidèle', 0.00, 30, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
 	(2, 'SARL Martin', NULL, 1, 0, 'contact@sarlmartin.fr', '0987654321', NULL, '45 avenue des Champs', 'Lyon', '69001', 'France', 'FR12345678901', '12345678901234', NULL, 'Société de services', 0.00, 30, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
-	(3, 'TechDistrib', NULL, 0, 1, 'commandes@techdistrib.fr', '0147258369', NULL, '8 rue du Commerce', 'Paris', '75011', 'France', 'FR98765432109', '98765432109876', NULL, 'Fournisseur informatique', 0.00, 30, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
+	(3, 'TechDistrib', NULL, 0, 1, 'commandes@techdistrib.fr', '0147258369', NULL, '8 rue du Commerce', 'Paris', '75011', 'France', 'FR98765432109', '98765432109876', NULL, 'Fournisseur informatique', 0.00, 30, 1, '2026-07-12 06:19:06', '2026-09-17 10:08:00', 1),
 	(4, 'FournBureau', NULL, 0, 1, 'ventes@fournbureau.fr', '0147258360', NULL, '25 rue des Écoles', 'Paris', '75005', 'France', 'FR45678912304', '45678912304567', NULL, 'Fournitures de bureau', 0.00, 30, 1, '2026-07-12 06:19:06', '2026-09-16 17:32:25', 1),
 	(5, 'Sophie Bernard', NULL, 1, 0, 'sophie.b@email.fr', '0654789123', NULL, '3 rue des Lilas', 'Bordeaux', '33100', 'France', NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
 	(6, 'Maweja', 'CLI-00001', 1, 0, 'maweja@gmail.com', '096523584', NULL, 'Kingu 2', 'Kinshasa', NULL, 'Autre', NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-07-13 13:35:06', '2026-09-16 18:08:28', 1),
-	(7, 'Client test', 'COMPTOIR', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-09-16 19:05:36', '2026-09-16 19:05:36', 1);
+	(7, 'Client comptoir', 'COMPTOIR', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-09-16 19:05:36', '2026-09-16 19:05:36', 1);
 
 -- Listage de la structure de table bd_odoo. permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -811,7 +955,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `permissions_nom_unique` (`nom`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.permissions : ~26 rows (environ)
 INSERT INTO `permissions` (`id`, `nom`, `garde`, `description`, `created_at`, `updated_at`) VALUES
@@ -845,7 +989,23 @@ INSERT INTO `permissions` (`id`, `nom`, `garde`, `description`, `created_at`, `u
 	(28, 'gerer_produits', NULL, 'Gestion des produits', '2026-07-12 06:52:16', '2026-07-12 06:52:16'),
 	(29, 'gerer_stock', NULL, 'Gestion de stock', '2026-07-12 07:14:00', '2026-07-12 07:14:00'),
 	(30, 'gerer_partenaires', NULL, 'Gestion de partenaires', '2026-07-13 13:34:47', '2026-07-13 13:34:47'),
-	(31, 'gerer_societes', 'admin', 'Créer/désactiver des sociétés (boutiques) et gérer les abonnements', '2026-09-16 18:57:34', '2026-09-16 18:57:34');
+	(31, 'gerer_societes', 'admin', 'Créer/désactiver des sociétés (boutiques) et gérer les abonnements', '2026-09-16 18:57:34', '2026-09-16 18:57:34'),
+	(32, 'voir_retours', 'stock', 'Consulter les retours en stock', '2026-09-17 08:52:45', '2026-09-17 08:52:45'),
+	(33, 'gerer_retours', 'stock', 'Créer / supprimer des retours en stock', '2026-09-17 08:52:45', '2026-09-17 08:52:45'),
+	(34, 'valider_retours', 'stock', 'Valider un retour (applique le mouvement de stock)', '2026-09-17 08:52:45', '2026-09-17 08:52:45'),
+	(35, 'voir_partenaires', 'partenaire', 'Consulter les partenaires', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(36, 'voir_categories', 'produit', 'Consulter les catégories', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(37, 'voir_unites', 'produit', 'Consulter les unités de mesure', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(38, 'voir_emplacements', 'stock', 'Consulter les emplacements', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(39, 'voir_lots', 'stock', 'Consulter les lots / séries', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(40, 'voir_inventaire', 'stock', 'Consulter les inventaires', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(41, 'voir_rapports', 'rapport', 'Accéder aux rapports', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(42, 'gerer_emplacements', 'stock', 'Créer / modifier / supprimer les emplacements', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(43, 'gerer_unites', 'produit', 'Créer / modifier / supprimer les unités de mesure', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(44, 'gerer_inventaire', 'stock', 'Créer et saisir les inventaires', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(45, 'valider_inventaire', 'stock', 'Valider un inventaire (ajuste le stock)', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(46, 'vendre_pos', 'vente', 'Réaliser des ventes comptoir (POS)', '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(47, 'gerer_parametres', 'admin', 'Modifier les paramètres (TVA, société, ticket)', '2026-09-17 09:52:50', '2026-09-17 09:52:50');
 
 -- Listage de la structure de table bd_odoo. personal_access_tokens
 CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
@@ -862,7 +1022,7 @@ CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=205 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.personal_access_tokens : ~32 rows (environ)
 INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `expires_at`, `created_at`, `updated_at`) VALUES
@@ -901,7 +1061,7 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 	(49, 'App\\Models\\Utilisateur', 1, 'auth_token', 'e8f16d0956d8ff4a7b52445d7056c8ac5c37a7aff31dcc1ed0ef815ed86370e2', '["*"]', '2026-07-16 06:33:45', NULL, '2026-07-15 12:52:26', '2026-07-16 06:33:45'),
 	(50, 'App\\Models\\Utilisateur', 1, 'auth_token', '998a7b7fb6e45acf97f77bf5dcc16919650de07b0b2a8d84370a2448245a3e80', '["*"]', '2026-07-17 11:25:51', NULL, '2026-07-17 11:24:48', '2026-07-17 11:25:51'),
 	(77, 'App\\Models\\Utilisateur', 11, 'auth_token', 'c2fde285d29f1fb4289375cf538cf545e5477ee9bc4505e6b79001a87b90876c', '["*"]', '2026-09-16 19:15:59', NULL, '2026-09-16 19:15:59', '2026-09-16 19:15:59'),
-	(102, 'App\\Models\\Utilisateur', 1, 'auth_token', '664f5a169dd535975f0a80c0401fb588a735029679d0db77d7da99d28d5fe1b4', '["*"]', '2026-09-16 20:02:17', NULL, '2026-09-16 19:44:10', '2026-09-16 20:02:17');
+	(204, 'App\\Models\\Utilisateur', 14, 'auth_token', '33a548cf7c213cf8cfe2c3f2c7a3efaefb02452c6880ae71c3c4f2cfd956da69', '["*"]', '2026-09-17 11:42:38', NULL, '2026-09-17 11:42:21', '2026-09-17 11:42:38');
 
 -- Listage de la structure de table bd_odoo. produit_modele
 CREATE TABLE IF NOT EXISTS `produit_modele` (
@@ -922,13 +1082,14 @@ CREATE TABLE IF NOT EXISTS `produit_modele` (
   KEY `produit_modele_societe_id_index` (`societe_id`),
   CONSTRAINT `produit_modele_categorie_id_foreign` FOREIGN KEY (`categorie_id`) REFERENCES `categorie_produit` (`id`) ON DELETE SET NULL,
   CONSTRAINT `produit_modele_unite_id_foreign` FOREIGN KEY (`unite_id`) REFERENCES `unite_mesure` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.produit_modele : ~2 rows (environ)
 INSERT INTO `produit_modele` (`id`, `nom`, `description`, `type`, `categorie_id`, `unite_id`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(1, 'Clavier Mécanique', NULL, 'stockable', 2, NULL, 1, '2026-07-12 06:54:26', '2026-07-12 06:54:26', 1),
 	(2, 'Écran 27 pouces', NULL, 'stockable', 2, NULL, 1, '2026-07-12 06:57:54', '2026-07-12 06:57:54', 1),
-	(3, 'vidéo projecteur', NULL, 'stockable', 1, 1, 1, '2026-07-14 09:39:05', '2026-07-14 09:39:05', 1);
+	(3, 'vidéo projecteur', NULL, 'stockable', 1, 1, 1, '2026-07-14 09:39:05', '2026-07-14 09:39:05', 1),
+	(4, 'Tomate', 'Tomate en boite', 'consommable', 4, 2, 1, '2026-09-17 09:07:02', '2026-09-17 09:07:02', 1);
 
 -- Listage de la structure de table bd_odoo. quantite_stock
 CREATE TABLE IF NOT EXISTS `quantite_stock` (
@@ -957,13 +1118,42 @@ CREATE TABLE IF NOT EXISTS `quantite_stock` (
   CONSTRAINT `quantite_stock_emplacement_id_foreign` FOREIGN KEY (`emplacement_id`) REFERENCES `emplacement_stock` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `quantite_stock_lot_id_foreign` FOREIGN KEY (`lot_id`) REFERENCES `lot_tracabilite` (`id`) ON DELETE SET NULL,
   CONSTRAINT `quantite_stock_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.quantite_stock : ~2 rows (environ)
 INSERT INTO `quantite_stock` (`id`, `produit_id`, `emplacement_id`, `lot_id`, `quantite_disponible`, `quantite_reservee`, `quantite_commande`, `quantite_controlee`, `seuil_minimum`, `seuil_maximum`, `societe_id`, `date_dernier_mouvement`, `date_prochaine_reception`, `notes`, `created_at`, `updated_at`) VALUES
-	(1, 1, 1, NULL, 81.00, 0.00, 0.00, 0.00, NULL, NULL, 1, '2026-09-16', NULL, NULL, '2026-07-12 07:02:23', '2026-09-16 19:59:20'),
-	(2, 2, 1, 1, 162.00, 0.00, 0.00, 0.00, 10.00, 1000.00, 1, '2026-09-16', '2026-07-26', NULL, '2026-07-12 07:15:00', '2026-09-16 19:55:20'),
-	(3, 3, 1, NULL, 69.00, 0.00, 0.00, 0.00, NULL, NULL, 1, '2026-09-16', NULL, NULL, '2026-07-14 09:45:17', '2026-09-16 19:55:20');
+	(1, 1, 1, NULL, 85.00, 0.00, 0.00, 0.00, NULL, NULL, 1, '2026-09-17', NULL, 'Retour RET-202609-0001 le 2026-09-17\nRetour RET-202609-0001 le 2026-09-17\nRetour RET-202609-0001 le 2026-09-17\nRetour RET-202609-0002 le 2026-09-17\nRetour RET-202609-0001 le 2026-09-17\nAjustement inventaire INV-202609-0002 le 2026-09-17', '2026-07-12 07:02:23', '2026-09-17 10:48:45'),
+	(2, 2, 1, 1, 158.00, 0.00, 0.00, 0.00, 10.00, 1000.00, 1, '2026-09-17', '2026-07-26', NULL, '2026-07-12 07:15:00', '2026-09-17 09:30:30'),
+	(3, 3, 1, NULL, 68.00, 0.00, 0.00, 0.00, NULL, NULL, 1, '2026-09-16', NULL, NULL, '2026-07-14 09:45:17', '2026-09-16 20:44:41'),
+	(4, 4, 1, NULL, 96.00, 0.00, 0.00, 0.00, NULL, NULL, 1, '2026-09-17', NULL, NULL, '2026-09-17 09:18:47', '2026-09-17 09:30:30');
+
+-- Listage de la structure de table bd_odoo. retours
+CREATE TABLE IF NOT EXISTS `retours` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `societe_id` bigint unsigned DEFAULT NULL,
+  `reference` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `date_retour` date NOT NULL,
+  `type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'client|fournisseur|casse',
+  `statut` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'brouillon',
+  `partenaire_id` bigint unsigned DEFAULT NULL,
+  `emplacement_id` bigint unsigned DEFAULT NULL,
+  `motif` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `utilisateur_id` bigint unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `valide_par` bigint unsigned DEFAULT NULL,
+  `date_validation` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `retours_reference_unique` (`reference`),
+  KEY `retours_type_index` (`type`),
+  KEY `retours_date_retour_index` (`date_retour`),
+  KEY `retours_societe_id_index` (`societe_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Listage des données de la table bd_odoo.retours : ~0 rows (environ)
+INSERT INTO `retours` (`id`, `societe_id`, `reference`, `date_retour`, `type`, `statut`, `partenaire_id`, `emplacement_id`, `motif`, `notes`, `utilisateur_id`, `created_at`, `updated_at`, `valide_par`, `date_validation`) VALUES
+	(8, 1, 'RET-202609-0001', '2026-09-17', 'casse', 'valide', 7, 1, 'casse', NULL, 1, '2026-09-17 08:58:18', '2026-09-17 09:02:11', 1, '2026-09-17 09:02:11');
 
 -- Listage de la structure de table bd_odoo. roles
 CREATE TABLE IF NOT EXISTS `roles` (
@@ -975,16 +1165,29 @@ CREATE TABLE IF NOT EXISTS `roles` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `roles_nom_unique` (`nom`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `roles_societe_nom_unique` (`societe_id`,`nom`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.roles : ~5 rows (environ)
 INSERT INTO `roles` (`id`, `nom`, `description`, `societe_id`, `actif`, `created_at`, `updated_at`) VALUES
-	(1, 'administrateur', 'Accès total à toutes les fonctionnalités', NULL, 1, '2026-07-12 06:19:06', '2026-07-13 13:35:02'),
+	(1, 'administrateur', 'Accès total à toutes les fonctionnalités', NULL, 1, '2026-07-12 06:19:06', '2026-09-17 09:45:24'),
 	(2, 'gestionnaire_stock', 'Gestion des stocks, transferts et mouvements', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(3, 'commercial', 'Gestion des commandes clients et devis', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(4, 'comptable', 'Gestion de la facturation et des paiements', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
-	(5, 'lecteur', 'Accès en lecture seule', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06');
+	(5, 'lecteur', 'Accès en lecture seule', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
+	(6, 'responsable_boutique', 'Responsable d\'une boutique : accès complet, limité à sa société', NULL, 1, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(7, 'administrateur', 'Accès total à toutes les fonctionnalités', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(8, 'commercial', 'Gestion des commandes clients et devis', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:42:05'),
+	(9, 'comptable', 'Gestion de la facturation et des paiements', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(10, 'gestionnaire_stock', 'Gestion des stocks, transferts et mouvements', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(11, 'lecteur', 'Accès en lecture seule', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(12, 'responsable_boutique', 'Responsable d\'une boutique : accès complet, limité à sa société', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(13, 'administrateur', 'Accès total à toutes les fonctionnalités', 1, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(14, 'commercial', 'Gestion des commandes clients et devis', 1, 1, '2026-09-17 11:30:10', '2026-09-17 11:35:56'),
+	(15, 'comptable', 'Gestion de la facturation et des paiements', 1, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(16, 'gestionnaire_stock', 'Gestion des stocks, transferts et mouvements', 1, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(17, 'lecteur', 'Accès en lecture seule', 1, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(18, 'responsable_boutique', 'Responsable d\'une boutique : accès complet, limité à sa société', 1, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10');
 
 -- Listage de la structure de table bd_odoo. role_permission
 CREATE TABLE IF NOT EXISTS `role_permission` (
@@ -998,7 +1201,7 @@ CREATE TABLE IF NOT EXISTS `role_permission` (
   KEY `role_permission_permission_id_foreign` (`permission_id`),
   CONSTRAINT `role_permission_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
   CONSTRAINT `role_permission_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=394 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.role_permission : ~56 rows (environ)
 INSERT INTO `role_permission` (`id`, `role_id`, `permission_id`, `created_at`, `updated_at`) VALUES
@@ -1058,7 +1261,330 @@ INSERT INTO `role_permission` (`id`, `role_id`, `permission_id`, `created_at`, `
 	(54, 1, 24, '2026-07-12 06:52:43', '2026-07-12 06:52:43'),
 	(55, 1, 27, '2026-07-12 06:52:43', '2026-07-12 06:52:43'),
 	(56, 1, 29, '2026-07-12 07:14:13', '2026-07-12 07:14:13'),
-	(57, 1, 30, '2026-07-13 13:35:02', '2026-07-13 13:35:02');
+	(57, 1, 30, '2026-07-13 13:35:02', '2026-07-13 13:35:02'),
+	(59, 1, 32, '2026-09-17 08:52:45', '2026-09-17 08:52:45'),
+	(60, 1, 33, '2026-09-17 08:52:45', '2026-09-17 08:52:45'),
+	(61, 1, 34, '2026-09-17 08:52:45', '2026-09-17 08:52:45'),
+	(62, 1, 35, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(63, 1, 36, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(64, 1, 37, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(65, 1, 38, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(66, 1, 39, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(67, 1, 40, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(68, 1, 41, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(69, 1, 42, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(70, 1, 43, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(71, 1, 44, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(72, 1, 45, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(73, 1, 46, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(74, 1, 47, '2026-09-17 09:52:50', '2026-09-17 09:52:50'),
+	(75, 6, 1, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(76, 6, 2, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(77, 6, 3, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(78, 6, 4, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(79, 6, 5, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(80, 6, 6, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(81, 6, 7, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(82, 6, 8, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(83, 6, 9, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(84, 6, 10, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(85, 6, 11, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(86, 6, 12, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(87, 6, 13, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(88, 6, 14, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(89, 6, 15, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(90, 6, 16, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(91, 6, 17, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(92, 6, 18, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(93, 6, 19, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(94, 6, 22, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(95, 6, 23, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(96, 6, 24, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(97, 6, 25, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(98, 6, 26, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(99, 6, 27, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(100, 6, 28, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(101, 6, 29, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(102, 6, 30, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(103, 6, 32, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(104, 6, 33, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(105, 6, 34, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(106, 6, 35, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(107, 6, 36, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(108, 6, 37, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(109, 6, 38, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(110, 6, 39, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(111, 6, 40, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(112, 6, 41, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(113, 6, 42, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(114, 6, 43, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(115, 6, 44, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(116, 6, 45, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(117, 6, 46, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(118, 6, 47, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
+	(119, 6, 21, '2026-09-17 11:26:03', '2026-09-17 11:26:03'),
+	(120, 6, 20, '2026-09-17 11:26:03', '2026-09-17 11:26:03'),
+	(121, 7, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(122, 7, 2, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(123, 7, 3, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(124, 7, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(125, 7, 5, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(126, 7, 6, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(127, 7, 7, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(128, 7, 8, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(129, 7, 9, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(130, 7, 10, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(131, 7, 11, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(132, 7, 12, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(133, 7, 13, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(134, 7, 14, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(135, 7, 15, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(136, 7, 16, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(137, 7, 17, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(138, 7, 18, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(139, 7, 19, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(140, 7, 20, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(141, 7, 21, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(142, 7, 22, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(143, 7, 23, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(144, 7, 24, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(145, 7, 25, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(146, 7, 26, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(147, 7, 27, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(148, 7, 28, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(149, 7, 29, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(150, 7, 30, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(151, 7, 32, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(152, 7, 33, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(153, 7, 34, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(154, 7, 35, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(155, 7, 36, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(156, 7, 37, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(157, 7, 38, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(158, 7, 39, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(159, 7, 40, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(160, 7, 41, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(161, 7, 42, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(162, 7, 43, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(163, 7, 44, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(164, 7, 45, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(165, 7, 46, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(166, 7, 47, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(167, 8, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(168, 8, 5, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(170, 8, 7, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(174, 9, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(175, 9, 9, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(176, 9, 13, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(177, 9, 14, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(178, 9, 15, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(179, 9, 16, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(180, 9, 17, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(181, 9, 18, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(182, 10, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(183, 10, 2, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(184, 10, 3, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(185, 10, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(186, 10, 10, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(187, 10, 11, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(188, 10, 12, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(189, 10, 13, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(190, 11, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(191, 11, 9, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(192, 11, 13, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(193, 11, 18, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(194, 12, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(195, 12, 2, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(196, 12, 3, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(197, 12, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(198, 12, 5, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(199, 12, 6, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(200, 12, 7, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(201, 12, 8, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(202, 12, 9, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(203, 12, 10, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(204, 12, 11, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(205, 12, 12, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(206, 12, 13, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(207, 12, 14, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(208, 12, 15, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(209, 12, 16, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(210, 12, 17, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(211, 12, 18, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(212, 12, 19, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(213, 12, 20, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(214, 12, 21, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(215, 12, 22, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(216, 12, 23, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(217, 12, 24, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(218, 12, 25, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(219, 12, 26, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(220, 12, 27, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(221, 12, 28, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(222, 12, 29, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(223, 12, 30, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(224, 12, 32, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(225, 12, 33, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(226, 12, 34, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(227, 12, 35, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(228, 12, 36, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(229, 12, 37, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(230, 12, 38, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(231, 12, 39, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(232, 12, 40, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(233, 12, 41, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(234, 12, 42, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(235, 12, 43, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(236, 12, 44, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(237, 12, 45, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(238, 12, 46, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(239, 12, 47, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(240, 13, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(241, 13, 2, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(242, 13, 3, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(243, 13, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(244, 13, 5, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(245, 13, 6, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(246, 13, 7, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(247, 13, 8, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(248, 13, 9, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(249, 13, 10, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(250, 13, 11, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(251, 13, 12, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(252, 13, 13, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(253, 13, 14, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(254, 13, 15, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(255, 13, 16, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(256, 13, 17, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(257, 13, 18, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(258, 13, 19, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(259, 13, 20, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(260, 13, 21, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(261, 13, 22, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(262, 13, 23, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(263, 13, 24, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(264, 13, 25, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(265, 13, 26, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(266, 13, 27, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(267, 13, 28, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(268, 13, 29, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(269, 13, 30, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(270, 13, 32, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(271, 13, 33, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(272, 13, 34, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(273, 13, 35, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(274, 13, 36, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(275, 13, 37, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(276, 13, 38, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(277, 13, 39, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(278, 13, 40, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(279, 13, 41, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(280, 13, 42, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(281, 13, 43, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(282, 13, 44, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(283, 13, 45, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(284, 13, 46, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(285, 13, 47, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(293, 15, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(294, 15, 9, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(295, 15, 13, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(296, 15, 14, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(297, 15, 15, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(298, 15, 16, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(299, 15, 17, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(300, 15, 18, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(301, 16, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(302, 16, 2, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(303, 16, 3, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(304, 16, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(305, 16, 10, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(306, 16, 11, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(307, 16, 12, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(308, 16, 13, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(309, 17, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(310, 17, 9, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(311, 17, 13, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(312, 17, 18, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(313, 18, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(314, 18, 2, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(315, 18, 3, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(316, 18, 4, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(317, 18, 5, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(318, 18, 6, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(319, 18, 7, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(320, 18, 8, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(321, 18, 9, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(322, 18, 10, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(323, 18, 11, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(324, 18, 12, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(325, 18, 13, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(326, 18, 14, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(327, 18, 15, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(328, 18, 16, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(329, 18, 17, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(330, 18, 18, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(331, 18, 19, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(332, 18, 20, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(333, 18, 21, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(334, 18, 22, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(335, 18, 23, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(336, 18, 24, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(337, 18, 25, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(338, 18, 26, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(339, 18, 27, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(340, 18, 28, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(341, 18, 29, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(342, 18, 30, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(343, 18, 32, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(344, 18, 33, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(345, 18, 34, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(346, 18, 35, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(347, 18, 36, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(348, 18, 37, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(349, 18, 38, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(350, 18, 39, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(351, 18, 40, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(352, 18, 41, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(353, 18, 42, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(354, 18, 43, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(355, 18, 44, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(356, 18, 45, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(357, 18, 46, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(358, 18, 47, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
+	(359, 8, 1, '2026-09-17 11:31:33', '2026-09-17 11:31:33'),
+	(360, 8, 2, '2026-09-17 11:31:33', '2026-09-17 11:31:33'),
+	(362, 8, 10, '2026-09-17 11:31:33', '2026-09-17 11:31:33'),
+	(363, 14, 4, '2026-09-17 11:37:38', '2026-09-17 11:37:38'),
+	(364, 14, 5, '2026-09-17 11:37:38', '2026-09-17 11:37:38'),
+	(365, 14, 6, '2026-09-17 11:37:38', '2026-09-17 11:37:38'),
+	(366, 14, 7, '2026-09-17 11:37:38', '2026-09-17 11:37:38'),
+	(367, 14, 8, '2026-09-17 11:37:38', '2026-09-17 11:37:38'),
+	(368, 14, 9, '2026-09-17 11:37:38', '2026-09-17 11:37:38'),
+	(369, 14, 13, '2026-09-17 11:37:38', '2026-09-17 11:37:38'),
+	(370, 8, 21, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(371, 8, 24, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(372, 8, 18, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(373, 8, 15, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(374, 8, 12, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(375, 8, 9, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(376, 8, 6, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(377, 8, 3, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(378, 8, 17, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(379, 8, 26, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(380, 8, 23, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(381, 8, 20, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(382, 8, 16, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(383, 8, 19, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(384, 8, 25, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(385, 8, 34, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(386, 8, 37, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(387, 8, 39, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(388, 8, 35, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(389, 8, 38, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(390, 8, 29, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(391, 8, 11, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(392, 8, 41, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
+	(393, 8, 42, '2026-09-17 11:42:05', '2026-09-17 11:42:05');
 
 -- Listage de la structure de table bd_odoo. societes
 CREATE TABLE IF NOT EXISTS `societes` (
@@ -1077,11 +1603,11 @@ CREATE TABLE IF NOT EXISTS `societes` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `societes_code_unique` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.societes : ~0 rows (environ)
 INSERT INTO `societes` (`id`, `nom`, `code`, `logo`, `email`, `telephone`, `adresse`, `actif`, `date_abonnement`, `date_expiration`, `notes`, `created_at`, `updated_at`) VALUES
-	(1, 'Pompage', 'PM', NULL, 'pomgage@gmail.com', '0898596501', NULL, 1, '2026-09-16', '2027-03-19', NULL, '2026-09-16 18:44:31', '2026-09-16 19:32:05'),
+	(1, 'Pompage', 'PM', '/logos/societe-1-1789639313.png', 'pomgage@gmail.com', '0898596501', NULL, 1, '2026-09-16', '2027-03-19', NULL, '2026-09-16 18:44:31', '2026-09-17 08:01:53'),
 	(4, 'ALIMA', 'AL', '/logos/societe-4-1789593906.png', 'alima@gmail.com', '0898596501', NULL, 1, '2026-09-16', '2026-10-16', NULL, '2026-09-16 19:06:22', '2026-09-16 19:25:06');
 
 -- Listage de la structure de table bd_odoo. transfert_stock
@@ -1173,17 +1699,18 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `utilisateurs_email_unique` (`email`),
   KEY `utilisateurs_email_index` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.utilisateurs : ~5 rows (environ)
+-- Listage des données de la table bd_odoo.utilisateurs : ~7 rows (environ)
 INSERT INTO `utilisateurs` (`id`, `nom`, `email`, `mot_de_passe`, `remember_token`, `telephone`, `actif`, `est_super_admin`, `derniere_connexion`, `societe_id`, `created_at`, `updated_at`) VALUES
-	(1, 'Pierre Famba', 'pierre@gmail.com', '$2y$10$s1wl7fuVy1MzUAr9/WANG.cVmwu4u5JgmYnBl2f5DUa6lM4axXxPe', NULL, NULL, 1, 0, '2026-09-16 21:44:10', 1, '2026-07-12 06:19:06', '2026-09-16 19:44:10'),
+	(1, 'Pierre Famba', 'pierre@gmail.com', '$2y$10$s1wl7fuVy1MzUAr9/WANG.cVmwu4u5JgmYnBl2f5DUa6lM4axXxPe', NULL, NULL, 1, 0, '2026-09-17 13:34:03', 1, '2026-07-12 06:19:06', '2026-09-17 11:34:03'),
 	(2, 'Jean Dupont', 'jean@exemple.com', '$2y$10$NH7Nm6RtOeU8tMLwghG8yOefhpDR6rfvimaoQneVZ6TFNp4DLn3w.', NULL, NULL, 1, 0, NULL, 1, '2026-07-12 06:19:06', '2026-07-15 10:42:32'),
 	(3, 'Marie Martin', 'marie@exemple.com', '$2y$10$zg1V2gl6VlbfMP8iJSc.NeNJC9lG56VfYHBzfaeeDDZZ1H0zuSi32', NULL, NULL, 1, 0, NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(4, 'Pierre Durand', 'pierre.durand@exemple.com', '$2y$10$dgA7/Lz9OO0.J45nd0vrjOjI2vVPB15zXMsHoXE71jq01ujgDTFD2', NULL, NULL, 1, 0, NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(5, 'Sophie Lefèvre', 'sophie@exemple.com', '$2y$10$81h5JSKow.doxieYaFzba.2kTCnXzS4rLrJLXhfYCNOiFJuQUxbpW', NULL, NULL, 1, 0, NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
-	(9, 'Kanza', 'kanza@gmail.com', '$2y$10$gK.TAqf./2PoTY2Yr6paxOz5n6WKavQrzWv8fogJovkPGhDzEOYum', NULL, NULL, 1, 0, '2026-09-16 21:33:39', 4, '2026-09-16 19:06:22', '2026-09-16 19:33:39'),
-	(11, 'Administrateur Plateforme', 'plateforme@gs-stock.com', '$2y$10$4Krn694DzUgWjApkuTUdlO3USzGbGSvxjnnC1gzSEEk0Qwg2FfWMS', NULL, NULL, 1, 1, '2026-09-16 21:18:54', NULL, '2026-09-16 19:15:41', '2026-09-16 19:28:48');
+	(9, 'Kanza', 'kanza@gmail.com', '$2y$10$gK.TAqf./2PoTY2Yr6paxOz5n6WKavQrzWv8fogJovkPGhDzEOYum', NULL, NULL, 1, 0, '2026-09-17 13:40:47', 4, '2026-09-16 19:06:22', '2026-09-17 11:40:47'),
+	(11, 'Administrateur Plateforme', 'plateforme@gs-stock.com', '$2y$10$4Krn694DzUgWjApkuTUdlO3USzGbGSvxjnnC1gzSEEk0Qwg2FfWMS', NULL, NULL, 1, 1, '2026-09-17 13:38:55', NULL, '2026-09-16 19:15:41', '2026-09-17 11:38:55'),
+	(14, 'Kakule', 'kakule@gmail.com', '$2y$10$38u80/K3zPnO4FMPG2fcSeeXCENbS.QSpUDDdhZJcVUsSuzSnOlxK', NULL, '0898569874', 1, 0, '2026-09-17 13:42:21', 4, '2026-09-17 11:37:51', '2026-09-17 11:42:21');
 
 -- Listage de la structure de table bd_odoo. utilisateur_role
 CREATE TABLE IF NOT EXISTS `utilisateur_role` (
@@ -1197,15 +1724,17 @@ CREATE TABLE IF NOT EXISTS `utilisateur_role` (
   KEY `utilisateur_role_role_id_foreign` (`role_id`),
   CONSTRAINT `utilisateur_role_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
   CONSTRAINT `utilisateur_role_utilisateur_id_foreign` FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.utilisateur_role : ~5 rows (environ)
 INSERT INTO `utilisateur_role` (`id`, `utilisateur_id`, `role_id`, `created_at`, `updated_at`) VALUES
-	(1, 1, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
-	(2, 2, 2, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
-	(3, 3, 3, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
-	(4, 4, 4, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
-	(5, 5, 5, '2026-07-12 06:19:06', '2026-07-12 06:19:06');
+	(1, 1, 13, '2026-07-12 06:19:06', '2026-09-17 11:30:10'),
+	(2, 2, 16, '2026-07-12 06:19:06', '2026-09-17 11:30:10'),
+	(3, 3, 14, '2026-07-12 06:19:06', '2026-09-17 11:30:10'),
+	(4, 4, 15, '2026-07-12 06:19:06', '2026-09-17 11:30:10'),
+	(5, 5, 17, '2026-07-12 06:19:06', '2026-09-17 11:30:10'),
+	(6, 9, 12, '2026-09-17 11:14:45', '2026-09-17 11:30:10'),
+	(9, 14, 8, '2026-09-17 11:37:52', '2026-09-17 11:37:52');
 
 -- Listage de la structure de table bd_odoo. variante_produit
 CREATE TABLE IF NOT EXISTS `variante_produit` (
@@ -1227,13 +1756,14 @@ CREATE TABLE IF NOT EXISTS `variante_produit` (
   KEY `variante_produit_nom_index` (`nom`),
   KEY `variante_produit_societe_id_index` (`societe_id`),
   CONSTRAINT `variante_produit_modele_produit_id_foreign` FOREIGN KEY (`modele_produit_id`) REFERENCES `produit_modele` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.variante_produit : ~2 rows (environ)
 INSERT INTO `variante_produit` (`id`, `modele_produit_id`, `code_interne`, `nom`, `prix_achat`, `prix_vente`, `poids`, `reference_fournisseur`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(1, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', 120.00, 180.00, NULL, 'COR-K70-RGB', 1, '2026-07-12 06:54:26', '2026-07-12 06:54:26', 1),
 	(2, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', 300.00, 350.00, NULL, 'DEL-S2722QC', 1, '2026-07-12 06:57:54', '2026-07-12 06:57:54', 1),
-	(3, 3, 'Code-video', 'hp-video', 300.00, 350.00, NULL, 'Ref-6788', 1, '2026-07-14 09:39:05', '2026-07-14 09:39:05', 1);
+	(3, 3, 'Code-video', 'hp-video', 300.00, 350.00, NULL, 'Ref-6788', 1, '2026-07-14 09:39:05', '2026-07-14 09:39:05', 1),
+	(4, 4, 'REF-414', 'Salsa', 3000.00, 5000.00, NULL, NULL, 1, '2026-09-17 09:07:02', '2026-09-17 09:07:02', 1);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

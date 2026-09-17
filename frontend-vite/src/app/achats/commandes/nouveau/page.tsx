@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -8,10 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/common/FormInput";
 import { FormSelect } from "@/components/common/FormSelect";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { FormTextarea } from "@/components/common/FormTextarea";
 import { commandesAchatService } from "@/lib/api/services/commandes-achat.service";
 import { partenairesService } from "@/lib/api/services/partenaires.service";
 import { produitsService } from "@/lib/api/services/produits.service";
+import { parametresService } from "@/lib/api/services/parametres.service";
 import { formatDateInput } from "@/lib/utils/format";
 import { ArrowLeft, Save, Loader2, ShoppingCart, User, Calendar, Plus, Trash2, Truck, List, Euro, Percent, Package } from "lucide-react";
 
@@ -21,6 +24,7 @@ interface LigneForm {
   quantite: number;
   prix_unitaire_ht: number;
   taux_remise: number;
+  seuil_minimum: number | "";
 }
 
 interface CommandeAchatFormProps {
@@ -41,7 +45,7 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
   });
 
   const [lignes, setLignes] = useState<LigneForm[]>([
-    { produit_id: "", nom_produit: "", quantite: 1, prix_unitaire_ht: 0, taux_remise: 0 },
+    { produit_id: "", nom_produit: "", quantite: 1, prix_unitaire_ht: 0, taux_remise: 0, seuil_minimum: "" },
   ]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -60,14 +64,36 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
   const { data: produitsData } = useQuery({
     queryKey: ["produits-select-achat"],
     queryFn: async () => {
-      const response = await produitsService.getAll({ actif: true });
-      return response;
+      const response = await produitsService.getAll({ actif: true, per_page: 500 });
+      const payload = response.data as unknown;
+      const modeles = Array.isArray(payload)
+        ? (payload as any[])
+        : ((payload as { data?: any[] })?.data ?? []);
+      const flat: { id: number; nom: string; sousTitre?: string; prix_achat: number }[] = [];
+      for (const m of modeles) {
+        for (const v of m.variantes ?? []) {
+          flat.push({
+            id: v.id,
+            nom: v.nom && v.nom !== m.nom ? `${m.nom} — ${v.nom}` : m.nom,
+            sousTitre: v.code_interne ?? undefined,
+            prix_achat: Number(v.prix_achat) || 0,
+          });
+        }
+      }
+      return flat;
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 1000,
   });
 
+  const { data: params } = useQuery({
+    queryKey: ["parametres"],
+    queryFn: async () => (await parametresService.getAll()).data ?? {},
+    staleTime: 5 * 60 * 1000,
+  });
+  const tvaTaux = Number(params?.tva_taux ?? 16) || 0;
+
   const fournisseurs = Array.isArray(fournisseursData?.data) ? fournisseursData.data : [];
-  const produits = (produitsData as any)?.data?.data ?? [];
+  const produits = produitsData ?? [];
 
   useEffect(() => {
     const loadCommande = async () => {
@@ -92,6 +118,7 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
                 quantite: l.quantite,
                 prix_unitaire_ht: l.prix_unitaire_ht,
                 taux_remise: l.taux_remise,
+                seuil_minimum: (l as any).seuil_minimum ?? "",
               }))
             );
           }
@@ -171,11 +198,10 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
       const updated = [...prev];
       updated[index] = { ...updated[index], [field]: value };
       if (field === "produit_id" && value) {
-        const produit = produits.find((p: any) => p.id === Number(value));
-        if (produit) {
-          const variante = produit.variantes?.[0];
-          updated[index].nom_produit = produit.nom;
-          if (variante?.prix_achat) updated[index].prix_unitaire_ht = Number(variante.prix_achat);
+        const variante = produits.find((p) => p.id === Number(value));
+        if (variante) {
+          updated[index].nom_produit = variante.nom;
+          updated[index].prix_unitaire_ht = variante.prix_achat;
         }
       }
       return updated;
@@ -185,7 +211,7 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
   const addLigne = () => {
     setLignes((prev) => [
       ...prev,
-      { produit_id: "", nom_produit: "", quantite: 1, prix_unitaire_ht: 0, taux_remise: 0 },
+      { produit_id: "", nom_produit: "", quantite: 1, prix_unitaire_ht: 0, taux_remise: 0, seuil_minimum: "" },
     ]);
   };
 
@@ -200,7 +226,7 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
   };
 
   const totalHT = lignes.reduce((sum, l) => sum + calcLigneTotal(l), 0);
-  const totalTVA = totalHT * 0.2;
+  const totalTVA = totalHT * (tvaTaux / 100);
   const totalTTC = totalHT + totalTVA;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -222,6 +248,8 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
         quantite: Number(l.quantite),
         prix_unitaire_ht: Number(l.prix_unitaire_ht),
         taux_remise: Number(l.taux_remise),
+        taux_tva: tvaTaux,
+        seuil_minimum: l.seuil_minimum === "" ? undefined : Number(l.seuil_minimum),
       })),
       montant_total_ht: totalHT,
       montant_total_ttc: totalTTC,
@@ -313,17 +341,19 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
                   <div className="space-y-3">
                     {lignes.map((ligne, index) => (
                       <div key={index} className="flex flex-wrap items-end gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-                        <div className="flex-1 min-w-[200px]">
-                          <FormSelect
-                            label="Produit"
-                            name={`produit_id_${index}`}
-                            value={String(ligne.produit_id)}
-                            onChange={(e) => handleLigneChange(index, "produit_id", e.target.value)}
-                            options={produits.map((p: any) => ({
-                              value: p.id,
-                              label: p.nom,
+                        <div className="flex-1 min-w-[220px]">
+                          <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Produit
+                          </label>
+                          <SearchableSelect
+                            options={produits.map((p) => ({
+                              id: p.id,
+                              nom: p.nom,
+                              sousTitre: p.sousTitre,
                             }))}
-                            placeholder="Sélectionner un produit"
+                            value={String(ligne.produit_id || "")}
+                            onValueChange={(v) => handleLigneChange(index, "produit_id", v)}
+                            placeholder="Rechercher un produit / variante"
                           />
                         </div>
                         <div className="w-24">
@@ -360,10 +390,28 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
                             step="0.1"
                           />
                         </div>
+                        <div className="w-32">
+                          <FormInput
+                            label="Seuil min."
+                            name={`seuil_${index}`}
+                            type="number"
+                            value={ligne.seuil_minimum}
+                            onChange={(e) =>
+                              handleLigneChange(
+                                index,
+                                "seuil_minimum",
+                                e.target.value === "" ? "" : Number(e.target.value)
+                              )
+                            }
+                            min="0"
+                            step="1"
+                            placeholder="Alerte"
+                          />
+                        </div>
                         <div className="w-28 pb-2.5">
                           <p className="text-sm font-medium text-gray-500 mb-1.5">Total HT</p>
                           <p className="text-sm font-bold text-gray-900 dark:text-white">
-                            {calcLigneTotal(ligne).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                            {calcLigneTotal(ligne).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                           </p>
                         </div>
                         <button type="button" onClick={() => removeLigne(index)} className="pb-2.5 text-red-500 hover:text-red-700 disabled:opacity-30" disabled={lignes.length <= 1}>
@@ -376,15 +424,17 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
                   <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-gray-600 dark:text-gray-400">Total HT :</span>
-                      <span className="font-bold text-gray-900 dark:text-white">{totalHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</span>
+                      <span className="font-bold text-gray-900 dark:text-white">{totalHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm mt-1">
-                      <span className="text-gray-600 dark:text-gray-400">TVA (20%) :</span>
-                      <span className="font-bold text-gray-900 dark:text-white">{totalTVA.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</span>
+                      <span className="text-gray-600 dark:text-gray-400">
+                        TVA ({tvaTaux}%) :
+                      </span>
+                      <span className="font-bold text-gray-900 dark:text-white">{totalTVA.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</span>
                     </div>
                     <div className="flex justify-between items-center text-base mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
                       <span className="font-semibold text-gray-800 dark:text-gray-200">Total TTC :</span>
-                      <span className="font-bold text-lg text-blue-700 dark:text-blue-400">{totalTTC.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</span>
+                      <span className="font-bold text-lg text-blue-700 dark:text-blue-400">{totalTTC.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</span>
                     </div>
                   </div>
                 </div>
@@ -406,9 +456,9 @@ export function CommandeAchatForm({ id }: CommandeAchatFormProps) {
                   <Save /> Actions
                 </h5>
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <p><strong>Total HT :</strong> {totalHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</p>
-                  <p><strong>TVA :</strong> {totalTVA.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</p>
-                  <p><strong>Total TTC :</strong> {totalTTC.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF</p>
+                  <p><strong>Total HT :</strong> {totalHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</p>
+                  <p><strong>TVA :</strong> {totalTVA.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</p>
+                  <p><strong>Total TTC :</strong> {totalTTC.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}</p>
                 </div>
                 <div className="pt-4 border-t">
                   <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={mutation.isPending || isSubmitting}>

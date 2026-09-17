@@ -10,10 +10,17 @@ import DashboardPage from "@/app/dashboard/page";
 import InventaireListPage from "@/app/dashboard/inventaire/page";
 import InventaireDetailPage from "@/app/dashboard/inventaire/_id/page";
 import SocietesPage from "@/app/dashboard/societes/page";
+import RetoursPage from "@/app/dashboard/retours/page";
 import PosPage from "@/app/dashboard/pos/page";
 import ProfilPage from "@/app/dashboard/profil/page";
 import ParametresPage from "@/app/dashboard/parametres/page";
 import RapportVendeursPage from "@/app/rapports/ventes-vendeurs/page";
+import RapportBonsCommandePage from "@/app/rapports/bons-commande/page";
+import RecherchePage from "@/app/recherche/page";
+import RuptureStockPage from "@/app/rapports/rupture-stock/page";
+import StockBasPage from "@/app/rapports/stock-bas/page";
+import VariationsPrixPage from "@/app/rapports/variations-prix/page";
+import CaPartenairesPage from "@/app/rapports/ca-partenaires/page";
 import RapportVendeurDetailsPage from "@/app/rapports/ventes-vendeurs/_id/page";
 
 import FacturesPage from "@/app/dashboard/factures/page";
@@ -102,10 +109,12 @@ export default function App() {
         {/* Protege */}
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/recherche" element={<RecherchePage />} />
 
           <Route path="/dashboard/inventaire" element={<InventaireListPage />} />
           <Route path="/dashboard/inventaire/:id" element={<InventaireDetailPage />} />
           <Route path="/dashboard/societes" element={<SocietesPage />} />
+          <Route path="/dashboard/retours" element={<RetoursPage />} />
           <Route path="/dashboard/pos" element={<PosPage />} />
           <Route path="/dashboard/parametres" element={<ParametresPage />} />
           <Route path="/dashboard/profil" element={<ProfilPage />} />
@@ -178,6 +187,11 @@ export default function App() {
 
           <Route path="/rapports" element={<RapportsPage />} />
           <Route path="/rapports/stock" element={<RapportStockPage />} />
+          <Route path="/rapports/rupture-stock" element={<RuptureStockPage />} />
+          <Route path="/rapports/stock-bas" element={<StockBasPage />} />
+          <Route path="/rapports/variations-prix" element={<VariationsPrixPage />} />
+          <Route path="/rapports/ca-partenaires" element={<CaPartenairesPage />} />
+          <Route path="/rapports/bons-commande" element={<RapportBonsCommandePage />} />
           <Route path="/rapports/ventes-vendeurs" element={<RapportVendeursPage />} />
           <Route path="/rapports/ventes-vendeurs/:id" element={<RapportVendeurDetailsPage />} />
           <Route path="/rapports/mouvements" element={<RapportsMouvementsPage />} />

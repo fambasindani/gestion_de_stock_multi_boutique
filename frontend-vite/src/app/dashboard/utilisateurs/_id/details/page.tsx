@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -12,7 +13,7 @@ import {
   type UtilisateurActivite,
 } from "@/lib/api/services/utilisateurs.service";
 import { resolveMediaUrl } from "@/lib/utils/assets";
-import { formatDateLong, formatDateTime } from "@/lib/utils/format";
+import { formatDateLong, formatDateTime, formatCompact } from "@/lib/utils/format";
 import {
   User,
   Mail,
@@ -109,13 +110,13 @@ export default function UtilisateurDetailsPage() {
         />
         <StatCard
           title="Total HT"
-          value={`${money(stats.total_ht)} CDF`}
+          value={`${formatCompact(stats.total_ht)} ${DEVISE}`}
           icon={<TrendingUp className="h-5 w-5" />}
           color="emerald"
         />
         <StatCard
           title="Total TTC"
-          value={`${money(stats.total_ttc)} CDF`}
+          value={`${formatCompact(stats.total_ttc)} ${DEVISE}`}
           icon={<Wallet className="h-5 w-5" />}
           color="violet"
         />

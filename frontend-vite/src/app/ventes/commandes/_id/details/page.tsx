@@ -1,4 +1,5 @@
 "use client";
+import { DEVISE } from "@/lib/utils/currency";
 
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -126,7 +127,7 @@ export default function CommandeVenteDetails() {
           nom_produit: l.nom_produit,
           quantite: l.quantite,
           prix_unitaire_ht: l.prix_unitaire_ht,
-          taux_tva: l.taux_tva || 20,
+          taux_tva: l.taux_tva ?? 0,
           montant_ht: l.montant_total_ht || (l.quantite * l.prix_unitaire_ht),
         }));
         const invoiceData: any = {
@@ -221,6 +222,22 @@ export default function CommandeVenteDetails() {
     </div>
   );
 
+  // Taux de TVA réel (depuis les lignes, sinon déduit du montant)
+  const tauxTva = (() => {
+    const rates = Array.from(
+      new Set(
+        (commande.lignes || [])
+          .map((l: any) => Number(l.taux_tva))
+          .filter((n: number) => !Number.isNaN(n))
+      )
+    );
+    if (rates.length === 1) return rates[0];
+    const ht = Number(commande.montant_total_ht);
+    const ttc = Number(commande.montant_total_ttc);
+    if (ht > 0) return Math.round(((ttc - ht) / ht) * 10000) / 100;
+    return null;
+  })();
+
   const canProgress = !!nextStatus[commande.etat];
   const canCancel = commande.etat !== "annule" && commande.etat !== "termine";
   const canModify = commande.etat === "brouillon";
@@ -275,7 +292,7 @@ export default function CommandeVenteDetails() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <InfoStat icon={User} label="Client" value={commande.partenaire?.nom || "-"} colorClass="bg-blue-100 text-blue-600" />
         <InfoStat icon={Calendar} label="Date" value={formatDateLong(commande.date_commande)} colorClass="bg-purple-100 text-purple-600" />
-        <InfoStat icon={Euro} label="Total TTC" value={`${Number(commande.montant_total_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF`} colorClass="bg-emerald-100 text-emerald-600" />
+        <InfoStat icon={Euro} label="Total TTC" value={`${Number(commande.montant_total_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} ${DEVISE}`} colorClass="bg-emerald-100 text-emerald-600" />
         <InfoStat icon={ClipboardList} label="Statut" value={statusLabels[commande.etat] || commande.etat} colorClass={commande.etat === "termine" ? "bg-emerald-100 text-emerald-600" : commande.etat === "annule" ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-600"} />
       </div>
 
@@ -305,11 +322,11 @@ export default function CommandeVenteDetails() {
                         <td className="py-3 pr-4 font-medium">{ligne.nom_produit}</td>
                         <td className="py-3 pr-4 text-right">{ligne.quantite}</td>
                         <td className="py-3 pr-4 text-right">
-                          {Number(ligne.prix_unitaire_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                          {Number(ligne.prix_unitaire_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                         </td>
                         <td className="py-3 pr-4 text-right">{ligne.taux_remise}%</td>
                         <td className="py-3 text-right font-medium">
-                          {Number(ligne.montant_total_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                          {Number(ligne.montant_total_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                         </td>
                       </tr>
                     ))}
@@ -324,19 +341,21 @@ export default function CommandeVenteDetails() {
               <div className="flex justify-end items-center gap-4">
                 <span className="text-sm text-gray-500">Total HT :</span>
                 <span className="font-semibold">
-                  {Number(commande.montant_total_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                  {Number(commande.montant_total_ht).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                 </span>
               </div>
               <div className="flex justify-end items-center gap-4">
-                <span className="text-sm text-gray-500">TVA (20%) :</span>
+                <span className="text-sm text-gray-500">
+                  TVA{tauxTva !== null ? ` (${tauxTva}%)` : ""} :
+                </span>
                 <span className="font-semibold">
-                  {(Number(commande.montant_total_ttc) - Number(commande.montant_total_ht)).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                  {(Number(commande.montant_total_ttc) - Number(commande.montant_total_ht)).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                 </span>
               </div>
               <div className="flex justify-end items-center gap-4 text-lg">
                 <span className="font-semibold text-gray-700">Total TTC :</span>
                 <span className="font-bold text-blue-700">
-                  {Number(commande.montant_total_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} CDF
+                  {Number(commande.montant_total_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
                 </span>
               </div>
             </div>
@@ -387,7 +406,7 @@ export default function CommandeVenteDetails() {
           </DialogHeader>
           <div className="py-4">
             <p className="text-sm text-slate-500 mb-4">
-              Total TTC : <strong className="text-slate-800">{Number(commande.montant_total_ttc).toFixed(2)} CDF</strong>
+              Total TTC : <strong className="text-slate-800">{Number(commande.montant_total_ttc).toFixed(2)} {DEVISE}</strong>
             </p>
             <FormInput
               label="Montant du paiement"

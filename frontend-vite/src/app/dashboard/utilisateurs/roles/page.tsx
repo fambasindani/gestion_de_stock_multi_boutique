@@ -1,4 +1,5 @@
 "use client";
+import { liveSearch } from "@/lib/utils/liveSearch";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -22,13 +23,15 @@ import { SkeletonTable } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { rolesService } from "@/lib/api/services/roles.service";
 import { Role } from "@/lib/api/typess";
+import { useAuth } from "@/hooks/useAuth";
 import {
-  Plus, Shield, Pencil, Trash2, CheckCircle, XCircle, Search, RefreshCw
+  Plus, Shield, Pencil, Trash2, CheckCircle, XCircle, Search, RefreshCw, Key, Users
 } from "lucide-react";
 
 export default function RolesPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { isSuperAdmin } = useAuth();
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -39,11 +42,11 @@ export default function RolesPage() {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["roles", page, perPage, search],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      params.append("page", String(page));
-      params.append("per_page", String(perPage));
-      if (search) params.append("search", search);
-      const response = await rolesService.getAll();
+      const response = await rolesService.getAll({
+        page,
+        per_page: perPage,
+        search: search || undefined,
+      });
       return response;
     },
     staleTime: 2 * 60 * 1000,
@@ -87,13 +90,41 @@ export default function RolesPage() {
         <span className="font-medium">{item.nom}</span>
       </div>
     )},
-    { key: "description", label: "Description", render: (item: Role) => <span>{item.description || "-"}</span> },
+    { key: "description", label: "Description", hidden: "lg" as const, render: (item: Role) => <span>{item.description || "-"}</span> },
+    {
+      key: "permissions",
+      label: "Permissions",
+      render: (item: Role) => {
+        const count = (item as unknown as { permissions?: unknown[] }).permissions?.length ?? 0;
+        return (
+          <DataTableBadge variant="info">
+            <Key className="h-3 w-3 mr-1" />
+            {count} permission{count > 1 ? "s" : ""}
+          </DataTableBadge>
+        );
+      },
+    },
+    {
+      key: "utilisateurs_count",
+      label: "Utilisateurs",
+      hidden: "sm" as const,
+      className: "text-right",
+      render: (item: Role) => (
+        <span className="inline-flex items-center gap-1.5 font-mono text-slate-600 dark:text-slate-300">
+          <Users className="h-3.5 w-3.5 text-slate-400" />
+          {(item as unknown as { utilisateurs_count?: number }).utilisateurs_count ?? 0}
+        </span>
+      ),
+    },
     { key: "actif", label: "Statut", render: (item: Role) => (
       Number(item.actif) === 1
         ? <DataTableBadge variant="success"><CheckCircle className="h-3 w-3 mr-1" />Actif</DataTableBadge>
         : <DataTableBadge variant="danger"><XCircle className="h-3 w-3 mr-1" />Inactif</DataTableBadge>
     )},
   ];
+
+  // Un responsable de boutique ne peut modifier/supprimer que les rôles de SA boutique
+  const peutGererRole = (item: Role) => isSuperAdmin || item.societe_id != null;
 
   const actions = [
     {
@@ -102,6 +133,7 @@ export default function RolesPage() {
       onClick: (item: Role) => router.push(`/dashboard/utilisateurs/roles/nouveau?id=${item.id}`),
       variant: "ghost" as const,
       className: "text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/30",
+      show: peutGererRole,
     },
     {
       label: "Supprimer",
@@ -109,6 +141,7 @@ export default function RolesPage() {
       onClick: (item: Role) => handleDeleteClick(item),
       variant: "ghost" as const,
       className: "text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30",
+      show: (item: Role) => peutGererRole(item) && item.nom !== "responsable_boutique",
     },
   ];
 
@@ -175,7 +208,7 @@ export default function RolesPage() {
             <div className="flex-1 min-w-[200px]">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input placeholder="Rechercher par nom..." value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={handleKeyDown} className="pl-9" />
+                <Input placeholder="Rechercher par nom..." value={searchInput} onChange={(e) => { const v = e.target.value; setSearchInput(v); liveSearch(() => { setSearch(v); setPage(1); }); }} onKeyDown={handleKeyDown} className="pl-9" />
               </div>
             </div>
             <Button onClick={handleSearchSubmit} className="bg-blue-600 hover:bg-blue-700 text-white"><Search className="h-4 w-4 mr-2" />Rechercher</Button>
