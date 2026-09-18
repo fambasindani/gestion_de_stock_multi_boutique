@@ -56,6 +56,13 @@ class _CommandeDetailScreenState extends State<CommandeDetailScreen> {
   List<LigneCommande> get _lignes => _vente?.lignes ?? _achat?.lignes ?? [];
   dynamic get _commande => _vente ?? _achat;
 
+  // État de paiement (d'après les factures liées)
+  List<EcritureComptable> get _facturesVente => _vente?.factures ?? [];
+  double get _resteAPayer => _facturesVente.isEmpty
+      ? _totalTtc
+      : _facturesVente.fold<double>(0, (s, f) => s + f.montantRestant);
+  bool get _estPayee => _facturesVente.isNotEmpty && _resteAPayer <= 0.001;
+
   static const _nextStatusVente = <String, String>{
     'brouillon': 'confirme',
     'confirme': 'en_cours',
@@ -269,6 +276,25 @@ class _CommandeDetailScreenState extends State<CommandeDetailScreen> {
           ),
           child: Text(_partenaireNom, style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w500, fontSize: 13)),
         ),
+        if (widget.type == 'vente' && _estPayee) ...[
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(color: AppTheme.success.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
+            child: Row(mainAxisSize: MainAxisSize.min, children: const [
+              Icon(Icons.verified, size: 14, color: AppTheme.success),
+              SizedBox(width: 4),
+              Text('Payée', style: TextStyle(color: AppTheme.success, fontWeight: FontWeight.w600, fontSize: 12)),
+            ]),
+          ),
+        ] else if (widget.type == 'vente' && _facturesVente.isNotEmpty) ...[
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(color: AppTheme.warning.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
+            child: Text('Reste ${formatCompact(_resteAPayer)}', style: const TextStyle(color: AppTheme.warning, fontWeight: FontWeight.w600, fontSize: 12)),
+          ),
+        ],
       ]),
     ]);
   }
@@ -338,8 +364,13 @@ class _CommandeDetailScreenState extends State<CommandeDetailScreen> {
       buttons.add(_actionBtn('Passer à ${_statusLabels[next]}', Icons.send, AppTheme.info, () => _changerEtat(next), loading: _changingStatus));
       buttons.add(const SizedBox(height: 8));
     }
-    if (_etat == 'termine' && widget.type == 'vente') {
-      buttons.add(_actionBtn('Confirmer paiement', Icons.credit_card, AppTheme.success, _openPaiementDialog));
+    if (_etat == 'termine' && widget.type == 'vente' && !_estPayee) {
+      buttons.add(_actionBtn(
+        _facturesVente.isEmpty ? 'Confirmer paiement' : 'Enregistrer un paiement',
+        Icons.credit_card,
+        AppTheme.success,
+        _openPaiementDialog,
+      ));
       buttons.add(const SizedBox(height: 8));
     }
     if (_canCancel) {

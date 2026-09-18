@@ -197,8 +197,18 @@ class _FactureDetailScreenState extends State<FactureDetailScreen> {
   }
 
   Widget _buildActions(EcritureComptable f) {
-    final statuts = ['brouillon', 'validee', 'envoyee', 'payee', 'annulee'];
-    final curIdx = statuts.indexOf(f.statut);
+    // Transitions : une facture validée ne s'annule pas (on émet un avoir).
+    const nextStatut = <String, String>{
+      'brouillon': 'validee',
+      'validee': 'envoyee',
+      'envoyee': 'payee',
+    };
+    const labels = <String, String>{
+      'validee': 'Valider',
+      'envoyee': 'Envoyer',
+      'payee': 'Marquer payée',
+    };
+    final next = nextStatut[f.statut];
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       ElevatedButton.icon(
         onPressed: _pdfLoading ? null : _downloadPdf,
@@ -210,8 +220,8 @@ class _FactureDetailScreenState extends State<FactureDetailScreen> {
       ),
       const SizedBox(height: 8),
       if (f.montantRestant > 0) Padding(padding: const EdgeInsets.only(bottom: 8), child: ElevatedButton.icon(icon: const Icon(Icons.payment), label: const Text('Enregistrer un paiement'), onPressed: _paiementPartiel)),
-      if (curIdx >= 0 && curIdx < statuts.length - 1 && statuts[curIdx + 1] != 'payee')
-        OutlinedButton(onPressed: () => _changerStatut(statuts[curIdx + 1]), child: Text('Passer à "${statuts[curIdx + 1]}"')),
+      if (next != null)
+        OutlinedButton(onPressed: () => _changerStatut(next), child: Text(labels[next] ?? 'Passer à "$next"')),
       if (f.statut == 'brouillon')
         TextButton.icon(icon: const Icon(Icons.delete, color: Colors.red), label: const Text('Supprimer', style: TextStyle(color: Colors.red)), onPressed: () async {
           final ok = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(title: const Text('Confirmation'), content: const Text('Supprimer cette facture ?'), actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')), TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer', style: TextStyle(color: Colors.red)))],));

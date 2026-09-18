@@ -135,13 +135,18 @@ export default function FactureDetailsPage() {
   };
 
   const nextStatuts = (statut: string): { value: string; label: string }[] => {
-    const transitions: Record<string, { value: string; label: string }[]> = {
-      brouillon: [{ value: "validee", label: "Valider" }],
-      validee: [{ value: "envoyee", label: "Envoyer" }, { value: "annulee", label: "Annuler" }],
-      envoyee: [{ value: "payee", label: "Marquer payée" }, { value: "annulee", label: "Annuler" }],
-      payee: [],
-      annulee: [],
-    };
+        // Une facture validée ne s'annule pas (on émet un avoir) : seul un
+        // brouillon peut être annulé.
+        const transitions: Record<string, { value: string; label: string }[]> = {
+          brouillon: [
+            { value: "validee", label: "Valider" },
+            { value: "annulee", label: "Annuler" },
+          ],
+          validee: [{ value: "envoyee", label: "Envoyer" }],
+          envoyee: [{ value: "payee", label: "Marquer payée" }],
+          payee: [],
+          annulee: [],
+        };
     return transitions[statut] || [];
   };
 

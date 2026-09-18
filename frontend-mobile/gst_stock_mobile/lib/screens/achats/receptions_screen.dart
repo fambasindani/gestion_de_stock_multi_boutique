@@ -14,8 +14,18 @@ class ReceptionsScreen extends StatefulWidget {
 
 class _ReceptionsScreenState extends State<ReceptionsScreen> {
   final _service = CommandeAchatService();
+  final _search = TextEditingController();
   List<CommandeAchat> _items = [];
   bool _loading = true;
+
+  static const _labels = <String, String>{
+    'brouillon': 'Brouillon',
+    'confirme': 'Confirmé',
+    'envoye': 'Envoyé',
+    'recu': 'Reçu',
+    'termine': 'Terminé',
+    'annule': 'Annulé',
+  };
 
   @override
   void initState() {
@@ -23,12 +33,18 @@ class _ReceptionsScreenState extends State<ReceptionsScreen> {
     _load();
   }
 
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final envoye = await _service.getAll(etat: 'envoye');
-      final recu = await _service.getAll(etat: 'recu');
-      setState(() => _items = [...envoye, ...recu]);
+      final all = await _service.getAll(search: _search.text.trim());
+      // On garde les commandes non annulées, les plus récentes d'abord.
+      setState(() => _items = all.where((c) => c.etat != 'annule').toList());
     } catch (_) {
       setState(() => _items = []);
     } finally {
@@ -36,18 +52,29 @@ class _ReceptionsScreenState extends State<ReceptionsScreen> {
     }
   }
 
+  bool _receptable(String etat) => etat == 'envoye' || etat == 'recu';
+
   Future<void> _recevoir(CommandeAchat c) async {
+    if (!_receptable(c.etat)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("La commande doit être à l'état « Envoyé » pour être réceptionnée (état actuel : ${_labels[c.etat] ?? c.etat})."),
+          backgroundColor: AppTheme.warning,
+        ),
+      );
+      return;
+    }
+
     final commande = await _service.getById(c.id);
     if (!mounted) return;
     final lignes = commande.lignes ?? [];
     if (lignes.isEmpty) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Aucune ligne à réceptionner')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Aucune ligne à réceptionner')));
       return;
     }
     final controllers = <int, TextEditingController>{};
     for (final l in lignes) {
-      final restant = (l.quantite - ((l as dynamic).quantiteRecue ?? 0));
-      controllers[l.id] = TextEditingController(text: (restant > 0 ? restant : 0).toStringAsFixed(2));
+      controllers[l.id] = TextEditingController(text: l.quantite.toStringAsFixed(2));
     }
 
     final ok = await showDialog<bool>(
@@ -64,7 +91,11 @@ class _ReceptionsScreenState extends State<ReceptionsScreen> {
                       child: TextField(
                         controller: controllers[l.id],
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: InputDecoration(labelText: l.nomProduit ?? 'Produit #${l.produitId}', isDense: true),
+                        decoration: InputDecoration(
+                          labelText: l.nomProduit ?? 'Produit #${l.produitId}',
+                          helperText: 'Commandé : ${l.quantite}',
+                          isDense: true,
+                        ),
                       ),
                     ))
                 .toList(),
@@ -90,10 +121,10 @@ class _ReceptionsScreenState extends State<ReceptionsScreen> {
             'quantite_recue': double.tryParse(controllers[l.id]!.text.replaceAll(',', '.')) ?? 0,
           }
       ]);
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Réception enregistrée')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Réception enregistrée'), backgroundColor: AppTheme.success));
       _load();
     } on ApiException catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message), backgroundColor: Colors.redAccent));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message), backgroundColor: AppTheme.danger));
     }
   }
 
@@ -102,34 +133,70 @@ class _ReceptionsScreenState extends State<ReceptionsScreen> {
     return Scaffold(
       backgroundColor: AppTheme.surface,
       appBar: AppBar(title: const Text('Réceptions')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _load,
-              child: _items.isEmpty
-                  ? ListView(children: const [
-                      SizedBox(height: 120),
-                      Center(child: Text('Aucune commande à réceptionner', style: TextStyle(color: Colors.grey))),
-                    ])
-                  : ListView.separated(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: _items.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
-                      itemBuilder: (context, i) {
-                        final c = _items[i];
-                        return Card(
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.grey.shade200)),
-                          child: ListTile(
-                            title: Text(c.reference, style: const TextStyle(fontWeight: FontWeight.w600)),
-                            subtitle: Text('${c.partenaire?.nom ?? ''} • ${formatDate(c.dateCommande)} • ${c.etat}'),
-                            trailing: const Icon(Icons.inventory, color: AppTheme.primary),
-                            onTap: () => _recevoir(c),
-                          ),
-                        );
-                      },
-                    ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: TextField(
+              controller: _search,
+              decoration: const InputDecoration(hintText: 'Rechercher une commande...', prefixIcon: Icon(Icons.search)),
+              onSubmitted: (_) => _load(),
             ),
+          ),
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : RefreshIndicator(
+                    onRefresh: _load,
+                    child: _items.isEmpty
+                        ? ListView(children: const [
+                            SizedBox(height: 120),
+                            Center(child: Text('Aucune commande d\'achat', style: TextStyle(color: Colors.grey))),
+                          ])
+                        : ListView.separated(
+                            padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
+                            itemCount: _items.length,
+                            separatorBuilder: (_, __) => const SizedBox(height: 8),
+                            itemBuilder: (context, i) {
+                              final c = _items[i];
+                              final ok = _receptable(c.etat);
+                              return Card(
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: AppTheme.border)),
+                                child: ListTile(
+                                  onTap: () => _recevoir(c),
+                                  leading: Container(
+                                    width: 42,
+                                    height: 42,
+                                    decoration: BoxDecoration(
+                                      color: (ok ? AppTheme.success : AppTheme.textSecondary).withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(Icons.inventory_2_outlined, color: ok ? AppTheme.success : AppTheme.textSecondary, size: 20),
+                                  ),
+                                  title: Text(c.reference, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                  subtitle: Text('${c.partenaire?.nom ?? ''} • ${formatDate(c.dateCommande)}'),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(color: AppTheme.statusBgColor(c.etat), borderRadius: BorderRadius.circular(8)),
+                                        child: Text(_labels[c.etat] ?? c.etat, style: TextStyle(fontSize: 11, color: AppTheme.statusTextColor(c.etat), fontWeight: FontWeight.w600)),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(ok ? 'Réceptionner' : '—', style: TextStyle(fontSize: 11, color: ok ? AppTheme.primary : Colors.grey)),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }

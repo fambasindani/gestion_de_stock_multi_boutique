@@ -352,11 +352,13 @@ class EcritureComptableController extends Controller
                 'notes' => 'nullable|string',
             ]);
 
+            // Une facture validée ne s'annule pas : on émet un avoir.
+            // Seul un brouillon peut être annulé.
             $transitions = [
                 'brouillon' => ['validee', 'annulee'],
-                'validee' => ['envoyee', 'annulee'],
-                'envoyee' => ['payee', 'annulee'],
-                'payee' => ['annulee'],
+                'validee' => ['envoyee'],
+                'envoyee' => ['payee'],
+                'payee' => [],
                 'annulee' => [],
             ];
 
