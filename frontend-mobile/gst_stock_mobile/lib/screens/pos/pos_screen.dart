@@ -6,6 +6,7 @@ import 'package:gst_stock_mobile/providers/auth_provider.dart';
 import 'package:gst_stock_mobile/services/api_client.dart';
 import 'package:gst_stock_mobile/services/services.dart';
 import 'package:gst_stock_mobile/services/ticket_pdf_generator.dart';
+import 'package:gst_stock_mobile/screens/pos/pos_journal_screen.dart';
 
 class _ProduitItem {
   final int id;
@@ -217,7 +218,18 @@ class _PosScreenState extends State<PosScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.surface,
-      appBar: AppBar(title: const Text('Vente comptoir (POS)')),
+      appBar: AppBar(
+        title: const Text('Vente comptoir (POS)'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.receipt_long_outlined),
+            tooltip: 'Journal / clôture de caisse',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const PosJournalScreen()),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(

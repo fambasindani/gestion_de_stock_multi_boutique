@@ -18,6 +18,11 @@ import 'profil/profil_screen.dart';
 import 'retours/retours_screen.dart';
 import 'inventaire/inventaires_screen.dart';
 import 'parametres/parametres_screen.dart';
+import 'produits/categories_screen.dart';
+import 'produits/unites_screen.dart';
+import 'achats/receptions_screen.dart';
+import 'recherche/recherche_screen.dart';
+import 'societes/societes_screen.dart';
 import 'package:gst_stock_mobile/widgets/notification_bell.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -86,9 +91,14 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () => _scaffoldKey.currentState?.openDrawer(),
             tooltip: 'Menu',
           ),
-          actions: const [
-            NotificationBell(),
-            SizedBox(width: 4),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              tooltip: 'Recherche',
+              onPressed: () => _pushScreen(const RechercheScreen()),
+            ),
+            const NotificationBell(),
+            const SizedBox(width: 4),
           ],
         ),
         body: _screens[_currentIndex],
@@ -145,7 +155,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       _sectionHeader('GESTION'),
                       _drawerItem(Icons.point_of_sale_rounded, 'Vente comptoir (POS)', () => _pushScreen(const PosScreen())),
                       _drawerItem(Icons.people_rounded, 'Partenaires', () => _pushScreen(const PartenairesListScreen())),
+                      _drawerItem(Icons.inventory_rounded, 'Réceptions', () => _pushScreen(const ReceptionsScreen())),
+                      _drawerItem(Icons.category_rounded, 'Catégories', () => _pushScreen(const CategoriesScreen())),
+                      _drawerItem(Icons.straighten_rounded, 'Unités de mesure', () => _pushScreen(const UnitesScreen())),
                       _drawerItem(Icons.description_rounded, 'Factures', () => _pushScreen(const FacturesListScreen())),
+                      if (auth.estSuperAdmin)
+                        _drawerItem(Icons.business_rounded, 'Sociétés', () => _pushScreen(const SocietesScreen())),
                       _drawerItem(Icons.swap_horiz_rounded, 'Transferts', () => _pushScreen(const TransfertsScreen())),
                       _drawerItem(Icons.assignment_return_rounded, 'Retours', () => _pushScreen(const RetoursScreen())),
                       _drawerItem(Icons.fact_check_rounded, 'Inventaires', () => _pushScreen(const InventairesScreen())),

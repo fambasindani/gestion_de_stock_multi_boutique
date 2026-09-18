@@ -18,6 +18,7 @@ class _FacturesListScreenState extends State<FacturesListScreen> {
   List<EcritureComptable> _factures = [];
   bool _loading = true;
   String? _error;
+  String _filtre = 'all';
 
   @override
   void initState() {
@@ -25,16 +26,64 @@ class _FacturesListScreenState extends State<FacturesListScreen> {
     _loadFactures();
   }
 
+  String? get _typeParam {
+    switch (_filtre) {
+      case 'client':
+        return 'facture_client';
+      case 'fournisseur':
+        return 'facture_fournisseur';
+      case 'avoirs':
+        return 'avoir_client,avoir_fournisseur';
+      default:
+        return null;
+    }
+  }
+
+  List<EcritureComptable> get _visibles =>
+      _filtre == 'impayees' ? _factures.where((f) => f.montantRestant > 0).toList() : _factures;
+
   Future<void> _loadFactures() async {
     setState(() { _loading = true; _error = null; });
     try {
-      final data = await _service.getAll();
+      final data = await _service.getAll(type: _typeParam);
       if (!mounted) return;
       setState(() { _factures = data; _loading = false; });
     } catch (e) {
       if (!mounted) return;
       setState(() { _error = e.toString(); _loading = false; });
     }
+  }
+
+  void _setFiltre(String f) {
+    setState(() => _filtre = f);
+    _loadFactures();
+  }
+
+  Widget _filtresBar() {
+    final options = {
+      'all': 'Toutes',
+      'client': 'Clients',
+      'fournisseur': 'Fournisseurs',
+      'avoirs': 'Avoirs',
+      'impayees': 'Impayées',
+    };
+    return SizedBox(
+      height: 44,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        children: options.entries
+            .map((e) => Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: ChoiceChip(
+                    label: Text(e.value),
+                    selected: _filtre == e.key,
+                    onSelected: (_) => _setFiltre(e.key),
+                  ),
+                ))
+            .toList(),
+      ),
+    );
   }
 
   Future<void> _openForm([EcritureComptable? f]) async {
@@ -55,7 +104,11 @@ class _FacturesListScreenState extends State<FacturesListScreen> {
         backgroundColor: AppTheme.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      body: _buildBody(),
+      body: Column(children: [
+        const SizedBox(height: 8),
+        _filtresBar(),
+        Expanded(child: _buildBody()),
+      ]),
     );
   }
 
@@ -68,7 +121,7 @@ class _FacturesListScreenState extends State<FacturesListScreen> {
         ElevatedButton(onPressed: _loadFactures, child: const Text('Réessayer')),
       ]));
     }
-    if (_factures.isEmpty) {
+    if (_visibles.isEmpty) {
       return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
         Icon(Icons.description_outlined, size: 64, color: Colors.grey[400]),
         const SizedBox(height: 16),
@@ -79,7 +132,7 @@ class _FacturesListScreenState extends State<FacturesListScreen> {
     }
     return RefreshIndicator(
       onRefresh: _loadFactures,
-      child: ListView.builder(padding: const EdgeInsets.fromLTRB(16, 0, 16, 80), itemCount: _factures.length, itemBuilder: (context, index) => _buildFactureCard(_factures[index])),
+      child: ListView.builder(padding: const EdgeInsets.fromLTRB(16, 0, 16, 80), itemCount: _visibles.length, itemBuilder: (context, index) => _buildFactureCard(_visibles[index])),
     );
   }
 

@@ -160,8 +160,10 @@ class CommandeAchatService {
     await _api.post('/commandes-achat/$id/changer-etat', data: {'etat': etat});
   }
 
-  Future<void> receptionner(int id) async {
-    await _api.post('/commandes-achat/$id/receptionner');
+  Future<void> receptionner(int id, {List<Map<String, dynamic>>? lignes}) async {
+    await _api.post('/commandes-achat/$id/receptionner', data: {
+      if (lignes != null) 'lignes': lignes,
+    });
   }
 }
 
@@ -568,6 +570,91 @@ class SocieteService {
   Future<List<Societe>> getAll() async {
     final data = await _api.get('/societes', params: {'per_page': 200});
     return _extractList(data).map((e) => Societe.fromJson(e)).toList();
+  }
+
+  Future<Societe> create(Map<String, dynamic> body) async {
+    final data = await _api.post('/societes', data: body);
+    return Societe.fromJson(data['data'] ?? data);
+  }
+
+  Future<Societe> update(int id, Map<String, dynamic> body) async {
+    final data = await _api.put('/societes/$id', data: body);
+    return Societe.fromJson(data['data'] ?? data);
+  }
+
+  Future<void> activer(int id) async {
+    await _api.post('/societes/$id/activer');
+  }
+
+  Future<void> desactiver(int id) async {
+    await _api.post('/societes/$id/desactiver');
+  }
+
+  Future<void> delete(int id) async {
+    await _api.delete('/societes/$id');
+  }
+}
+
+class CategorieService {
+  final ApiClient _api = ApiClient();
+
+  Future<List<CategorieProduit>> getAll({String? search}) async {
+    final params = <String, dynamic>{'per_page': 500};
+    if (search != null && search.isNotEmpty) params['search'] = search;
+    final data = await _api.get('/categories', params: params);
+    return _extractList(data).map((e) => CategorieProduit.fromJson(e)).toList();
+  }
+
+  Future<CategorieProduit> create(Map<String, dynamic> body) async {
+    final data = await _api.post('/categories', data: body);
+    return CategorieProduit.fromJson(data['data'] ?? data);
+  }
+
+  Future<CategorieProduit> update(int id, Map<String, dynamic> body) async {
+    final data = await _api.put('/categories/$id', data: body);
+    return CategorieProduit.fromJson(data['data'] ?? data);
+  }
+
+  Future<void> delete(int id) async {
+    await _api.delete('/categories/$id');
+  }
+}
+
+class UniteService {
+  final ApiClient _api = ApiClient();
+
+  Future<List<UniteMesure>> getAll({String? search}) async {
+    final params = <String, dynamic>{'per_page': 500};
+    if (search != null && search.isNotEmpty) params['search'] = search;
+    final data = await _api.get('/unites-mesure', params: params);
+    return _extractList(data).map((e) => UniteMesure.fromJson(e)).toList();
+  }
+
+  Future<UniteMesure> create(Map<String, dynamic> body) async {
+    final data = await _api.post('/unites-mesure', data: body);
+    return UniteMesure.fromJson(data['data'] ?? data);
+  }
+
+  Future<UniteMesure> update(int id, Map<String, dynamic> body) async {
+    final data = await _api.put('/unites-mesure/$id', data: body);
+    return UniteMesure.fromJson(data['data'] ?? data);
+  }
+
+  Future<void> delete(int id) async {
+    await _api.delete('/unites-mesure/$id');
+  }
+}
+
+class OperationService {
+  final ApiClient _api = ApiClient();
+
+  Future<List<dynamic>> getAll({String? search, int? produitId, int? lotId}) async {
+    final params = <String, dynamic>{};
+    if (search != null && search.isNotEmpty) params['search'] = search;
+    if (produitId != null) params['produit_id'] = produitId;
+    if (lotId != null) params['lot_id'] = lotId;
+    final data = await _api.get('/operations', params: params.isEmpty ? null : params);
+    return _extractList(data);
   }
 }
 

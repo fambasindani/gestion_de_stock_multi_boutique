@@ -109,6 +109,16 @@ class RapportsScreen extends StatelessWidget {
         RapportColumn('Remise', (r) => _txt(r['total_remise']), numeric: true),
         RapportColumn('Total TTC', (r) => _txt(r['total_ttc']), numeric: true),
       ], loader: (p) => service.fetch('/rapports/ventes-vendeurs', params: p)),
+      _ReportEntry('Traçabilité', Icons.qr_code_2, Colors.deepPurple, loader: (p) async {
+        final ops = await OperationService().getAll();
+        return {'lignes': ops, 'totaux': {'total': ops.length}};
+      }, columns: [
+        RapportColumn('Date', (r) => formatDate((r['date_operation'] ?? r['created_at'] ?? '').toString())),
+        RapportColumn('Produit', (r) => _get(r, ['produit', 'nom'])),
+        RapportColumn('Lot', (r) => _get(r, ['lot', 'nom'])),
+        RapportColumn('Type', (r) => _txt(r['type_operation'])),
+        RapportColumn('Qté', (r) => _txt(r['quantite_traitee']), numeric: true),
+      ]),
       _ReportEntry('Logs d\'activité', Icons.history, Colors.grey, loader: (p) async {
         final res = await AuditLogService().getAll(search: p['search'] as String?);
         return {'lignes': res['lignes'], 'totaux': {'total': res['total']}};
