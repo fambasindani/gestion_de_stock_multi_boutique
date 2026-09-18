@@ -17,6 +17,17 @@ class PlusScreen extends StatelessWidget {
     final auth = context.watch<AuthProvider>();
     final user = auth.user;
 
+    // Menu filtré selon les permissions de l'utilisateur (le super-admin voit tout)
+    final canPartenaires = auth.hasPermission('voir_partenaires');
+    final canTransferts = auth.hasAny(['voir_stock', 'transferer_stock']);
+    final canRapports = auth.hasPermission('voir_rapports');
+    final canUtilisateurs = auth.hasPermission('gerer_utilisateurs');
+    final canRoles = auth.hasAny(['gerer_roles', 'assigner_roles']);
+    final canPermissions = auth.hasAny(['gerer_permissions', 'gerer_roles']);
+    final canEmplacements = auth.hasAny(['voir_emplacements', 'gerer_emplacements']);
+    final hasGestion = canPartenaires || canTransferts || canRapports;
+    final hasAdmin = canUtilisateurs || canRoles || canPermissions || canEmplacements;
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -44,59 +55,88 @@ class PlusScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
           ],
-          _sectionTitle('Gestion'),
-          const SizedBox(height: 8),
-          _menuCard(
-            context,
-            icon: Icons.people_outline,
-            title: 'Partenaires',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PartenairesListScreen())),
-          ),
-          const SizedBox(height: 8),
-          _menuCard(
-            context,
-            icon: Icons.swap_horiz,
-            title: 'Transferts',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TransfertsScreen())),
-          ),
-          const SizedBox(height: 8),
-          _menuCard(
-            context,
-            icon: Icons.assessment_outlined,
-            title: 'Rapports',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RapportsScreen())),
-          ),
-          const SizedBox(height: 24),
-          _sectionTitle('Administration'),
-          const SizedBox(height: 8),
-          _menuCard(
-            context,
-            icon: Icons.person_outline,
-            title: 'Utilisateurs',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UtilisateursScreen())),
-          ),
-          const SizedBox(height: 8),
-          _menuCard(
-            context,
-            icon: Icons.shield_outlined,
-            title: 'Rôles',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RolesScreen())),
-          ),
-          const SizedBox(height: 8),
-          _menuCard(
-            context,
-            icon: Icons.vpn_key_outlined,
-            title: 'Permissions',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PermissionsScreen())),
-          ),
-          const SizedBox(height: 8),
-          _menuCard(
-            context,
-            icon: Icons.location_on_outlined,
-            title: 'Emplacements',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmplacementsScreen())),
-          ),
-          const SizedBox(height: 32),
+          if (hasGestion) ...[
+            _sectionTitle('Gestion'),
+            const SizedBox(height: 8),
+            if (canPartenaires) ...[
+              _menuCard(
+                context,
+                icon: Icons.people_outline,
+                title: 'Partenaires',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PartenairesListScreen())),
+              ),
+              const SizedBox(height: 8),
+            ],
+            if (canTransferts) ...[
+              _menuCard(
+                context,
+                icon: Icons.swap_horiz,
+                title: 'Transferts',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TransfertsScreen())),
+              ),
+              const SizedBox(height: 8),
+            ],
+            if (canRapports)
+              _menuCard(
+                context,
+                icon: Icons.assessment_outlined,
+                title: 'Rapports',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RapportsScreen())),
+              ),
+            const SizedBox(height: 24),
+          ],
+          if (hasAdmin) ...[
+            _sectionTitle('Administration'),
+            const SizedBox(height: 8),
+            if (canUtilisateurs) ...[
+              _menuCard(
+                context,
+                icon: Icons.person_outline,
+                title: 'Utilisateurs',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UtilisateursScreen())),
+              ),
+              const SizedBox(height: 8),
+            ],
+            if (canRoles) ...[
+              _menuCard(
+                context,
+                icon: Icons.shield_outlined,
+                title: 'Rôles',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RolesScreen())),
+              ),
+              const SizedBox(height: 8),
+            ],
+            if (canPermissions) ...[
+              _menuCard(
+                context,
+                icon: Icons.vpn_key_outlined,
+                title: 'Permissions',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PermissionsScreen())),
+              ),
+              const SizedBox(height: 8),
+            ],
+            if (canEmplacements)
+              _menuCard(
+                context,
+                icon: Icons.location_on_outlined,
+                title: 'Emplacements',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmplacementsScreen())),
+              ),
+            const SizedBox(height: 24),
+          ],
+          if (!hasGestion && !hasAdmin)
+            Container(
+              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                "Aucune rubrique d'administration disponible pour votre compte. Demandez à un responsable de vous attribuer un rôle.",
+                style: TextStyle(fontSize: 13),
+              ),
+            ),
           _sectionTitle('Compte'),
           const SizedBox(height: 8),
           SizedBox(

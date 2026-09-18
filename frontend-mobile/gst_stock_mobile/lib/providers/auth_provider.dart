@@ -33,6 +33,12 @@ class AuthProvider extends ChangeNotifier {
     return _permissions.contains(name);
   }
 
+  /// Vrai si l'utilisateur possède AU MOINS une des permissions.
+  bool hasAny(List<String> names) {
+    if (_estSuperAdmin) return true;
+    return names.any(_permissions.contains);
+  }
+
   void _applySession({
     required Utilisateur user,
     Societe? societe,
