@@ -1,7 +1,7 @@
 "use client";
 import { DEVISE } from "@/lib/utils/currency";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -39,12 +39,8 @@ interface FactureFormProps {
   id?: number;
 }
 
-const TVA_OPTIONS = [
-  { value: "0", label: "0%" },
-  { value: "5.5", label: "5.5%" },
-  { value: "10", label: "10%" },
-  { value: "20", label: "20%" },
-];
+// Taux proposés par défaut ; le taux de la société (paramètre) est ajouté dynamiquement.
+const TVA_TAUX_COMMUNS = [0, 5.5, 10, 16, 20];
 
 const TYPE_OPTIONS = [
   { value: "facture_client", label: "Facture client" },
@@ -103,7 +99,7 @@ export function FactureForm({ id }: FactureFormProps) {
   });
 
   const [lignes, setLignes] = useState<LigneFacture[]>([
-    { produit_id: null, nom_produit: "", description: "", quantite: 1, prix_unitaire_ht: 0, taux_tva: 20, taux_remise: 0, montant_ht: 0, montant_tva: 0, montant_ttc: 0 },
+    { produit_id: null, nom_produit: "", description: "", quantite: 1, prix_unitaire_ht: 0, taux_tva: 0, taux_remise: 0, montant_ht: 0, montant_tva: 0, montant_ttc: 0 },
   ]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -115,6 +111,15 @@ export function FactureForm({ id }: FactureFormProps) {
     staleTime: 5 * 60 * 1000,
   });
   const tvaTaux = Number(params?.tva_taux ?? 16) || 0;
+
+  // Liste des taux de TVA : taux société + taux courants (sans doublon)
+  const tvaOptions = useMemo(() => {
+    const set = new Set<number>([tvaTaux, ...TVA_TAUX_COMMUNS]);
+    return Array.from(set)
+      .filter((n) => !Number.isNaN(n))
+      .sort((a, b) => a - b)
+      .map((v) => ({ value: String(v), label: `${v}%${v === tvaTaux ? " (défaut)" : ""}` }));
+  }, [tvaTaux]);
 
   useEffect(() => {
     if (params && lignes.length === 1 && lignes[0].produit_id === null) {
@@ -484,7 +489,7 @@ export function FactureForm({ id }: FactureFormProps) {
                           name={`ligne_${index}_tva`}
                           value={String(ligne.taux_tva)}
                           onChange={(e) => handleLigneChange(index, "taux_tva", Number(e.target.value))}
-                          options={TVA_OPTIONS}
+                          options={tvaOptions}
                         />
                         <FormInput
                           label="Remise (%)"

@@ -22,6 +22,7 @@ import { posService, type PosVenteResult } from "@/lib/api/services/pos.service"
 import { produitsService } from "@/lib/api/services/produits.service";
 import { parametresService } from "@/lib/api/services/parametres.service";
 import { resolveMediaUrl } from "@/lib/utils/assets";
+import { useAuth } from "@/hooks/useAuth";
 import {
   ShoppingCart,
   Search,
@@ -77,6 +78,8 @@ function unwrapList<T>(payload: unknown): T[] {
 export default function PosPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { permissions } = useAuth();
+  const peutReouvrirCaisse = permissions.includes("gerer_parametres");
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState<CartLine[]>([]);
   const [clientNom, setClientNom] = useState("");
@@ -376,9 +379,15 @@ export default function PosPage() {
                 <span className="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 dark:bg-amber-950/30 dark:text-amber-400">
                   Caisse clôturée
                 </span>
-                <Button variant="outline" onClick={() => setConfirmReouverture(true)}>
-                  <Unlock className="mr-2 h-4 w-4" /> Réouvrir la caisse
-                </Button>
+                {peutReouvrirCaisse ? (
+                  <Button variant="outline" onClick={() => setConfirmReouverture(true)}>
+                    <Unlock className="mr-2 h-4 w-4" /> Réouvrir la caisse
+                  </Button>
+                ) : (
+                  <span className="text-xs text-slate-400">
+                    Réouverture par un responsable
+                  </span>
+                )}
               </div>
             ) : (
               <Button variant="outline" onClick={() => setConfirmCloture(true)}>

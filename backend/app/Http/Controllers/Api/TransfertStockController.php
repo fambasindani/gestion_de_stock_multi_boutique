@@ -392,6 +392,9 @@ public function store(Request $request)
             $transfert->modifie_par_utilisateur_id = auth()->id();
             $transfert->save();
 
+            // Synchroniser l'état des mouvements avec celui du transfert
+            $transfert->mouvements()->update(['etat' => $validated['etat']]);
+
             DB::commit();
 
             $transfert->load(['emplacementSource', 'emplacementDestination', 'mouvements']);
@@ -634,22 +637,22 @@ public function store(Request $request)
                 ], 422);
             }
 
-            // Vérifier que tous les mouvements sont traités
-            $mouvementsNonTraites = $transfert->mouvements()
-                                             ->where('quantite_traitee', '<', DB::raw('quantite_demandee'))
-                                             ->count();
-
-            if ($mouvementsNonTraites > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tous les mouvements doivent être complètement traités avant de valider le transfert'
-                ], 422);
+            // Compléter automatiquement les quantités non encore traitées :
+            // valider = transférer la totalité demandée.
+            foreach ($transfert->mouvements as $mouvement) {
+                if ((float) $mouvement->quantite_traitee < (float) $mouvement->quantite_demandee) {
+                    $mouvement->quantite_traitee = $mouvement->quantite_demandee;
+                    $mouvement->save();
+                }
             }
 
             $transfert->etat = 'termine';
             $transfert->date_reelle = now()->toDateString();
             $transfert->modifie_par_utilisateur_id = auth()->id();
             $transfert->save();
+
+            // Les mouvements passent aussi à "terminé"
+            $transfert->mouvements()->update(['etat' => 'termine']);
 
             // Mettre à jour les stocks
             foreach ($transfert->mouvements as $mouvement) {

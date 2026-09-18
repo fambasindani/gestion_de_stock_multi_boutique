@@ -116,6 +116,15 @@ export default function CommandeVenteDetails() {
     if (!commande || !montantPaiement) return;
     const montant = Number(montantPaiement);
     if (montant <= 0) { toast.error("Montant invalide"); return; }
+
+    // Empêche de payer plus que le reste dû
+    const facturesLiees = ((commande as any).factures || []) as Array<{ montant_restant?: any }>;
+    const reste = facturesLiees.length > 0
+      ? facturesLiees.reduce((s, f) => s + Number(f.montant_restant || 0), 0)
+      : Number(commande.montant_total_ttc);
+    if (reste <= 0) { toast.error("Cette commande est déjà entièrement payée"); setPaiementDialogOpen(false); return; }
+    if (montant > reste + 0.001) { toast.error("Le montant dépasse le reste à payer"); return; }
+
     setPaiementLoading(true);
     try {
       const ecritures = (commande as any).factures || [];
@@ -242,6 +251,14 @@ export default function CommandeVenteDetails() {
   const canCancel = commande.etat !== "annule" && commande.etat !== "termine";
   const canModify = commande.etat === "brouillon";
 
+  // État de paiement réel (d'après les factures liées)
+  const factures = ((commande as unknown as { factures?: Array<{ montant_paye?: any; montant_restant?: any }> }).factures ?? []);
+  const totalPaye = factures.reduce((s, f) => s + Number(f.montant_paye || 0), 0);
+  const resteAPayer = factures.length > 0
+    ? factures.reduce((s, f) => s + Number(f.montant_restant || 0), 0)
+    : Number(commande.montant_total_ttc);
+  const estPayee = factures.length > 0 && resteAPayer <= 0.0001;
+
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 bg-slate-50/30 min-h-screen">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -257,6 +274,15 @@ export default function CommandeVenteDetails() {
             <Badge variant="outline" className="bg-white">
               {commande.partenaire?.nom || "Client inconnu"}
             </Badge>
+            {estPayee ? (
+              <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+                <CheckCircle className="mr-1 h-3 w-3" /> Payée
+              </Badge>
+            ) : factures.length > 0 ? (
+              <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">
+                Reste {Number(resteAPayer).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} {DEVISE}
+              </Badge>
+            ) : null}
           </div>
         </div>
         <div className="flex gap-2">
@@ -271,9 +297,10 @@ export default function CommandeVenteDetails() {
               Passer à {statusLabels[nextStatus[commande.etat]]}
             </Button>
           )}
-          {commande.etat === "termine" && (
+          {commande.etat === "termine" && !estPayee && (
             <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => setPaiementDialogOpen(true)}>
-              <CreditCard className="mr-2 h-4 w-4" /> Confirmer paiement
+              <CreditCard className="mr-2 h-4 w-4" />
+              {factures.length > 0 ? "Enregistrer un paiement" : "Confirmer paiement"}
             </Button>
           )}
           {canCancel && (
@@ -405,8 +432,16 @@ export default function CommandeVenteDetails() {
             <DialogTitle>Confirmer le paiement</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-slate-500 mb-4">
+            <p className="text-sm text-slate-500">
               Total TTC : <strong className="text-slate-800">{Number(commande.montant_total_ttc).toFixed(2)} {DEVISE}</strong>
+            </p>
+            {totalPaye > 0 && (
+              <p className="text-sm text-slate-500 mt-1">
+                Déjà payé : <strong className="text-emerald-600">{Number(totalPaye).toFixed(2)} {DEVISE}</strong>
+              </p>
+            )}
+            <p className="text-sm text-slate-500 mb-4 mt-1">
+              Reste à payer : <strong className="text-amber-600">{Number(resteAPayer).toFixed(2)} {DEVISE}</strong>
             </p>
             <FormInput
               label="Montant du paiement"
@@ -415,7 +450,7 @@ export default function CommandeVenteDetails() {
               value={montantPaiement}
               onChange={(e) => setMontantPaiement(e.target.value)}
               min="0"
-              max={commande.montant_total_ttc}
+              max={resteAPayer}
               step="0.01"
               placeholder={"Montant à payer"}
             />

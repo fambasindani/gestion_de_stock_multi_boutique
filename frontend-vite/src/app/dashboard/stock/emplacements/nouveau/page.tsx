@@ -133,6 +133,8 @@ export function EmplacementForm({ id }: EmplacementFormProps) {
       }
       toast.success(isEditMode ? "Emplacement mis à jour" : "Emplacement créé");
       queryClient.invalidateQueries({ queryKey: ["emplacements"] });
+      queryClient.invalidateQueries({ queryKey: ["emplacements-arborescence"] });
+      queryClient.invalidateQueries({ queryKey: ["emplacements-liste"] });
       router.push("/dashboard/stock/emplacements");
     },
     onError: (error: any) => {

@@ -15,6 +15,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
         defaultOptions: {
           queries: {
             staleTime: 60 * 1000, // 1 minute
+            // Toujours rafraîchir quand on (re)ouvre une page : évite les listes
+            // figées après un ajout / une modification.
+            refetchOnMount: "always",
             refetchOnWindowFocus: false,
             retry: 1,
           },

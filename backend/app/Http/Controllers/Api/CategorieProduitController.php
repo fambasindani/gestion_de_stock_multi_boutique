@@ -52,7 +52,7 @@ class CategorieProduitController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nom' => 'required|string|max:100|unique:categorie_produit',
+                'nom' => ['required', 'string', 'max:100', $this->uniqueSociete('categorie_produit', 'nom')],
             'description' => 'nullable|string',
             'parent_id' => 'nullable|exists:categorie_produit,id',
             'actif' => 'boolean',
@@ -76,7 +76,7 @@ class CategorieProduitController extends Controller
         $categorie = CategorieProduit::findOrFail($id);
 
         $validated = $request->validate([
-            'nom' => 'sometimes|string|max:100|unique:categorie_produit,nom,'.$id,
+                'nom' => ['sometimes', 'string', 'max:100', $this->uniqueSociete('categorie_produit', 'nom', $id)],
             'description' => 'nullable|string',
             'parent_id' => 'nullable|exists:categorie_produit,id',
             'actif' => 'boolean',

@@ -96,8 +96,8 @@ class UniteMesureController extends Controller
     {
         try {
             $validated = $request->validate([
-                'nom' => 'required|string|max:100|unique:unite_mesure',
-                'symbole' => 'required|string|max:10|unique:unite_mesure',
+                'nom' => ['required', 'string', 'max:100', $this->uniqueSociete('unite_mesure', 'nom')],
+                'symbole' => ['required', 'string', 'max:10', $this->uniqueSociete('unite_mesure', 'symbole')],
                 'description' => 'nullable|string',
                 'actif' => 'boolean',
             ]);
@@ -140,8 +140,8 @@ class UniteMesureController extends Controller
             $unite = UniteMesure::findOrFail($id);
 
             $validated = $request->validate([
-                'nom' => 'sometimes|string|max:100|unique:unite_mesure,nom,'.$id,
-                'symbole' => 'sometimes|string|max:10|unique:unite_mesure,symbole,'.$id,
+                'nom' => ['sometimes', 'string', 'max:100', $this->uniqueSociete('unite_mesure', 'nom', $id)],
+                'symbole' => ['sometimes', 'string', 'max:10', $this->uniqueSociete('unite_mesure', 'symbole', $id)],
                 'description' => 'nullable|string',
                 'actif' => 'boolean',
             ]);

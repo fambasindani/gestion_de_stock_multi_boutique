@@ -379,6 +379,14 @@ class SocieteController extends Controller
                 ], 422);
             }
 
+            // Nettoyer les données rattachées (paramètres, rôles) pour éviter les orphelins
+            \Illuminate\Support\Facades\DB::table('role_permission')
+                ->whereIn('role_id', function ($q) use ($societe) {
+                    $q->select('id')->from('roles')->where('societe_id', $societe->id);
+                })->delete();
+            \App\Models\Role::where('societe_id', $societe->id)->delete();
+            Parametre::withoutGlobalScopes()->where('societe_id', $societe->id)->delete();
+
             $societe->delete();
 
             return response()->json([

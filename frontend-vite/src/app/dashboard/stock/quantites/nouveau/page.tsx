@@ -211,6 +211,30 @@ export default function NouveauStock() {
                       options={[{ value: "", label: "Aucun lot" }, ...lotOptions]}
                       icon={<Tag className="h-4 w-4" />}
                     />
+                    {!formData.produit_id && (
+                      <p className="mt-2 text-xs text-slate-400">
+                        Astuce : choisissez d'abord un produit pour n'afficher que ses lots.
+                        Laissez « Aucun lot » pour un stock global (sans lot).
+                      </p>
+                    )}
+                    {formData.produit_id && lotOptions.length === 0 && (
+                      <p className="mt-2 flex flex-wrap items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                        <AlertTriangle className="h-3.5 w-3.5" />
+                        Aucun lot n'existe pour ce produit.
+                        <button
+                          type="button"
+                          className="font-medium underline hover:no-underline"
+                          onClick={() => router.push("/dashboard/stock/lots/nouveau")}
+                        >
+                          Créer un lot
+                        </button>
+                      </p>
+                    )}
+                    {formData.produit_id && lotOptions.length > 0 && (
+                      <p className="mt-2 text-xs text-slate-400">
+                        {lotOptions.length} lot(s) disponible(s) pour ce produit.
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -263,6 +287,12 @@ export default function NouveauStock() {
                       min="0"
                       step="0.01"
                     />
+                  </div>
+                  <div className="mt-3 rounded-lg bg-slate-50 dark:bg-slate-800/40 p-3 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                    <p><strong className="text-emerald-600">Disponible</strong> : stock réellement vendable (mis à jour par les ventes). <strong>Mets ta quantité ici.</strong></p>
+                    <p><strong>Réservée</strong> : mis de côté pour des commandes clients (laisser 0).</p>
+                    <p><strong>Commandée</strong> : en commande fournisseur, pas encore reçu (laisser 0).</p>
+                    <p><strong>Contrôlée</strong> : reçu en attente de contrôle qualité (laisser 0).</p>
                   </div>
                 </div>
 

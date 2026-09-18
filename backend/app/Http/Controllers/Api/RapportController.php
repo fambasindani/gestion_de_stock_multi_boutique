@@ -651,12 +651,14 @@ class RapportController extends Controller
     public function stock(Request $request)
     {
         try {
+            // NB : ne pas aliaser en "quantite_totale" (collision avec l'accesseur
+            // getQuantiteTotaleAttribute du modèle QuantiteStock → renverrait 0).
             $query = QuantiteStock::query()
                 ->select(
                     'produit_id',
                     'emplacement_id',
-                    DB::raw('SUM(quantite_disponible) as quantite_totale'),
-                    DB::raw('SUM(quantite_reservee) as quantite_reservee_totale')
+                    DB::raw('SUM(quantite_disponible) as qte_dispo_sum'),
+                    DB::raw('SUM(quantite_reservee) as qte_reservee_sum')
                 )
                 ->with('produit.modele.categorie', 'emplacement')
                 ->groupBy('produit_id', 'emplacement_id');
@@ -671,15 +673,25 @@ class RapportController extends Controller
                 $query->where('emplacement_id', $request->emplacement_id);
             }
 
-            $lignes = $query->get();
+            $lignes = $query->get()->map(function ($item) {
+                $quantite = round((float) $item->qte_dispo_sum, 2);
+                $reservee = round((float) $item->qte_reservee_sum, 2);
+                $prixAchat = (float) ($item->produit->prix_achat ?? 0);
 
-            $lignes->each(function ($item) {
-                $item->valeur = ($item->produit->prix_achat ?? 0) * $item->quantite_totale;
+                return [
+                    'produit_id' => $item->produit_id,
+                    'emplacement_id' => $item->emplacement_id,
+                    'quantite_totale' => $quantite,
+                    'quantite_reservee_totale' => $reservee,
+                    'valeur' => round($prixAchat * $quantite, 2),
+                    'produit' => $item->produit,
+                    'emplacement' => $item->emplacement,
+                ];
             });
 
             $totaux = [
-                'quantite_totale' => $lignes->sum('quantite_totale'),
-                'valeur_totale' => $lignes->sum('valeur'),
+                'quantite_totale' => round($lignes->sum('quantite_totale'), 2),
+                'valeur_totale' => round($lignes->sum('valeur'), 2),
                 'nombre_produits' => $lignes->unique('produit_id')->count(),
             ];
 

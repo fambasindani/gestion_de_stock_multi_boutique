@@ -145,7 +145,7 @@ class LotTracabiliteController extends Controller
 
             $validated = $request->validate([
                 'nom' => 'required|string|max:255',
-                'code' => 'nullable|string|max:100|unique:lot_tracabilite',
+                'code' => ['nullable', 'string', 'max:100', $this->uniqueSociete('lot_tracabilite', 'code')],
                 'produit_id' => 'required|exists:variante_produit,id',
                 'type' => 'required|in:lot,serie',
                 'date_production' => 'nullable|date',
@@ -231,7 +231,7 @@ class LotTracabiliteController extends Controller
 
             $validated = $request->validate([
                 'nom' => 'sometimes|string|max:255',
-                'code' => 'nullable|string|max:100|unique:lot_tracabilite,code,'.$id,
+                'code' => ['nullable', 'string', 'max:100', $this->uniqueSociete('lot_tracabilite', 'code', $id)],
                 'date_production' => 'nullable|date',
                 'date_peremption' => 'nullable|date|after_or_equal:date_production',
                 'date_reception' => 'nullable|date',

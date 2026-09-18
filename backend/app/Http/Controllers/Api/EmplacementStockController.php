@@ -152,7 +152,7 @@ class EmplacementStockController extends Controller
 
             $validated = $request->validate([
                 'nom' => 'required|string|max:255',
-                'code' => 'nullable|string|max:50|unique:emplacement_stock',
+                'code' => ['nullable', 'string', 'max:50', $this->uniqueSociete('emplacement_stock', 'code')],
                 'description' => 'nullable|string',
                 'emplacement_parent_id' => 'nullable|exists:emplacement_stock,id',
                 'usage' => 'required|in:fournisseur,client,interne,inventaire,approvisionnement,production,transit,vue',
@@ -231,7 +231,7 @@ class EmplacementStockController extends Controller
 
             $validated = $request->validate([
                 'nom' => 'sometimes|string|max:255',
-                'code' => 'nullable|string|max:50|unique:emplacement_stock,code,'.$id,
+                'code' => ['nullable', 'string', 'max:50', $this->uniqueSociete('emplacement_stock', 'code', $id)],
                 'description' => 'nullable|string',
                 'emplacement_parent_id' => 'nullable|exists:emplacement_stock,id',
                 'usage' => 'sometimes|in:fournisseur,client,interne,inventaire,approvisionnement,production,transit,vue',

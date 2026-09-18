@@ -60,7 +60,7 @@ export default function TransfertDetails() {
   const queryClient = useQueryClient();
   const id = Number(params.id);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<{ etat: string; label: string } | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{ mode: "etat" | "valider"; etat?: string; label: string } | null>(null);
 
   const { data: transfert, isLoading } = useQuery({
     queryKey: ["transfert", id],
@@ -93,25 +93,53 @@ export default function TransfertDetails() {
     },
   });
 
-  const handleEtatChange = (etat: string, label: string) => {
-    setConfirmAction({ etat, label });
+  // Valider = déplacer réellement le stock de la source vers la destination
+  const validerMutation = useMutation({
+    mutationFn: () => transfertsService.valider(id),
+    onSuccess: (data) => {
+      if (data?.success === false) {
+        toast.error(data.message || "Erreur lors de la validation");
+        return;
+      }
+      toast.success("Transfert validé — stock déplacé");
+      queryClient.invalidateQueries({ queryKey: ["transfert", id] });
+      queryClient.invalidateQueries({ queryKey: ["transferts"] });
+      queryClient.invalidateQueries({ queryKey: ["stocks"] });
+      setConfirmDialogOpen(false);
+      setConfirmAction(null);
+    },
+    onError: () => {
+      toast.error("Erreur lors de la validation");
+      setConfirmDialogOpen(false);
+      setConfirmAction(null);
+    },
+  });
+
+  const handleAction = (action: { mode: "etat" | "valider"; etat?: string; label: string }) => {
+    setConfirmAction(action);
     setConfirmDialogOpen(true);
   };
 
-  const confirmEtatChange = () => {
-    if (confirmAction) mutationEtat.mutate({ etat: confirmAction.etat });
+  const executerAction = () => {
+    if (!confirmAction) return;
+    if (confirmAction.mode === "valider") {
+      validerMutation.mutate();
+    } else if (confirmAction.etat) {
+      mutationEtat.mutate({ etat: confirmAction.etat });
+    }
   };
 
   const getAvailableActions = (etat: string) => {
     switch (etat) {
       case "brouillon":
-        return [{ etat: "confirme", label: "Confirmer", icon: <Send className="h-4 w-4 mr-2" />, className: "bg-blue-600 hover:bg-blue-700" }];
+        return [{ mode: "etat" as const, etat: "confirme", label: "Confirmer", icon: <Send className="h-4 w-4 mr-2" />, className: "bg-blue-600 hover:bg-blue-700" }];
       case "confirme":
-        return [{ etat: "termine", label: "Valider", icon: <ClipboardCheck className="h-4 w-4 mr-2" />, className: "bg-emerald-600 hover:bg-emerald-700" }];
+      case "assigne":
+        return [{ mode: "valider" as const, label: "Valider", icon: <ClipboardCheck className="h-4 w-4 mr-2" />, className: "bg-emerald-600 hover:bg-emerald-700" }];
       case "attente":
         return [
-          { etat: "confirme", label: "Confirmer", icon: <Send className="h-4 w-4 mr-2" />, className: "bg-blue-600 hover:bg-blue-700" },
-          { etat: "annule", label: "Annuler", icon: <Ban className="h-4 w-4 mr-2" />, className: "bg-red-600 hover:bg-red-700" },
+          { mode: "etat" as const, etat: "confirme", label: "Confirmer", icon: <Send className="h-4 w-4 mr-2" />, className: "bg-blue-600 hover:bg-blue-700" },
+          { mode: "etat" as const, etat: "annule", label: "Annuler", icon: <Ban className="h-4 w-4 mr-2" />, className: "bg-red-600 hover:bg-red-700" },
         ];
       default:
         return [];
@@ -233,10 +261,10 @@ export default function TransfertDetails() {
           </div>
         </div>
         <div className="flex gap-2">
-          {availableActions.map((action) => (
+          {availableActions.map((action, i) => (
             <Button
-              key={action.etat}
-              onClick={() => handleEtatChange(action.etat, action.label)}
+              key={"etat" in action && action.etat ? action.etat : action.label}
+              onClick={() => handleAction(action)}
               className={action.className}
             >
               {action.icon}
@@ -376,13 +404,17 @@ export default function TransfertDetails() {
       <ConfirmDialog
         open={confirmDialogOpen}
         onOpenChange={setConfirmDialogOpen}
-        onConfirm={confirmEtatChange}
+        onConfirm={executerAction}
         title={`${confirmAction?.label || "Confirmer"} le transfert`}
-        description={`Êtes-vous sûr de vouloir passer ce transfert à l'état "${confirmAction?.label || confirmAction?.etat || ""}" ?`}
+        description={
+          confirmAction?.mode === "valider"
+            ? "Valider déplace définitivement le stock de l'emplacement source vers l'emplacement destination. Confirmer ?"
+            : `Êtes-vous sûr de vouloir passer ce transfert à l'état "${confirmAction?.label || confirmAction?.etat || ""}" ?`
+        }
         confirmLabel={confirmAction?.label || "Confirmer"}
         cancelLabel="Annuler"
-        variant="info"
-        isLoading={mutationEtat.isPending}
+        variant={confirmAction?.mode === "valider" ? "warning" : "info"}
+        isLoading={mutationEtat.isPending || validerMutation.isPending}
       />
     </div>
   );

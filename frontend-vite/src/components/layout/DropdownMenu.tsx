@@ -1,26 +1,26 @@
 "use client";
 
-import { Bell, LogOut, User, Settings, Menu as MenuIcon, Search, HelpCircle, TriangleAlert, Sun, Moon } from "lucide-react";
+import { Bell, LogOut, User, Settings, Menu as MenuIcon, HelpCircle, TriangleAlert, Sun, Moon } from "lucide-react";
 import { toast } from "sonner";
 import { isDark, toggleTheme } from "@/lib/utils/theme";
 import { societesService } from "@/lib/api/services/societes.service";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { getActiveMenuLabel } from "./menuConfig";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { notificationsService } from "@/lib/api/services/notifications.service";
 
 interface AppHeaderProps {
-  portalTitle: string;
   onMenuToggle?: () => void;
 }
 
-export function AppHeader({ portalTitle, onMenuToggle }: AppHeaderProps) {
+export function AppHeader({ onMenuToggle }: AppHeaderProps) {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const pathname = usePathname();
+  const activeMenuLabel = getActiveMenuLabel(pathname);
   const [dark, setDark] = useState(false);
   const [selectedSociete, setSelectedSociete] = useState("");
 
@@ -71,13 +71,6 @@ export function AppHeader({ portalTitle, onMenuToggle }: AppHeaderProps) {
   const messageAbo = abonnementExpire
     ? "Votre abonnement a expiré. Contactez l'administrateur."
     : `Votre abonnement expire dans ${joursRestants} jour(s).`;
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/recherche?q=${encodeURIComponent(searchQuery)}`);
-    }
-  };
 
   // ✅ Fonction de déconnexion
   const handleLogout = async () => {
@@ -131,21 +124,11 @@ export function AppHeader({ portalTitle, onMenuToggle }: AppHeaderProps) {
         >
           <MenuIcon size={20} />
         </Button>
-        <h2 className="font-semibold text-gray-700 text-lg hidden sm:block">
-          {portalTitle}
-        </h2>
-        <div className="hidden md:block">
-          <form onSubmit={handleSearch} className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Rechercher..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 w-48 lg:w-64 h-9 text-sm bg-gray-50 border-gray-200 focus:bg-white"
-            />
-          </form>
-        </div>
+        {activeMenuLabel && (
+          <h2 className="text-lg font-semibold text-gray-700 dark:text-slate-200">
+            {activeMenuLabel}
+          </h2>
+        )}
       </div>
 
       {/* Right section */}

@@ -167,15 +167,36 @@ export default function NouveauTransfert() {
         quantite_demandee: Number(l.quantite_demandee),
       }));
 
+    // Validation claire avant l'envoi
+    const newErrors: Record<string, string> = {};
+    if (!formData.type) newErrors.type = "Type de transfert requis";
+    if (!formData.emplacement_source_id) {
+      newErrors.emplacement_source_id = "Emplacement source requis";
+    }
+    if (!formData.emplacement_destination_id) {
+      newErrors.emplacement_destination_id = "Emplacement destination requis";
+    } else if (
+      formData.emplacement_source_id &&
+      formData.emplacement_source_id === formData.emplacement_destination_id
+    ) {
+      newErrors.emplacement_destination_id = "Doit être différent de l'emplacement source";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Veuillez corriger les erreurs du formulaire");
+      return;
+    }
+
     if (mouvements.length === 0) {
-      toast.error("Ajoutez au moins un produit au transfert");
+      toast.error("Ajoutez au moins un produit (produit + quantité)");
       return;
     }
 
     const dataToSend = {
       type: formData.type,
-      emplacement_source_id: formData.emplacement_source_id ? Number(formData.emplacement_source_id) : undefined,
-      emplacement_destination_id: formData.emplacement_destination_id ? Number(formData.emplacement_destination_id) : undefined,
+      emplacement_source_id: Number(formData.emplacement_source_id),
+      emplacement_destination_id: Number(formData.emplacement_destination_id),
       date_prevue: formData.date_prevue || undefined,
       notes: formData.notes || undefined,
       mouvements,
@@ -189,15 +210,28 @@ export default function NouveauTransfert() {
     label: `${emp.code ? emp.code + " - " : ""}${emp.nom}`,
   }));
 
-  const produitOptions = (produitsList || []).map((prod: ProduitModele) => ({
-    value: String(prod.id),
-    label: prod.nom,
-  }));
+  const pasAssezEmplacements = emplacementOptions.length < 2;
 
-  const lotOptions = (lotsList || []).map((lot: LotTracabilite) => ({
-    value: String(lot.id),
-    label: `${lot.nom || lot.code || "Lot #" + lot.id} (${lot.quantite_actuelle})`,
-  }));
+  // L'API attend une VARIANTE (variante_produit), pas un modèle produit
+  const produitOptions = ((produitsList || []) as unknown as Array<{ id: number; nom: string; variantes?: any[] }>)
+    .flatMap((prod) => {
+      const variantes = prod.variantes || [];
+      if (variantes.length === 0) {
+        return [{ value: String(prod.id), label: prod.nom }];
+      }
+      return variantes.map((v: any) => ({
+        value: String(v.id),
+        label: v.nom && v.nom !== prod.nom ? `${prod.nom} — ${v.nom}` : prod.nom,
+      }));
+    });
+
+  const lotsPourProduit = (produitId: string) =>
+    (lotsList || [])
+      .filter((lot: LotTracabilite) => !produitId || String((lot as any).produit_id) === produitId)
+      .map((lot: LotTracabilite) => ({
+        value: String(lot.id),
+        label: `${lot.nom || lot.code || "Lot #" + lot.id} (${lot.quantite_actuelle})`,
+      }));
 
   return (
     <div className="p-4 md:p-6">
@@ -213,6 +247,34 @@ export default function NouveauTransfert() {
           Nouveau transfert
         </h1>
       </div>
+
+      <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-slate-600 dark:border-blue-900/40 dark:bg-blue-950/20 dark:text-slate-300">
+        <p className="font-medium text-blue-700 dark:text-blue-400">À quoi sert un transfert ?</p>
+        <p className="mt-1">
+          À déplacer du stock d'un <strong>emplacement source</strong> vers un <strong>emplacement destination</strong> :
+          d'un magasin à un autre, d'un entrepôt vers un magasin, ou d'un magasin vers un client (type livraison).
+        </p>
+        <p className="mt-1 text-xs text-slate-500">
+          Le transfert est créé en <strong>brouillon</strong> : le stock est réellement déplacé quand il est <strong>validé</strong>
+          (liste des transferts → Valider).
+        </p>
+      </div>
+
+      {pasAssezEmplacements && (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300">
+          <p className="font-medium">Il faut au moins 2 emplacements pour transférer du stock.</p>
+          <p className="mt-1">
+            Votre boutique en a actuellement <strong>{emplacementOptions.length}</strong> (source et destination doivent être différents).
+            <button
+              type="button"
+              className="ml-1 font-medium underline hover:no-underline"
+              onClick={() => router.push("/dashboard/stock/emplacements/nouveau")}
+            >
+              Créer un emplacement
+            </button>
+          </p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} noValidate>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -250,6 +312,8 @@ export default function NouveauTransfert() {
                       value={formData.emplacement_source_id}
                       onChange={(e) => handleSelectChange("emplacement_source_id", e.target.value)}
                       options={emplacementOptions}
+                      required
+                      error={errors.emplacement_source_id}
                       icon={<Warehouse className="h-4 w-4" />}
                     />
                     <FormSelect
@@ -258,6 +322,8 @@ export default function NouveauTransfert() {
                       value={formData.emplacement_destination_id}
                       onChange={(e) => handleSelectChange("emplacement_destination_id", e.target.value)}
                       options={emplacementOptions}
+                      required
+                      error={errors.emplacement_destination_id}
                       icon={<Truck className="h-4 w-4" />}
                     />
                   </div>
@@ -306,7 +372,7 @@ export default function NouveauTransfert() {
                         name={`lignes[${index}].lot_id`}
                         value={ligne.lot_id}
                         onChange={(e) => handleLigneChange(index, "lot_id", e.target.value)}
-                        options={lotOptions}
+                        options={lotsPourProduit(ligne.produit_id)}
                         placeholder="Aucun"
                       />
                       <FormInput

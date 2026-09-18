@@ -8,7 +8,7 @@ import { parametresService } from "@/lib/api/services/parametres.service";
 import { setDevise } from "@/lib/utils/currency";
 
 export default function AppLayout() {
-  const { isAuthenticated, isLoadingUser, isSuperAdmin, societe } = useAuth();
+  const { isAuthenticated, isLoadingUser, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mounted, setMounted] = useState(false);
@@ -70,7 +70,7 @@ export default function AppLayout() {
       )}
       <Sidebar />
       <div className="flex-1 flex flex-col min-h-screen">
-        <AppHeader portalTitle={societe?.nom || "GS Stock"} />
+        <AppHeader />
         <main className="flex-1 p-4 md:p-6 lg:p-8 page-container">
           <Outlet />
         </main>

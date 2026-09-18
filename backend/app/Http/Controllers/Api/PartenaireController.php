@@ -113,7 +113,7 @@ class PartenaireController extends Controller
         try {
             $validated = $request->validate([
                 'nom' => 'required|string|max:255',
-                'code' => 'nullable|string|max:50|unique:partenaire',
+                'code' => ['nullable', 'string', 'max:50', $this->uniqueSociete('partenaire', 'code')],
                 'est_client' => 'boolean',
                 'est_fournisseur' => 'boolean',
                 'email' => 'required|email|max:255',
@@ -179,7 +179,7 @@ class PartenaireController extends Controller
 
             $validated = $request->validate([
                 'nom' => 'sometimes|string|max:255',
-                'code' => 'nullable|string|max:50|unique:partenaire,code,'.$id,
+                'code' => ['nullable', 'string', 'max:50', $this->uniqueSociete('partenaire', 'code', $id)],
                 'est_client' => 'boolean',
                 'est_fournisseur' => 'boolean',
                 'email' => 'nullable|email|max:255',
