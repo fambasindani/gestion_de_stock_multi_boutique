@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ProduitModele;
 use App\Models\VarianteProduit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Exception;
@@ -331,12 +332,34 @@ class ProduitModeleController extends Controller
         try {
             $produit = ProduitModele::findOrFail($id);
 
-            // Vérifier si le produit a des variantes
-            if ($produit->variantes()->count() > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Ce produit a des variantes. Supprimez-les d\'abord ou désactivez le produit.'
-                ], 422);
+            $varianteIds = $produit->variantes()->pluck('id')->all();
+
+            if (!empty($varianteIds)) {
+                // Historique : on refuse la suppression si le produit est utilisé.
+                $tablesHistorique = [
+                    'ligne_commande_vente',
+                    'ligne_commande_achat',
+                    'ligne_ecriture_comptable',
+                    'ligne_inventaires',
+                    'ligne_operation_stock',
+                    'ligne_retours',
+                    'lot_tracabilite',
+                    'mouvement_stock',
+                ];
+
+                foreach ($tablesHistorique as $table) {
+                    $utilise = DB::table($table)->whereIn('produit_id', $varianteIds)->exists();
+                    if ($utilise) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Ce produit est utilisé (commandes, factures, stock ou lots). Désactivez-le plutôt.",
+                        ], 422);
+                    }
+                }
+
+                // Aucun historique bloquant : on supprime les lignes de stock puis les variantes.
+                DB::table('quantite_stock')->whereIn('produit_id', $varianteIds)->delete();
+                DB::table('variante_produit')->whereIn('id', $varianteIds)->delete();
             }
 
             $produit->delete();
