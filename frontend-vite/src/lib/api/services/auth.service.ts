@@ -123,8 +123,26 @@ export class AuthService {
    */
   isAuthenticated(): boolean {
     const token = this.getStoredToken();
-    console.log('🔍 isAuthenticated - Token:', token ? 'Présent' : 'Absent');
     return !!token;
+  }
+
+  /**
+   * Demande l'envoi d'un lien de réinitialisation du mot de passe par email.
+   */
+  async forgotPassword(email: string) {
+    return apiClient.post('/auth/forgot-password', { email });
+  }
+
+  /**
+   * Réinitialise le mot de passe à partir du token reçu par email.
+   */
+  async resetPassword(payload: {
+    email: string;
+    token: string;
+    mot_de_passe: string;
+    mot_de_passe_confirmation: string;
+  }) {
+    return apiClient.post('/auth/reset-password', payload);
   }
 }
 

@@ -4,6 +4,7 @@ import AuthLayout from "@/layouts/AuthLayout";
 
 import RootLoginPage from "@/app/page";
 import AuthLoginPage from "@/app/auth/login/page";
+import ResetPasswordPage from "@/app/auth/reset-password/page";
 
 import DashboardPage from "@/app/dashboard/page";
 
@@ -104,6 +105,8 @@ export default function App() {
         <Route element={<AuthLayout />}>
           <Route path="/auth/login" element={<AuthLoginPage />} />
           <Route path="/login" element={<AuthLoginPage />} />
+          <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Route>
 
         {/* Protege */}

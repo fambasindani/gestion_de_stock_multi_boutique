@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense, useEffect } from "react";
+import React, { useState, Suspense, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/common/FormInput";
 import { FormTextarea } from "@/components/common/FormTextarea";
 import { FormCheckbox } from "@/components/common/FormCheckbox";
+import { Input } from "@/components/ui/input";
 import { rolesService } from "@/lib/api/services/roles.service";
 import { permissionsService } from "@/lib/api/services/permissions.service";
 import { Permission } from "@/lib/api/typess";
-import { ArrowLeft, Save, Loader2, Shield, Key, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Shield, Key, CheckCircle, XCircle, Search } from "lucide-react";
 
 export default function NouveauRolePageWrapper() {
   return (
@@ -36,6 +37,7 @@ function NouveauRolePage() {
   });
 
   const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
+  const [permSearch, setPermSearch] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [initialLoading, setInitialLoading] = useState(isEditMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,7 +45,7 @@ function NouveauRolePage() {
   const { data: permissionsList } = useQuery({
     queryKey: ["permissions-list"],
     queryFn: async () => {
-      const response = await permissionsService.getAll();
+      const response = await permissionsService.getAll({ per_page: 500 });
       const perms = response.data;
       return Array.isArray(perms) ? perms : (perms as any)?.data ?? [];
     },
@@ -137,6 +139,27 @@ function NouveauRolePage() {
     );
   };
 
+  // Recherche dans les permissions (nom, description, module)
+  const filteredPermissions = useMemo(() => {
+    const list = (permissionsList || []) as Permission[];
+    const q = permSearch.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((p) => {
+      const garde = (p as unknown as { garde?: string }).garde || "";
+      return (
+        (p.nom || "").toLowerCase().includes(q) ||
+        (p.description || "").toLowerCase().includes(q) ||
+        garde.toLowerCase().includes(q)
+      );
+    });
+  }, [permissionsList, permSearch]);
+
+  const selectFiltered = () => {
+    setSelectedPermissions((prev) =>
+      Array.from(new Set([...prev, ...filteredPermissions.map((p) => p.id)]))
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -210,9 +233,10 @@ function NouveauRolePage() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setSelectedPermissions(permissionsList.map((p: Permission) => p.id))}
+                        onClick={selectFiltered}
                       >
-                        <CheckCircle className="mr-1.5 h-3.5 w-3.5" /> Tout sélectionner
+                        <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
+                        {permSearch.trim() ? "Sélectionner les résultats" : "Tout sélectionner"}
                       </Button>
                       <Button
                         type="button"
@@ -224,17 +248,39 @@ function NouveauRolePage() {
                       </Button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {permissionsList.map((perm: Permission) => (
-                      <FormCheckbox
-                        key={perm.id}
-                        label={perm.nom}
-                        name={`perm_${perm.id}`}
-                        checked={selectedPermissions.includes(perm.id)}
-                        onChange={() => togglePermission(perm.id)}
-                      />
-                    ))}
+
+                  <div className="relative mb-4">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <Input
+                      placeholder="Rechercher une permission (nom, description, module)..."
+                      value={permSearch}
+                      onChange={(e) => setPermSearch(e.target.value)}
+                      className="pl-9"
+                    />
+                    {permSearch.trim() && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                        {filteredPermissions.length} résultat(s)
+                      </span>
+                    )}
                   </div>
+
+                  {filteredPermissions.length === 0 ? (
+                    <p className="py-8 text-center text-sm text-slate-400">
+                      Aucune permission ne correspond à « {permSearch} ».
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                      {filteredPermissions.map((perm: Permission) => (
+                        <FormCheckbox
+                          key={perm.id}
+                          label={perm.nom}
+                          name={`perm_${perm.id}`}
+                          checked={selectedPermissions.includes(perm.id)}
+                          onChange={() => togglePermission(perm.id)}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}

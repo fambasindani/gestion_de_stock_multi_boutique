@@ -44,7 +44,9 @@ use App\Http\Controllers\Api\NotificationController;
 
 
 // Routes publiques
-Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
 
 // Logo de la société (public, via l'API pour bénéficier du CORS)
 Route::get('/logo/{societe}', function ($societeId) {

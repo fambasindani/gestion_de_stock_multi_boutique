@@ -40,9 +40,9 @@ CREATE TABLE IF NOT EXISTS `audit_logs` (
   KEY `audit_logs_user_id_index` (`user_id`),
   KEY `audit_logs_societe_id_index` (`societe_id`),
   CONSTRAINT `audit_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=220 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=294 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.audit_logs : ~87 rows (environ)
+-- Listage des données de la table bd_odoo.audit_logs : ~228 rows (environ)
 INSERT INTO `audit_logs` (`id`, `user_id`, `societe_id`, `action`, `entity_type`, `entity_id`, `description`, `old_values`, `new_values`, `ip_address`, `user_agent`, `created_at`, `updated_at`) VALUES
 	(1, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0', '2026-07-12 07:30:06', '2026-07-12 07:30:06'),
 	(2, NULL, NULL, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0', '2026-07-12 07:30:20', '2026-07-12 07:30:20'),
@@ -262,7 +262,81 @@ INSERT INTO `audit_logs` (`id`, `user_id`, `societe_id`, `action`, `entity_type`
 	(216, 14, 4, 'logout', 'Utilisateur', 14, 'Déconnexion de kakule@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:40:38', '2026-09-17 11:40:38'),
 	(217, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:40:47', '2026-09-17 11:40:47'),
 	(218, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:42:13', '2026-09-17 11:42:13'),
-	(219, NULL, 4, 'login', 'Utilisateur', 14, 'Connexion de kakule@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:42:21', '2026-09-17 11:42:21');
+	(219, NULL, 4, 'login', 'Utilisateur', 14, 'Connexion de kakule@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:42:21', '2026-09-17 11:42:21'),
+	(220, 14, 4, 'logout', 'Utilisateur', 14, 'Déconnexion de kakule@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:50:29', '2026-09-17 11:50:29'),
+	(221, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:50:38', '2026-09-17 11:50:38'),
+	(222, 9, 4, 'create', 'Partenaire', 8, 'Création partenaire MARSAVKO', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:52:34', '2026-09-17 11:52:34'),
+	(223, 9, 4, 'create', 'Partenaire', 9, 'Création partenaire NGOMA', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 11:54:00', '2026-09-17 11:54:00'),
+	(224, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 20:58:54', '2026-09-17 20:58:54'),
+	(225, NULL, 1, 'login', 'Utilisateur', 1, 'Connexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-17 20:59:44', '2026-09-17 20:59:44'),
+	(226, 1, 1, 'logout', 'Utilisateur', 1, 'Déconnexion de pierre@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 09:43:03', '2026-09-18 09:43:03'),
+	(227, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 09:43:15', '2026-09-18 09:43:15'),
+	(228, 9, 4, 'create', 'Categorie', 5, 'Création catégorie Légume', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 09:43:44', '2026-09-18 09:43:44'),
+	(229, 1, 1, 'create', 'Categorie', 6, 'Création catégorie TestDoublonCat', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 09:49:09', '2026-09-18 09:49:09'),
+	(230, 9, 4, 'create', 'Categorie', 7, 'Création catégorie TestDoublonCat', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 09:49:10', '2026-09-18 09:49:10'),
+	(231, 9, 4, 'create', 'Produit', 5, 'Création du produit Tomate', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 09:52:51', '2026-09-18 09:52:51'),
+	(232, 9, 4, 'create', 'Produit', 6, 'Création du produit Haricot', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 09:54:57', '2026-09-18 09:54:57'),
+	(233, 9, 4, 'create', 'Partenaire', 10, 'Création partenaire Maman Mado', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 09:56:58', '2026-09-18 09:56:58'),
+	(234, 1, 1, 'create', 'CommandeAchat', 10, 'Création commande achat PO-2026-00004', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:00:55', '2026-09-18 10:00:55'),
+	(235, 9, 4, 'create', 'CommandeAchat', 15, 'Création commande achat PO-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:02:04', '2026-09-18 10:02:04'),
+	(236, 9, 4, 'delete', 'CommandeAchat', 15, 'Suppression commande achat #15', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:02:04', '2026-09-18 10:02:04'),
+	(237, 9, 4, 'create', 'CommandeAchat', 16, 'Création commande achat PO-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:02:24', '2026-09-18 10:02:24'),
+	(238, 9, 4, 'update', 'CommandeAchat', 16, 'Modification commande achat PO-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:03:26', '2026-09-18 10:03:26'),
+	(239, 9, 4, 'changer_etat', 'CommandeAchat', 16, 'Changement état commande achat PO-2026-00001: brouillon → confirme', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:03:50', '2026-09-18 10:03:50'),
+	(240, 9, 4, 'changer_etat', 'CommandeAchat', 16, 'Changement état commande achat PO-2026-00001: confirme → envoye', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:04:13', '2026-09-18 10:04:13'),
+	(241, 9, 4, 'changer_etat', 'CommandeAchat', 16, 'Changement état commande achat PO-2026-00001: envoye → recu', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:04:25', '2026-09-18 10:04:25'),
+	(242, 9, 4, 'changer_etat', 'CommandeAchat', 16, 'Changement état commande achat PO-2026-00001: recu → termine', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:04:33', '2026-09-18 10:04:33'),
+	(243, 9, 4, 'vente_comptoir', 'CommandeVente', 11, 'Vente comptoir SO-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:05:46', '2026-09-18 10:05:46'),
+	(244, 9, 4, 'cloture_caisse', 'Pos', NULL, 'Clôture de caisse du 2026-09-18', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:09:23', '2026-09-18 10:09:23'),
+	(245, 9, 4, 'reouverture_caisse', 'Pos', NULL, 'Réouverture de la caisse', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:10:34', '2026-09-18 10:10:34'),
+	(246, 9, 4, 'create', 'CommandeVente', 12, 'Création commande vente SO-2026-00002', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:11:41', '2026-09-18 10:11:41'),
+	(247, 1, 1, 'cloture_caisse', 'Pos', NULL, 'Clôture de caisse du 2026-09-18', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:11:49', '2026-09-18 10:11:49'),
+	(248, 1, 1, 'reouverture_caisse', 'Pos', NULL, 'Réouverture de la caisse', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:11:51', '2026-09-18 10:11:51'),
+	(249, 9, 4, 'update', 'CommandeVente', 12, 'Modification commande vente SO-2026-00002', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:12:06', '2026-09-18 10:12:06'),
+	(250, 9, 4, 'changer_etat', 'CommandeVente', 12, 'Changement état commande vente SO-2026-00002: brouillon → confirme', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:12:17', '2026-09-18 10:12:17'),
+	(251, 9, 4, 'changer_etat', 'CommandeVente', 12, 'Changement état commande vente SO-2026-00002: confirme → en_cours', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:12:21', '2026-09-18 10:12:21'),
+	(252, 9, 4, 'changer_etat', 'CommandeVente', 12, 'Changement état commande vente SO-2026-00002: en_cours → termine', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:12:25', '2026-09-18 10:12:25'),
+	(253, 9, 4, 'create', 'Facture', 11, 'Création facture_client INV-2026-00002', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:12:41', '2026-09-18 10:12:41'),
+	(254, 9, 4, 'payer', 'Facture', 11, 'Paiement partiel de 45000€ sur INV-2026-00002', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:12:42', '2026-09-18 10:12:42'),
+	(255, 9, 4, 'payer', 'Facture', 11, 'Paiement partiel de 7200€ sur INV-2026-00002', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:16:32', '2026-09-18 10:16:32'),
+	(256, 9, 4, 'create', 'Lot', 2, 'Création lot LOT-5874 (627967)', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:22:19', '2026-09-18 10:22:19'),
+	(257, 1, 1, 'create', 'TransfertStock', 4, 'Création transfert stock TRF-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:38:17', '2026-09-18 10:38:17'),
+	(258, 1, 1, 'delete', 'TransfertStock', 4, 'Suppression transfert stock #4', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:38:18', '2026-09-18 10:38:18'),
+	(259, 9, 4, 'create', 'TransfertStock', 5, 'Création transfert stock TRF-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:47:30', '2026-09-18 10:47:30'),
+	(260, 9, 4, 'valider', 'TransfertStock', 5, 'Validation transfert TRF-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:52:16', '2026-09-18 10:52:16'),
+	(261, 1, 1, 'create', 'TransfertStock', 6, 'Création transfert stock TRF-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:53:20', '2026-09-18 10:53:20'),
+	(262, 1, 1, 'valider', 'TransfertStock', 6, 'Validation transfert TRF-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:53:22', '2026-09-18 10:53:22'),
+	(263, 1, 1, 'create', 'TransfertStock', 7, 'Création transfert stock TRF-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:56:23', '2026-09-18 10:56:23'),
+	(264, 1, 1, 'valider', 'TransfertStock', 7, 'Validation transfert TRF-2026-00001', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 10:56:25', '2026-09-18 10:56:25'),
+	(265, 9, 4, 'create', 'Retour', 9, 'Création retour RET-202609-0002 (casse) — en attente de validation', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:59:29', '2026-09-18 10:59:29'),
+	(266, 9, 4, 'valider', 'Retour', 9, 'Validation retour RET-202609-0002', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 10:59:40', '2026-09-18 10:59:40'),
+	(267, 9, 4, 'create', 'Facture', 12, 'Création facture_fournisseur INV-2026-00003', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:02:32', '2026-09-18 11:02:32'),
+	(268, 9, 4, 'changer_etat', 'Facture', 12, 'Changement statut INV-2026-00003: → validee', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:03:01', '2026-09-18 11:03:01'),
+	(269, 9, 4, 'payer', 'Facture', 12, 'Paiement partiel de 8000€ sur INV-2026-00003', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:03:13', '2026-09-18 11:03:13'),
+	(270, 9, 4, 'create', 'Facture', 13, 'Création avoir_client INV-2026-00004', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:07:42', '2026-09-18 11:07:42'),
+	(271, 9, 4, 'changer_etat', 'Facture', 13, 'Changement statut INV-2026-00004: → validee', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:07:59', '2026-09-18 11:07:59'),
+	(272, 9, 4, 'payer', 'Facture', 13, 'Paiement partiel de 9280€ sur INV-2026-00004', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:08:23', '2026-09-18 11:08:23'),
+	(273, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:20:45', '2026-09-18 11:20:45'),
+	(274, NULL, 1, 'forgot_password', 'Utilisateur', 15, 'Demande de réinitialisation pour pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 11:41:28', '2026-09-18 11:41:28'),
+	(275, NULL, 1, 'reset_password', 'Utilisateur', 15, 'Réinitialisation du mot de passe de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 11:41:30', '2026-09-18 11:41:30'),
+	(276, NULL, 1, 'login', 'Utilisateur', 15, 'Connexion de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1.26100.9444', '2026-09-18 11:41:30', '2026-09-18 11:41:30'),
+	(277, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:43:09', '2026-09-18 11:43:09'),
+	(278, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:45:42', '2026-09-18 11:45:42'),
+	(279, NULL, 4, 'login', 'Utilisateur', 14, 'Connexion de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:45:46', '2026-09-18 11:45:46'),
+	(280, 14, 4, 'logout', 'Utilisateur', 14, 'Déconnexion de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:46:11', '2026-09-18 11:46:11'),
+	(281, NULL, 4, 'forgot_password', 'Utilisateur', 14, 'Demande de réinitialisation pour pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:46:33', '2026-09-18 11:46:33'),
+	(282, NULL, 4, 'reset_password', 'Utilisateur', 14, 'Réinitialisation du mot de passe de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36 Edg/153.0.0.0', '2026-09-18 11:47:39', '2026-09-18 11:47:39'),
+	(283, NULL, 4, 'login', 'Utilisateur', 14, 'Connexion de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:48:01', '2026-09-18 11:48:01'),
+	(284, 14, 4, 'logout', 'Utilisateur', 14, 'Déconnexion de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:48:23', '2026-09-18 11:48:23'),
+	(285, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:48:30', '2026-09-18 11:48:30'),
+	(286, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:52:09', '2026-09-18 11:52:09'),
+	(287, NULL, 4, 'login', 'Utilisateur', 14, 'Connexion de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:52:18', '2026-09-18 11:52:18'),
+	(288, 14, 4, 'logout', 'Utilisateur', 14, 'Déconnexion de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:52:46', '2026-09-18 11:52:46'),
+	(289, NULL, 4, 'login', 'Utilisateur', 9, 'Connexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:52:54', '2026-09-18 11:52:54'),
+	(290, 9, 4, 'logout', 'Utilisateur', 9, 'Déconnexion de kanza@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:54:00', '2026-09-18 11:54:00'),
+	(291, NULL, 4, 'login', 'Utilisateur', 14, 'Connexion de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:54:14', '2026-09-18 11:54:14'),
+	(292, 14, 4, 'logout', 'Utilisateur', 14, 'Déconnexion de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 11:55:02', '2026-09-18 11:55:02'),
+	(293, NULL, 4, 'login', 'Utilisateur', 14, 'Connexion de pierrpapy@gmail.com', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-18 12:00:19', '2026-09-18 12:00:19');
 
 -- Listage de la structure de table bd_odoo. categorie_produit
 CREATE TABLE IF NOT EXISTS `categorie_produit` (
@@ -275,18 +349,19 @@ CREATE TABLE IF NOT EXISTS `categorie_produit` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `societe_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `categorie_produit_nom_unique` (`nom`),
+  UNIQUE KEY `categorie_produit_societe_nom_unique` (`societe_id`,`nom`),
   KEY `categorie_produit_parent_id_foreign` (`parent_id`),
   KEY `categorie_produit_societe_id_index` (`societe_id`),
   CONSTRAINT `categorie_produit_parent_id_foreign` FOREIGN KEY (`parent_id`) REFERENCES `categorie_produit` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.categorie_produit : ~4 rows (environ)
+-- Listage des données de la table bd_odoo.categorie_produit : ~5 rows (environ)
 INSERT INTO `categorie_produit` (`id`, `nom`, `description`, `parent_id`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(1, 'Électronique', 'Produits électroniques', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 07:44:05', 1),
 	(2, 'Informatique', 'Matériel informatique', 1, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
 	(3, 'Bureau', 'Fournitures de bureau', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
-	(4, 'Alimentaire', 'Produits alimentaires', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1);
+	(4, 'Alimentaire', 'Produits alimentaires', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
+	(5, 'Légume', NULL, NULL, 1, '2026-09-18 09:43:44', '2026-09-18 09:43:44', 4);
 
 -- Listage de la structure de table bd_odoo. commande_achat
 CREATE TABLE IF NOT EXISTS `commande_achat` (
@@ -314,7 +389,7 @@ CREATE TABLE IF NOT EXISTS `commande_achat` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `societe_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `commande_achat_reference_unique` (`reference`),
+  UNIQUE KEY `commande_achat_societe_reference_unique` (`societe_id`,`reference`),
   KEY `commande_achat_cree_par_utilisateur_id_foreign` (`cree_par_utilisateur_id`),
   KEY `commande_achat_modifie_par_utilisateur_id_foreign` (`modifie_par_utilisateur_id`),
   KEY `commande_achat_reference_index` (`reference`),
@@ -325,13 +400,14 @@ CREATE TABLE IF NOT EXISTS `commande_achat` (
   CONSTRAINT `commande_achat_cree_par_utilisateur_id_foreign` FOREIGN KEY (`cree_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `commande_achat_modifie_par_utilisateur_id_foreign` FOREIGN KEY (`modifie_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `commande_achat_partenaire_id_foreign` FOREIGN KEY (`partenaire_id`) REFERENCES `partenaire` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.commande_achat : ~2 rows (environ)
+-- Listage des données de la table bd_odoo.commande_achat : ~3 rows (environ)
 INSERT INTO `commande_achat` (`id`, `reference`, `partenaire_id`, `date_commande`, `date_livraison_prevue`, `date_livraison_reelle`, `etat`, `montant_total_ht`, `montant_total_ttc`, `montant_remise`, `taux_remise`, `frais_livraison`, `notes`, `adresse_livraison`, `adresse_facturation`, `mode_paiement`, `reference_commande_fournisseur`, `cree_par_utilisateur_id`, `modifie_par_utilisateur_id`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(1, 'PO-2026-00001', 4, '2026-07-12', '2026-07-12', '2026-07-14', 'termine', 12000.00, 12000.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-07-12 07:01:04', '2026-07-14 09:48:09', 1),
 	(2, 'PO-2026-00002', 3, '2026-07-14', '2026-07-09', '2026-07-14', 'termine', 21000.00, 21000.00, 0.00, 0.00, 0.00, NULL, 'Mongaka 12', NULL, NULL, NULL, 1, 1, 1, '2026-07-14 09:40:07', '2026-07-14 10:56:26', 1),
-	(3, 'PO-2026-00003', 3, '2026-09-17', '2026-09-19', '2026-09-17', 'termine', 301200.00, 346380.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-09-17 09:18:15', '2026-09-17 09:18:53', 1);
+	(3, 'PO-2026-00003', 3, '2026-09-17', '2026-09-19', '2026-09-17', 'termine', 301200.00, 346380.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-09-17 09:18:15', '2026-09-17 09:18:53', 1),
+	(16, 'PO-2026-00001', 10, '2026-09-18', '2026-09-27', '2026-09-18', 'termine', 720000.00, 835200.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 9, 9, 1, '2026-09-18 10:02:24', '2026-09-18 10:04:33', 4);
 
 -- Listage de la structure de table bd_odoo. commande_vente
 CREATE TABLE IF NOT EXISTS `commande_vente` (
@@ -362,7 +438,7 @@ CREATE TABLE IF NOT EXISTS `commande_vente` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `societe_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `commande_vente_reference_unique` (`reference`),
+  UNIQUE KEY `commande_vente_societe_reference_unique` (`societe_id`,`reference`),
   KEY `commande_vente_cree_par_utilisateur_id_foreign` (`cree_par_utilisateur_id`),
   KEY `commande_vente_modifie_par_utilisateur_id_foreign` (`modifie_par_utilisateur_id`),
   KEY `commande_vente_reference_index` (`reference`),
@@ -373,16 +449,18 @@ CREATE TABLE IF NOT EXISTS `commande_vente` (
   CONSTRAINT `commande_vente_cree_par_utilisateur_id_foreign` FOREIGN KEY (`cree_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `commande_vente_modifie_par_utilisateur_id_foreign` FOREIGN KEY (`modifie_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `commande_vente_partenaire_id_foreign` FOREIGN KEY (`partenaire_id`) REFERENCES `partenaire` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.commande_vente : ~3 rows (environ)
+-- Listage des données de la table bd_odoo.commande_vente : ~7 rows (environ)
 INSERT INTO `commande_vente` (`id`, `reference`, `partenaire_id`, `client_nom`, `date_commande`, `date_livraison_souhaitee`, `date_livraison_prevue`, `date_livraison_reelle`, `etat`, `source`, `montant_total_ht`, `montant_total_ttc`, `montant_remise`, `taux_remise`, `frais_livraison`, `notes`, `adresse_livraison`, `adresse_facturation`, `mode_paiement`, `reference_commande_client`, `cree_par_utilisateur_id`, `modifie_par_utilisateur_id`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(1, 'SO-2026-00001', 2, NULL, '2026-07-12', '2026-07-12', NULL, '2026-07-12', 'termine', NULL, 7050.00, 7050.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-07-12 07:17:06', '2026-07-12 07:18:00', 1),
 	(2, 'SO-2026-00002', 6, NULL, '2026-07-14', '2026-07-16', NULL, '2026-07-14', 'termine', NULL, 1410.00, 1410.00, 0.00, 0.00, 0.00, NULL, 'Kwalo 12', NULL, NULL, NULL, 1, 1, 1, '2026-07-14 09:12:16', '2026-07-14 09:27:10', 1),
 	(3, 'SO-2026-00003', 1, NULL, '2026-07-14', '2026-07-14', NULL, '2026-07-14', 'termine', NULL, 1590.00, 1590.00, 0.00, 0.00, 0.00, NULL, 'Paris 12', NULL, NULL, NULL, 1, 1, 1, '2026-07-14 09:35:11', '2026-07-14 09:36:19', 1),
 	(4, 'SO-2026-00004', 6, NULL, '2026-09-16', NULL, NULL, '2026-09-16', 'termine', NULL, 710.00, 710.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, '2026-09-16 18:58:45', '2026-09-16 18:59:23', 1),
 	(8, 'SO-2026-00005', 7, NULL, '2026-09-16', NULL, NULL, NULL, 'termine', 'pos', 1750.00, 2030.00, 0.00, 0.00, 0.00, 'Vente comptoir', NULL, NULL, 'especes', NULL, 1, NULL, 1, '2026-09-16 20:44:41', '2026-09-16 20:44:41', 1),
-	(10, 'SO-2026-00006', 7, NULL, '2026-09-17', NULL, NULL, NULL, 'termine', 'pos', 20700.00, 23805.00, 0.00, 0.00, 0.00, 'Vente comptoir', NULL, NULL, 'especes', NULL, 1, NULL, 1, '2026-09-17 09:30:30', '2026-09-17 09:30:30', 1);
+	(10, 'SO-2026-00006', 7, NULL, '2026-09-17', NULL, NULL, NULL, 'termine', 'pos', 20700.00, 23805.00, 0.00, 0.00, 0.00, 'Vente comptoir', NULL, NULL, 'especes', NULL, 1, NULL, 1, '2026-09-17 09:30:30', '2026-09-17 09:30:30', 1),
+	(11, 'SO-2026-00001', 11, NULL, '2026-09-18', NULL, NULL, NULL, 'termine', 'pos', 62000.00, 71920.00, 0.00, 0.00, 0.00, 'Vente comptoir', NULL, NULL, 'especes', NULL, 9, NULL, 1, '2026-09-18 10:05:46', '2026-09-18 10:05:46', 4),
+	(12, 'SO-2026-00002', 9, NULL, '2026-09-18', '2026-09-20', NULL, '2026-09-18', 'termine', NULL, 45000.00, 52200.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 9, 9, 1, '2026-09-18 10:11:41', '2026-09-18 10:12:25', 4);
 
 -- Listage de la structure de table bd_odoo. ecriture_comptable
 CREATE TABLE IF NOT EXISTS `ecriture_comptable` (
@@ -418,8 +496,8 @@ CREATE TABLE IF NOT EXISTS `ecriture_comptable` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `ecriture_comptable_reference_unique` (`reference`),
-  UNIQUE KEY `ecriture_comptable_numero_facture_unique` (`numero_facture`),
+  UNIQUE KEY `ecriture_comptable_societe_reference_unique` (`societe_id`,`reference`),
+  UNIQUE KEY `ecriture_comptable_societe_numero_unique` (`societe_id`,`numero_facture`),
   KEY `ecriture_comptable_commande_vente_id_foreign` (`commande_vente_id`),
   KEY `ecriture_comptable_commande_achat_id_foreign` (`commande_achat_id`),
   KEY `ecriture_comptable_transfert_id_foreign` (`transfert_id`),
@@ -437,15 +515,19 @@ CREATE TABLE IF NOT EXISTS `ecriture_comptable` (
   CONSTRAINT `ecriture_comptable_modifie_par_utilisateur_id_foreign` FOREIGN KEY (`modifie_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `ecriture_comptable_partenaire_id_foreign` FOREIGN KEY (`partenaire_id`) REFERENCES `partenaire` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `ecriture_comptable_transfert_id_foreign` FOREIGN KEY (`transfert_id`) REFERENCES `transfert_stock` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.ecriture_comptable : ~3 rows (environ)
+-- Listage des données de la table bd_odoo.ecriture_comptable : ~5 rows (environ)
 INSERT INTO `ecriture_comptable` (`id`, `reference`, `numero_facture`, `partenaire_id`, `type`, `date_emission`, `date_echeance`, `date_paiement`, `montant_ht`, `montant_tva`, `montant_ttc`, `montant_remise`, `taux_remise`, `montant_paye`, `montant_restant`, `devise`, `taux_change`, `commande_vente_id`, `commande_achat_id`, `transfert_id`, `statut`, `mode_paiement`, `notes`, `adresse_facturation`, `adresse_livraison`, `societe_id`, `cree_par_utilisateur_id`, `modifie_par_utilisateur_id`, `actif`, `created_at`, `updated_at`) VALUES
 	(1, 'INV-2026-00001', 'FACT-2026-00001', 2, 'facture_client', '2026-07-12', '2026-08-11', '2026-07-12', 7050.00, 0.00, 7050.00, 0.00, 0.00, 7050.00, 0.00, 'EUR', 1.0000, 1, NULL, NULL, 'annulee', NULL, 'Paiement partiel de 7,050.00 € le 2026-07-12', NULL, NULL, 1, 1, 1, 1, '2026-07-12 07:18:56', '2026-07-13 14:03:33'),
 	(2, 'INV-2026-00002', 'FACT-2026-00002', 6, 'facture_client', '2026-07-14', '2026-08-13', '2026-07-14', 1410.00, 282.00, 1692.00, 0.00, 0.00, 1692.00, 0.00, 'EUR', 1.0000, 2, NULL, NULL, 'payee', NULL, 'Paiement partiel de 1,410.00 € le 2026-07-14\nPaiement partiel de 282.00 € le 2026-07-14', NULL, NULL, 1, 1, 1, 1, '2026-07-14 09:27:20', '2026-07-14 09:27:54'),
 	(3, 'INV-2026-00003', 'FACT-2026-00003', 1, 'facture_client', '2026-07-14', '2026-08-13', '2026-07-14', 1590.00, 318.00, 1908.00, 0.00, 0.00, 1908.00, 0.00, 'EUR', 1.0000, 3, NULL, NULL, 'payee', NULL, 'Paiement partiel de 1,590.00 € le 2026-07-14\nPaiement partiel de 318.00 € le 2026-07-14', NULL, NULL, 1, 1, 1, 1, '2026-07-14 09:36:23', '2026-07-14 09:51:15'),
 	(7, 'INV-2026-00004', 'FACT-2026-00004', 7, 'facture_client', '2026-09-16', NULL, '2026-09-16', 1750.00, 280.00, 2030.00, 0.00, 0.00, 2030.00, 0.00, 'EUR', 1.0000, 8, NULL, NULL, 'payee', 'especes', 'Vente comptoir SO-2026-00005', NULL, NULL, 1, 1, NULL, 1, '2026-09-16 20:44:41', '2026-09-16 20:44:41'),
-	(9, 'INV-2026-00005', 'FACT-2026-00005', 7, 'facture_client', '2026-09-17', NULL, '2026-09-17', 20700.00, 3105.00, 23805.00, 0.00, 0.00, 23805.00, 0.00, 'EUR', 1.0000, 10, NULL, NULL, 'payee', 'especes', 'Vente comptoir SO-2026-00006', NULL, NULL, 1, 1, NULL, 1, '2026-09-17 09:30:30', '2026-09-17 09:30:30');
+	(9, 'INV-2026-00005', 'FACT-2026-00005', 7, 'facture_client', '2026-09-17', NULL, '2026-09-17', 20700.00, 3105.00, 23805.00, 0.00, 0.00, 23805.00, 0.00, 'EUR', 1.0000, 10, NULL, NULL, 'payee', 'especes', 'Vente comptoir SO-2026-00006', NULL, NULL, 1, 1, NULL, 1, '2026-09-17 09:30:30', '2026-09-17 09:30:30'),
+	(10, 'INV-2026-00001', 'FACT-2026-00001', 11, 'facture_client', '2026-09-18', NULL, '2026-09-18', 62000.00, 9920.00, 71920.00, 0.00, 0.00, 71920.00, 0.00, 'EUR', 1.0000, 11, NULL, NULL, 'payee', 'especes', 'Vente comptoir SO-2026-00001', NULL, NULL, 4, 9, NULL, 1, '2026-09-18 10:05:46', '2026-09-18 10:05:46'),
+	(11, 'INV-2026-00002', 'FACT-2026-00002', 9, 'facture_client', '2026-09-18', '2026-10-18', '2026-09-18', 45000.00, 7200.00, 52200.00, 0.00, 0.00, 52200.00, 0.00, 'EUR', 1.0000, 12, NULL, NULL, 'payee', NULL, 'Paiement partiel de 45,000.00 € le 2026-09-18\nPaiement partiel de 7,200.00 € le 2026-09-18', NULL, NULL, 4, 9, 9, 1, '2026-09-18 10:12:41', '2026-09-18 10:16:32'),
+	(12, 'INV-2026-00003', 'FACT-2026-00003', 10, 'facture_fournisseur', '2026-09-18', '2026-10-10', '2026-09-18', 8000.00, 0.00, 8000.00, 0.00, 0.00, 8000.00, 0.00, 'EUR', 1.0000, NULL, NULL, NULL, 'payee', 'cheque', 'Paiement partiel de 8,000.00 € le 2026-09-18', NULL, NULL, 4, 9, 9, 1, '2026-09-18 11:02:32', '2026-09-18 11:03:13'),
+	(13, 'INV-2026-00004', 'FACT-2026-00004', 11, 'avoir_client', '2026-09-18', '2026-09-19', '2026-09-18', 8000.00, 1280.00, 9280.00, 0.00, 0.00, 9280.00, 0.00, 'EUR', 1.0000, NULL, NULL, NULL, 'payee', 'especes', 'Paiement partiel de 9,280.00 € le 2026-09-18', NULL, NULL, 4, 9, 9, 1, '2026-09-18 11:07:42', '2026-09-18 11:08:23');
 
 -- Listage de la structure de table bd_odoo. emplacement_stock
 CREATE TABLE IF NOT EXISTS `emplacement_stock` (
@@ -468,13 +550,13 @@ CREATE TABLE IF NOT EXISTS `emplacement_stock` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `emplacement_stock_code_unique` (`code`),
+  UNIQUE KEY `emplacement_stock_societe_code_unique` (`societe_id`,`code`),
   KEY `emplacement_stock_nom_index` (`nom`),
   KEY `emplacement_stock_code_index` (`code`),
   KEY `emplacement_stock_usage_index` (`usage`),
   KEY `emplacement_stock_emplacement_parent_id_usage_index` (`emplacement_parent_id`,`usage`),
   CONSTRAINT `emplacement_stock_emplacement_parent_id_foreign` FOREIGN KEY (`emplacement_parent_id`) REFERENCES `emplacement_stock` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.emplacement_stock : ~5 rows (environ)
 INSERT INTO `emplacement_stock` (`id`, `nom`, `code`, `description`, `emplacement_parent_id`, `usage`, `type`, `est_entrepot`, `est_zone`, `est_rayon`, `est_casier`, `code_barres`, `capacite_maximale`, `unite_capacite`, `societe_id`, `actif`, `created_at`, `updated_at`) VALUES
@@ -482,7 +564,9 @@ INSERT INTO `emplacement_stock` (`id`, `nom`, `code`, `description`, `emplacemen
 	(2, 'Zone A - Informatique', 'EP01-A', NULL, 1, 'interne', 'rayonnage', 0, 0, 0, 0, NULL, NULL, NULL, 1, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(3, 'Zone B - Bureau', 'EP01-B', NULL, 1, 'interne', 'rayonnage', 0, 0, 0, 0, NULL, NULL, NULL, 1, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(4, 'Zone C - Alimentaire', 'EP01-C', NULL, 1, 'interne', 'rayonnage', 0, 0, 0, 0, NULL, NULL, NULL, 1, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
-	(5, 'Quai de réception', 'QR01', NULL, 1, 'interne', 'quai', 0, 0, 0, 0, NULL, NULL, NULL, 1, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06');
+	(5, 'Quai de réception', 'QR01', NULL, 1, 'interne', 'quai', 0, 0, 0, 0, NULL, NULL, NULL, 1, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
+	(6, 'magasin paul', 'EMP-00001', NULL, NULL, 'interne', 'normal', 0, 0, 0, 0, NULL, NULL, NULL, 4, 1, '2026-09-18 10:20:23', '2026-09-18 10:20:23'),
+	(7, 'Magasin Principal', 'MP-98541', NULL, NULL, 'transit', 'normal', 0, 0, 0, 0, NULL, NULL, NULL, 4, 1, '2026-09-18 10:44:52', '2026-09-18 10:44:52');
 
 -- Listage de la structure de table bd_odoo. inventaires
 CREATE TABLE IF NOT EXISTS `inventaires` (
@@ -498,18 +582,20 @@ CREATE TABLE IF NOT EXISTS `inventaires` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `societe_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `inventaires_reference_unique` (`reference`),
+  UNIQUE KEY `inventaires_societe_reference_unique` (`societe_id`,`reference`),
   KEY `inventaires_emplacement_id_foreign` (`emplacement_id`),
   KEY `inventaires_statut_index` (`statut`),
   KEY `inventaires_date_inventaire_index` (`date_inventaire`),
   KEY `inventaires_societe_id_index` (`societe_id`),
   CONSTRAINT `inventaires_emplacement_id_foreign` FOREIGN KEY (`emplacement_id`) REFERENCES `emplacement_stock` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.inventaires : ~1 rows (environ)
+-- Listage des données de la table bd_odoo.inventaires : ~3 rows (environ)
 INSERT INTO `inventaires` (`id`, `reference`, `date_inventaire`, `emplacement_id`, `statut`, `notes`, `utilisateur_id`, `date_cloture`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(5, 'INV-202609-0001', '2026-09-16', NULL, 'cloture', NULL, 1, '2026-09-16 18:24:33', '2026-09-16 18:22:19', '2026-09-16 18:24:33', 1),
-	(13, 'INV-202609-0002', '2026-09-17', NULL, 'cloture', NULL, 1, '2026-09-17 09:23:28', '2026-09-17 09:22:54', '2026-09-17 09:23:28', 1);
+	(13, 'INV-202609-0002', '2026-09-17', NULL, 'cloture', NULL, 1, '2026-09-17 09:23:28', '2026-09-17 09:22:54', '2026-09-17 09:23:28', 1),
+	(16, 'INV-202609-0001', '2026-09-18', NULL, 'cloture', NULL, 9, '2026-09-18 10:18:54', '2026-09-18 10:18:10', '2026-09-18 10:18:54', 4),
+	(17, 'INV-202609-0002', '2026-09-18', NULL, 'cloture', NULL, 9, '2026-09-18 10:31:39', '2026-09-18 10:31:24', '2026-09-18 10:31:39', 4);
 
 -- Listage de la structure de table bd_odoo. ligne_commande_achat
 CREATE TABLE IF NOT EXISTS `ligne_commande_achat` (
@@ -539,14 +625,16 @@ CREATE TABLE IF NOT EXISTS `ligne_commande_achat` (
   KEY `ligne_commande_achat_code_produit_index` (`code_produit`),
   CONSTRAINT `ligne_commande_achat_commande_achat_id_foreign` FOREIGN KEY (`commande_achat_id`) REFERENCES `commande_achat` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ligne_commande_achat_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.ligne_commande_achat : ~0 rows (environ)
+-- Listage des données de la table bd_odoo.ligne_commande_achat : ~4 rows (environ)
 INSERT INTO `ligne_commande_achat` (`id`, `commande_achat_id`, `produit_id`, `code_produit`, `nom_produit`, `description`, `quantite`, `quantite_recue`, `prix_unitaire_ht`, `prix_unitaire_ttc`, `taux_remise`, `montant_remise`, `montant_total_ht`, `montant_total_ttc`, `taux_tva`, `date_livraison_prevue`, `delai_livraison`, `notes`, `created_at`, `updated_at`) VALUES
 	(1, 1, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', NULL, 100.00, 100.00, 120.00, 120.00, 0.00, 0.00, 12000.00, 12000.00, 0.00, NULL, NULL, NULL, '2026-07-12 07:01:04', '2026-07-12 07:02:23'),
 	(2, 2, 3, 'Code-video', 'hp-video', NULL, 70.00, 70.00, 300.00, 300.00, 0.00, 0.00, 21000.00, 21000.00, 0.00, NULL, NULL, NULL, '2026-07-14 09:40:07', '2026-07-14 09:45:17'),
 	(3, 3, 4, 'REF-414', 'Salsa', NULL, 100.00, 100.00, 3000.00, 3450.00, 0.00, 0.00, 300000.00, 345000.00, 15.00, NULL, NULL, NULL, '2026-09-17 09:18:15', '2026-09-17 09:18:47'),
-	(4, 3, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', NULL, 10.00, 10.00, 120.00, 138.00, 0.00, 0.00, 1200.00, 1380.00, 15.00, NULL, NULL, NULL, '2026-09-17 09:18:15', '2026-09-17 09:18:47');
+	(4, 3, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', NULL, 10.00, 10.00, 120.00, 138.00, 0.00, 0.00, 1200.00, 1380.00, 15.00, NULL, NULL, NULL, '2026-09-17 09:18:15', '2026-09-17 09:18:47'),
+	(10, 16, 5, 'TM-8541', 'Salsa', NULL, 100.00, 100.00, 3000.00, 3480.00, 0.00, 0.00, 300000.00, 348000.00, 16.00, NULL, NULL, NULL, '2026-09-18 10:03:26', '2026-09-18 10:04:25'),
+	(11, 16, 6, 'HT-5214', 'Haricot Blanc', NULL, 70.00, 70.00, 6000.00, 6960.00, 0.00, 0.00, 420000.00, 487200.00, 16.00, NULL, NULL, NULL, '2026-09-18 10:03:26', '2026-09-18 10:04:25');
 
 -- Listage de la structure de table bd_odoo. ligne_commande_vente
 CREATE TABLE IF NOT EXISTS `ligne_commande_vente` (
@@ -576,9 +664,9 @@ CREATE TABLE IF NOT EXISTS `ligne_commande_vente` (
   KEY `ligne_commande_vente_code_produit_index` (`code_produit`),
   CONSTRAINT `ligne_commande_vente_commande_vente_id_foreign` FOREIGN KEY (`commande_vente_id`) REFERENCES `commande_vente` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ligne_commande_vente_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.ligne_commande_vente : ~6 rows (environ)
+-- Listage des données de la table bd_odoo.ligne_commande_vente : ~13 rows (environ)
 INSERT INTO `ligne_commande_vente` (`id`, `commande_vente_id`, `produit_id`, `code_produit`, `nom_produit`, `description`, `quantite`, `quantite_livree`, `prix_unitaire_ht`, `prix_unitaire_ttc`, `taux_remise`, `montant_remise`, `montant_total_ht`, `montant_total_ttc`, `taux_tva`, `date_livraison_souhaitee`, `delai_livraison`, `notes`, `created_at`, `updated_at`) VALUES
 	(1, 1, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', NULL, 10.00, 0.00, 180.00, 180.00, 0.00, 0.00, 1800.00, 1800.00, 0.00, NULL, NULL, NULL, '2026-07-12 07:17:06', '2026-07-12 07:17:06'),
 	(2, 1, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 15.00, 0.00, 350.00, 350.00, 0.00, 0.00, 5250.00, 5250.00, 0.00, NULL, NULL, NULL, '2026-07-12 07:17:06', '2026-07-12 07:17:06'),
@@ -591,7 +679,10 @@ INSERT INTO `ligne_commande_vente` (`id`, `commande_vente_id`, `produit_id`, `co
 	(14, 8, 3, 'Code-video', 'hp-video', NULL, 2.00, 0.00, 350.00, 406.00, 0.00, 0.00, 700.00, 812.00, 16.00, NULL, NULL, NULL, '2026-09-16 20:44:41', '2026-09-16 20:44:41'),
 	(15, 8, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 3.00, 0.00, 350.00, 406.00, 0.00, 0.00, 1050.00, 1218.00, 16.00, NULL, NULL, NULL, '2026-09-16 20:44:41', '2026-09-16 20:44:41'),
 	(17, 10, 4, 'REF-414', 'Salsa', NULL, 4.00, 0.00, 5000.00, 5750.00, 0.00, 0.00, 20000.00, 23000.00, 15.00, NULL, NULL, NULL, '2026-09-17 09:30:30', '2026-09-17 09:30:30'),
-	(18, 10, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 2.00, 0.00, 350.00, 402.50, 0.00, 0.00, 700.00, 805.00, 15.00, NULL, NULL, NULL, '2026-09-17 09:30:30', '2026-09-17 09:30:30');
+	(18, 10, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 2.00, 0.00, 350.00, 402.50, 0.00, 0.00, 700.00, 805.00, 15.00, NULL, NULL, NULL, '2026-09-17 09:30:30', '2026-09-17 09:30:30'),
+	(19, 11, 5, 'TM-8541', 'Salsa', NULL, 6.00, 0.00, 5000.00, 5800.00, 0.00, 0.00, 30000.00, 34800.00, 16.00, NULL, NULL, NULL, '2026-09-18 10:05:46', '2026-09-18 10:05:46'),
+	(20, 11, 6, 'HT-5214', 'Haricot Blanc', NULL, 4.00, 0.00, 8000.00, 9280.00, 0.00, 0.00, 32000.00, 37120.00, 16.00, NULL, NULL, NULL, '2026-09-18 10:05:46', '2026-09-18 10:05:46'),
+	(22, 12, 5, 'TM-8541', 'Salsa', NULL, 9.00, 0.00, 5000.00, 5800.00, 0.00, 0.00, 45000.00, 52200.00, 16.00, NULL, NULL, NULL, '2026-09-18 10:12:06', '2026-09-18 10:12:06');
 
 -- Listage de la structure de table bd_odoo. ligne_ecriture_comptable
 CREATE TABLE IF NOT EXISTS `ligne_ecriture_comptable` (
@@ -621,9 +712,9 @@ CREATE TABLE IF NOT EXISTS `ligne_ecriture_comptable` (
   KEY `ligne_ecriture_comptable_code_produit_index` (`code_produit`),
   CONSTRAINT `ligne_ecriture_comptable_ecriture_comptable_id_foreign` FOREIGN KEY (`ecriture_comptable_id`) REFERENCES `ecriture_comptable` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ligne_ecriture_comptable_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.ligne_ecriture_comptable : ~6 rows (environ)
+-- Listage des données de la table bd_odoo.ligne_ecriture_comptable : ~8 rows (environ)
 INSERT INTO `ligne_ecriture_comptable` (`id`, `ecriture_comptable_id`, `produit_id`, `code_produit`, `nom_produit`, `description`, `quantite`, `prix_unitaire_ht`, `prix_unitaire_ttc`, `taux_remise`, `montant_remise`, `montant_ht`, `montant_tva`, `montant_ttc`, `taux_tva`, `compte_comptable`, `compte_tva`, `notes`, `created_at`, `updated_at`) VALUES
 	(1, 1, 1, NULL, 'Corsair K70 RGB', NULL, 10.00, 180.00, 180.00, 0.00, 0.00, 1800.00, 0.00, 1800.00, 0.00, NULL, NULL, NULL, '2026-07-12 07:18:56', '2026-07-12 07:18:56'),
 	(2, 1, 2, NULL, 'Dell S2722QC 4K', NULL, 15.00, 350.00, 350.00, 0.00, 0.00, 5250.00, 0.00, 5250.00, 0.00, NULL, NULL, NULL, '2026-07-12 07:18:56', '2026-07-12 07:18:56'),
@@ -634,7 +725,12 @@ INSERT INTO `ligne_ecriture_comptable` (`id`, `ecriture_comptable_id`, `produit_
 	(12, 7, 3, 'Code-video', 'hp-video', NULL, 2.00, 350.00, 406.00, 0.00, 0.00, 700.00, 112.00, 812.00, 16.00, '411', '4457', NULL, '2026-09-16 20:44:41', '2026-09-16 20:44:41'),
 	(13, 7, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 3.00, 350.00, 406.00, 0.00, 0.00, 1050.00, 168.00, 1218.00, 16.00, '411', '4457', NULL, '2026-09-16 20:44:41', '2026-09-16 20:44:41'),
 	(15, 9, 4, 'REF-414', 'Salsa', NULL, 4.00, 5000.00, 5750.00, 0.00, 0.00, 20000.00, 3000.00, 23000.00, 15.00, '411', '4457', NULL, '2026-09-17 09:30:30', '2026-09-17 09:30:30'),
-	(16, 9, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 2.00, 350.00, 402.50, 0.00, 0.00, 700.00, 105.00, 805.00, 15.00, '411', '4457', NULL, '2026-09-17 09:30:30', '2026-09-17 09:30:30');
+	(16, 9, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', NULL, 2.00, 350.00, 402.50, 0.00, 0.00, 700.00, 105.00, 805.00, 15.00, '411', '4457', NULL, '2026-09-17 09:30:30', '2026-09-17 09:30:30'),
+	(17, 10, 5, 'TM-8541', 'Salsa', NULL, 6.00, 5000.00, 5800.00, 0.00, 0.00, 30000.00, 4800.00, 34800.00, 16.00, '411', '4457', NULL, '2026-09-18 10:05:46', '2026-09-18 10:05:46'),
+	(18, 10, 6, 'HT-5214', 'Haricot Blanc', NULL, 4.00, 8000.00, 9280.00, 0.00, 0.00, 32000.00, 5120.00, 37120.00, 16.00, '411', '4457', NULL, '2026-09-18 10:05:46', '2026-09-18 10:05:46'),
+	(19, 11, 5, NULL, 'Salsa', NULL, 9.00, 5000.00, 5800.00, 0.00, 0.00, 45000.00, 7200.00, 52200.00, 16.00, NULL, NULL, NULL, '2026-09-18 10:12:41', '2026-09-18 10:12:41'),
+	(20, 12, 6, NULL, 'Haricot', NULL, 1.00, 8000.00, 8000.00, 0.00, 0.00, 8000.00, 0.00, 8000.00, 0.00, NULL, NULL, NULL, '2026-09-18 11:02:32', '2026-09-18 11:02:32'),
+	(21, 13, 6, NULL, 'Haricot', NULL, 1.00, 8000.00, 9280.00, 0.00, 0.00, 8000.00, 1280.00, 9280.00, 16.00, NULL, NULL, NULL, '2026-09-18 11:07:42', '2026-09-18 11:07:42');
 
 -- Listage de la structure de table bd_odoo. ligne_inventaires
 CREATE TABLE IF NOT EXISTS `ligne_inventaires` (
@@ -657,9 +753,9 @@ CREATE TABLE IF NOT EXISTS `ligne_inventaires` (
   CONSTRAINT `ligne_inventaires_emplacement_id_foreign` FOREIGN KEY (`emplacement_id`) REFERENCES `emplacement_stock` (`id`) ON DELETE SET NULL,
   CONSTRAINT `ligne_inventaires_inventaire_id_foreign` FOREIGN KEY (`inventaire_id`) REFERENCES `inventaires` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ligne_inventaires_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.ligne_inventaires : ~3 rows (environ)
+-- Listage des données de la table bd_odoo.ligne_inventaires : ~7 rows (environ)
 INSERT INTO `ligne_inventaires` (`id`, `inventaire_id`, `produit_id`, `emplacement_id`, `quantite_theorique`, `quantite_physique`, `ecart`, `ajuste`, `notes`, `created_at`, `updated_at`) VALUES
 	(13, 5, 1, 1, 85.00, 85.00, 0.00, 1, NULL, '2026-09-16 18:22:19', '2026-09-16 18:24:33'),
 	(14, 5, 2, 1, 164.00, 164.00, 0.00, 1, NULL, '2026-09-16 18:22:19', '2026-09-16 18:24:33'),
@@ -667,7 +763,12 @@ INSERT INTO `ligne_inventaires` (`id`, `inventaire_id`, `produit_id`, `emplaceme
 	(37, 13, 1, 1, 89.00, 85.00, -4.00, 1, NULL, '2026-09-17 09:22:54', '2026-09-17 09:23:28'),
 	(38, 13, 2, 1, 160.00, 160.00, 0.00, 1, NULL, '2026-09-17 09:22:54', '2026-09-17 09:23:28'),
 	(39, 13, 3, 1, 68.00, 68.00, 0.00, 1, NULL, '2026-09-17 09:22:54', '2026-09-17 09:23:28'),
-	(40, 13, 4, 1, 100.00, 100.00, 0.00, 1, NULL, '2026-09-17 09:22:54', '2026-09-17 09:23:28');
+	(40, 13, 4, 1, 100.00, 100.00, 0.00, 1, NULL, '2026-09-17 09:22:54', '2026-09-17 09:23:28'),
+	(49, 16, 5, 1, 85.00, 83.00, -2.00, 1, NULL, '2026-09-18 10:18:10', '2026-09-18 10:18:54'),
+	(50, 16, 6, 1, 66.00, 66.00, 0.00, 1, NULL, '2026-09-18 10:18:10', '2026-09-18 10:18:54'),
+	(51, 17, 5, 1, 83.00, 83.00, 0.00, 0, NULL, '2026-09-18 10:31:24', '2026-09-18 10:31:24'),
+	(52, 17, 6, 1, 66.00, 66.00, 0.00, 0, NULL, '2026-09-18 10:31:24', '2026-09-18 10:31:24'),
+	(53, 17, 6, 6, 66.00, 66.00, 0.00, 0, NULL, '2026-09-18 10:31:24', '2026-09-18 10:31:24');
 
 -- Listage de la structure de table bd_odoo. ligne_operation_stock
 CREATE TABLE IF NOT EXISTS `ligne_operation_stock` (
@@ -721,11 +822,12 @@ CREATE TABLE IF NOT EXISTS `ligne_retours` (
   KEY `ligne_retours_retour_id_index` (`retour_id`),
   CONSTRAINT `ligne_retours_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `ligne_retours_retour_id_foreign` FOREIGN KEY (`retour_id`) REFERENCES `retours` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.ligne_retours : ~1 rows (environ)
 INSERT INTO `ligne_retours` (`id`, `retour_id`, `produit_id`, `quantite`, `prix_unitaire_ht`, `montant_ht`, `notes`, `created_at`, `updated_at`) VALUES
-	(8, 8, 1, 2.00, 180.00, 360.00, NULL, '2026-09-17 08:58:18', '2026-09-17 08:58:18');
+	(8, 8, 1, 2.00, 180.00, 360.00, NULL, '2026-09-17 08:58:18', '2026-09-17 08:58:18'),
+	(9, 9, 6, 2.00, 8000.00, 16000.00, NULL, '2026-09-18 10:59:29', '2026-09-18 10:59:29');
 
 -- Listage de la structure de table bd_odoo. lot_tracabilite
 CREATE TABLE IF NOT EXISTS `lot_tracabilite` (
@@ -752,7 +854,7 @@ CREATE TABLE IF NOT EXISTS `lot_tracabilite` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `lot_tracabilite_code_unique` (`code`),
+  UNIQUE KEY `lot_tracabilite_societe_code_unique` (`societe_id`,`code`),
   KEY `lot_tracabilite_cree_par_utilisateur_id_foreign` (`cree_par_utilisateur_id`),
   KEY `lot_tracabilite_modifie_par_utilisateur_id_foreign` (`modifie_par_utilisateur_id`),
   KEY `lot_tracabilite_nom_index` (`nom`),
@@ -764,11 +866,12 @@ CREATE TABLE IF NOT EXISTS `lot_tracabilite` (
   CONSTRAINT `lot_tracabilite_cree_par_utilisateur_id_foreign` FOREIGN KEY (`cree_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `lot_tracabilite_modifie_par_utilisateur_id_foreign` FOREIGN KEY (`modifie_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL,
   CONSTRAINT `lot_tracabilite_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.lot_tracabilite : ~0 rows (environ)
 INSERT INTO `lot_tracabilite` (`id`, `nom`, `code`, `produit_id`, `type`, `date_production`, `date_peremption`, `date_reception`, `fournisseur`, `reference_fournisseur`, `quantite_initiale`, `quantite_actuelle`, `quantite_reservee`, `unite`, `statut`, `notes`, `societe_id`, `cree_par_utilisateur_id`, `modifie_par_utilisateur_id`, `actif`, `created_at`, `updated_at`) VALUES
-	(1, 'LOT-2026-002', 'LOT-Ecran', 2, 'lot', '2026-07-12', NULL, NULL, 'NGOMA', NULL, 150.00, 128.00, 0.00, NULL, 'actif', NULL, 1, 1, 1, 1, '2026-07-12 07:07:03', '2026-09-16 18:59:23');
+	(1, 'LOT-2026-002', 'LOT-Ecran', 2, 'lot', '2026-07-12', NULL, NULL, 'NGOMA', NULL, 150.00, 128.00, 0.00, NULL, 'actif', NULL, 1, 1, 1, 1, '2026-07-12 07:07:03', '2026-09-16 18:59:23'),
+	(2, 'LOT-5874', '627967', 6, 'lot', '2026-08-13', '2027-03-14', NULL, 'NGOMA', NULL, 100.00, 100.00, 0.00, NULL, 'actif', NULL, 4, 9, NULL, 1, '2026-09-18 10:22:19', '2026-09-18 10:22:19');
 
 -- Listage de la structure de table bd_odoo. migrations
 CREATE TABLE IF NOT EXISTS `migrations` (
@@ -776,9 +879,9 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.migrations : ~0 rows (environ)
+-- Listage des données de la table bd_odoo.migrations : ~32 rows (environ)
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(1, '2019_12_14_000001_create_personal_access_tokens_table', 1),
 	(2, '2026_06_30_110404_create_permissions_table', 1),
@@ -819,7 +922,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(37, '2026_09_17_000013_add_responsable_boutique_role', 13),
 	(38, '2026_09_17_000014_grant_roles_permissions_to_responsable_boutique', 14),
 	(39, '2026_09_17_000015_roles_par_societe', 15),
-	(40, '2026_09_17_000016_reparer_permissions_roles_societe', 16);
+	(40, '2026_09_17_000016_reparer_permissions_roles_societe', 16),
+	(41, '2026_09_17_000017_unicite_referentiels_par_societe', 17),
+	(42, '2026_09_17_000018_references_uniques_par_societe', 18),
+	(43, '2026_09_17_000019_sync_etat_mouvements_transfert', 19),
+	(44, '2026_09_18_000020_create_password_reset_tokens_table', 20);
 
 -- Listage de la structure de table bd_odoo. mouvement_stock
 CREATE TABLE IF NOT EXISTS `mouvement_stock` (
@@ -864,9 +971,11 @@ CREATE TABLE IF NOT EXISTS `mouvement_stock` (
   CONSTRAINT `mouvement_stock_lot_id_foreign` FOREIGN KEY (`lot_id`) REFERENCES `lot_tracabilite` (`id`) ON DELETE SET NULL,
   CONSTRAINT `mouvement_stock_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `mouvement_stock_transfert_id_foreign` FOREIGN KEY (`transfert_id`) REFERENCES `transfert_stock` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.mouvement_stock : ~0 rows (environ)
+INSERT INTO `mouvement_stock` (`id`, `transfert_id`, `produit_id`, `lot_id`, `code_produit`, `nom_produit`, `description`, `quantite_demandee`, `quantite_traitee`, `quantite_reservee`, `emplacement_source_id`, `emplacement_destination_id`, `emplacement_source_reel_id`, `emplacement_destination_reel_id`, `etat`, `unite`, `poids_unitaire`, `volume_unitaire`, `date_prelevement`, `date_reception`, `notes`, `created_at`, `updated_at`, `societe_id`) VALUES
+	(2, 5, 6, 2, 'HT-5214', 'Haricot Blanc', NULL, 20.00, 20.00, 0.00, 6, 7, NULL, NULL, 'termine', 'pièce', NULL, NULL, NULL, NULL, NULL, '2026-09-18 10:47:30', '2026-09-18 10:52:16', 4);
 
 -- Listage de la structure de table bd_odoo. parametres
 CREATE TABLE IF NOT EXISTS `parametres` (
@@ -880,9 +989,9 @@ CREATE TABLE IF NOT EXISTS `parametres` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_parametre_societe` (`societe_id`,`cle`),
   KEY `parametres_societe_id_index` (`societe_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.parametres : ~0 rows (environ)
+-- Listage des données de la table bd_odoo.parametres : ~17 rows (environ)
 INSERT INTO `parametres` (`id`, `societe_id`, `cle`, `valeur`, `description`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'tva_taux', '15', 'Taux de TVA par défaut (%)', '2026-09-16 19:04:50', '2026-09-17 08:05:25'),
 	(2, 1, 'entreprise_nom', '', 'Nom affiché sur le ticket', '2026-09-16 19:04:50', '2026-09-16 19:04:50'),
@@ -894,13 +1003,7 @@ INSERT INTO `parametres` (`id`, `societe_id`, `cle`, `valeur`, `description`, `c
 	(8, 4, 'entreprise_adresse', '', 'Adresse affichée sur le ticket', '2026-09-16 19:51:40', '2026-09-16 19:51:40'),
 	(9, 4, 'entreprise_telephone', '', 'Téléphone affiché sur le ticket', '2026-09-16 19:51:40', '2026-09-16 19:51:40'),
 	(10, 4, 'ticket_message', 'Merci de votre visite !', 'Message de bas de ticket', '2026-09-16 19:51:40', '2026-09-16 19:51:40'),
-	(15, 1, 'devise', 'CDF', NULL, '2026-09-17 11:13:50', '2026-09-17 11:13:50'),
-	(16, 6, 'tva_taux', '16', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07'),
-	(17, 6, 'devise', 'CDF', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07'),
-	(18, 6, 'entreprise_nom', 'TEST ZZZ Boutique', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07'),
-	(19, 6, 'entreprise_adresse', '', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07'),
-	(20, 6, 'entreprise_telephone', '', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07'),
-	(21, 6, 'ticket_message', 'Merci de votre visite !', NULL, '2026-09-17 11:27:07', '2026-09-17 11:27:07');
+	(15, 1, 'devise', 'CDF', NULL, '2026-09-17 11:13:50', '2026-09-17 11:13:50');
 
 -- Listage de la structure de table bd_odoo. partenaire
 CREATE TABLE IF NOT EXISTS `partenaire` (
@@ -927,15 +1030,15 @@ CREATE TABLE IF NOT EXISTS `partenaire` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `societe_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `partenaire_code_unique` (`code`),
+  UNIQUE KEY `partenaire_societe_code_unique` (`societe_id`,`code`),
   KEY `partenaire_nom_index` (`nom`),
   KEY `partenaire_email_index` (`email`),
   KEY `partenaire_code_index` (`code`),
   KEY `partenaire_est_client_est_fournisseur_index` (`est_client`,`est_fournisseur`),
   KEY `partenaire_societe_id_index` (`societe_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.partenaire : ~5 rows (environ)
+-- Listage des données de la table bd_odoo.partenaire : ~9 rows (environ)
 INSERT INTO `partenaire` (`id`, `nom`, `code`, `est_client`, `est_fournisseur`, `email`, `telephone`, `mobile`, `adresse`, `ville`, `code_postal`, `pays`, `numero_tva`, `siret`, `site_web`, `notes`, `remise`, `delai_paiement`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(1, 'Jean Dupont', NULL, 1, 0, 'jean.dupont@email.com', '0123456789', NULL, '12 rue de la Paix', 'Paris', '75001', 'France', NULL, NULL, NULL, 'Client fidèle', 0.00, 30, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
 	(2, 'SARL Martin', NULL, 1, 0, 'contact@sarlmartin.fr', '0987654321', NULL, '45 avenue des Champs', 'Lyon', '69001', 'France', 'FR12345678901', '12345678901234', NULL, 'Société de services', 0.00, 30, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
@@ -943,7 +1046,21 @@ INSERT INTO `partenaire` (`id`, `nom`, `code`, `est_client`, `est_fournisseur`, 
 	(4, 'FournBureau', NULL, 0, 1, 'ventes@fournbureau.fr', '0147258360', NULL, '25 rue des Écoles', 'Paris', '75005', 'France', 'FR45678912304', '45678912304567', NULL, 'Fournitures de bureau', 0.00, 30, 1, '2026-07-12 06:19:06', '2026-09-16 17:32:25', 1),
 	(5, 'Sophie Bernard', NULL, 1, 0, 'sophie.b@email.fr', '0654789123', NULL, '3 rue des Lilas', 'Bordeaux', '33100', 'France', NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
 	(6, 'Maweja', 'CLI-00001', 1, 0, 'maweja@gmail.com', '096523584', NULL, 'Kingu 2', 'Kinshasa', NULL, 'Autre', NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-07-13 13:35:06', '2026-09-16 18:08:28', 1),
-	(7, 'Client comptoir', 'COMPTOIR', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-09-16 19:05:36', '2026-09-16 19:05:36', 1);
+	(7, 'Client comptoir', 'COMPTOIR', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-09-16 19:05:36', '2026-09-16 19:05:36', 1),
+	(8, 'MARSAVKO', 'MR-9652', 0, 1, 'marsavko@mc.cd', '0898596501', '0547845125', '02 Mengi', 'KINSHASA', '87455', 'RDC', NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-09-17 11:52:34', '2026-09-17 11:52:34', 4),
+	(9, 'NGOMA', 'NG-565', 1, 0, 'ngoma@gmail.com', '099698541', '02458745125', 'Q. Golf, Lubumbashi', 'KINSHASA', NULL, 'RDC', NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-09-17 11:54:00', '2026-09-17 11:54:00', 4),
+	(10, 'Maman Mado', '12547', 0, 1, 'mamanmado@gmail.com', '0958745658', '12355478', '12 Mengi', NULL, NULL, 'France', NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-09-18 09:56:58', '2026-09-18 09:56:58', 4),
+	(11, 'Client comptoir', 'COMPTOIR', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0.00, 30, 1, '2026-09-18 10:05:46', '2026-09-18 10:05:46', 4);
+
+-- Listage de la structure de table bd_odoo. password_reset_tokens
+CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Listage des données de la table bd_odoo.password_reset_tokens : ~0 rows (environ)
 
 -- Listage de la structure de table bd_odoo. permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -957,7 +1074,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   UNIQUE KEY `permissions_nom_unique` (`nom`)
 ) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.permissions : ~26 rows (environ)
+-- Listage des données de la table bd_odoo.permissions : ~47 rows (environ)
 INSERT INTO `permissions` (`id`, `nom`, `garde`, `description`, `created_at`, `updated_at`) VALUES
 	(1, 'creer_produits', 'produit', 'Créer des produits', '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(2, 'modifier_produits', 'produit', 'Modifier des produits', '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
@@ -1022,9 +1139,9 @@ CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=205 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=233 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.personal_access_tokens : ~32 rows (environ)
+-- Listage des données de la table bd_odoo.personal_access_tokens : ~36 rows (environ)
 INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `expires_at`, `created_at`, `updated_at`) VALUES
 	(1, 'App\\Models\\Utilisateur', 1, 'auth_token', '34404ffed37a9985488c8813ce6fab1165425dcbd2380ac65aa2817c43c7a004', '["*"]', '2026-07-12 06:43:34', NULL, '2026-07-12 06:41:16', '2026-07-12 06:43:34'),
 	(6, 'App\\Models\\Utilisateur', 1, 'auth_token', 'e31f9cc27abb880175946678a7158d9b2d4a3997bc48e26046581a8cc759a015', '["*"]', '2026-07-12 09:02:29', NULL, '2026-07-12 07:34:41', '2026-07-12 09:02:29'),
@@ -1061,7 +1178,8 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 	(49, 'App\\Models\\Utilisateur', 1, 'auth_token', 'e8f16d0956d8ff4a7b52445d7056c8ac5c37a7aff31dcc1ed0ef815ed86370e2', '["*"]', '2026-07-16 06:33:45', NULL, '2026-07-15 12:52:26', '2026-07-16 06:33:45'),
 	(50, 'App\\Models\\Utilisateur', 1, 'auth_token', '998a7b7fb6e45acf97f77bf5dcc16919650de07b0b2a8d84370a2448245a3e80', '["*"]', '2026-07-17 11:25:51', NULL, '2026-07-17 11:24:48', '2026-07-17 11:25:51'),
 	(77, 'App\\Models\\Utilisateur', 11, 'auth_token', 'c2fde285d29f1fb4289375cf538cf545e5477ee9bc4505e6b79001a87b90876c', '["*"]', '2026-09-16 19:15:59', NULL, '2026-09-16 19:15:59', '2026-09-16 19:15:59'),
-	(204, 'App\\Models\\Utilisateur', 14, 'auth_token', '33a548cf7c213cf8cfe2c3f2c7a3efaefb02452c6880ae71c3c4f2cfd956da69', '["*"]', '2026-09-17 11:42:38', NULL, '2026-09-17 11:42:21', '2026-09-17 11:42:38');
+	(224, 'App\\Models\\Utilisateur', 15, 'auth_token', '84c0b91ab0d55d618871b643232cf76918c3b4662ca8324b4c3eabfb89b95531', '["*"]', NULL, NULL, '2026-09-18 11:41:30', '2026-09-18 11:41:30'),
+	(232, 'App\\Models\\Utilisateur', 14, 'auth_token', '82e56b6778bc116e95f1829b59e83c74d2cb04d536b2d4aee25ba2760bad8746', '["*"]', '2026-09-18 12:03:23', NULL, '2026-09-18 12:00:19', '2026-09-18 12:03:23');
 
 -- Listage de la structure de table bd_odoo. produit_modele
 CREATE TABLE IF NOT EXISTS `produit_modele` (
@@ -1082,14 +1200,16 @@ CREATE TABLE IF NOT EXISTS `produit_modele` (
   KEY `produit_modele_societe_id_index` (`societe_id`),
   CONSTRAINT `produit_modele_categorie_id_foreign` FOREIGN KEY (`categorie_id`) REFERENCES `categorie_produit` (`id`) ON DELETE SET NULL,
   CONSTRAINT `produit_modele_unite_id_foreign` FOREIGN KEY (`unite_id`) REFERENCES `unite_mesure` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.produit_modele : ~2 rows (environ)
+-- Listage des données de la table bd_odoo.produit_modele : ~4 rows (environ)
 INSERT INTO `produit_modele` (`id`, `nom`, `description`, `type`, `categorie_id`, `unite_id`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(1, 'Clavier Mécanique', NULL, 'stockable', 2, NULL, 1, '2026-07-12 06:54:26', '2026-07-12 06:54:26', 1),
 	(2, 'Écran 27 pouces', NULL, 'stockable', 2, NULL, 1, '2026-07-12 06:57:54', '2026-07-12 06:57:54', 1),
 	(3, 'vidéo projecteur', NULL, 'stockable', 1, 1, 1, '2026-07-14 09:39:05', '2026-07-14 09:39:05', 1),
-	(4, 'Tomate', 'Tomate en boite', 'consommable', 4, 2, 1, '2026-09-17 09:07:02', '2026-09-17 09:07:02', 1);
+	(4, 'Tomate', 'Tomate en boite', 'consommable', 4, 2, 1, '2026-09-17 09:07:02', '2026-09-17 09:07:02', 1),
+	(5, 'Tomate', 'Tomate en boite', 'consommable', 5, 8, 1, '2026-09-18 09:52:51', '2026-09-18 09:52:51', 4),
+	(6, 'Haricot', NULL, 'consommable', 5, 8, 1, '2026-09-18 09:54:57', '2026-09-18 09:54:57', 4);
 
 -- Listage de la structure de table bd_odoo. quantite_stock
 CREATE TABLE IF NOT EXISTS `quantite_stock` (
@@ -1118,14 +1238,18 @@ CREATE TABLE IF NOT EXISTS `quantite_stock` (
   CONSTRAINT `quantite_stock_emplacement_id_foreign` FOREIGN KEY (`emplacement_id`) REFERENCES `emplacement_stock` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `quantite_stock_lot_id_foreign` FOREIGN KEY (`lot_id`) REFERENCES `lot_tracabilite` (`id`) ON DELETE SET NULL,
   CONSTRAINT `quantite_stock_produit_id_foreign` FOREIGN KEY (`produit_id`) REFERENCES `variante_produit` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.quantite_stock : ~2 rows (environ)
+-- Listage des données de la table bd_odoo.quantite_stock : ~4 rows (environ)
 INSERT INTO `quantite_stock` (`id`, `produit_id`, `emplacement_id`, `lot_id`, `quantite_disponible`, `quantite_reservee`, `quantite_commande`, `quantite_controlee`, `seuil_minimum`, `seuil_maximum`, `societe_id`, `date_dernier_mouvement`, `date_prochaine_reception`, `notes`, `created_at`, `updated_at`) VALUES
-	(1, 1, 1, NULL, 85.00, 0.00, 0.00, 0.00, NULL, NULL, 1, '2026-09-17', NULL, 'Retour RET-202609-0001 le 2026-09-17\nRetour RET-202609-0001 le 2026-09-17\nRetour RET-202609-0001 le 2026-09-17\nRetour RET-202609-0002 le 2026-09-17\nRetour RET-202609-0001 le 2026-09-17\nAjustement inventaire INV-202609-0002 le 2026-09-17', '2026-07-12 07:02:23', '2026-09-17 10:48:45'),
+	(1, 1, 1, NULL, 85.00, 0.00, 0.00, 0.00, 20.00, NULL, 1, '2026-09-18', NULL, 'Retour RET-202609-0001 le 2026-09-17\nRetour RET-202609-0001 le 2026-09-17\nRetour RET-202609-0001 le 2026-09-17\nRetour RET-202609-0002 le 2026-09-17\nRetour RET-202609-0001 le 2026-09-17\nAjustement inventaire INV-202609-0002 le 2026-09-17', '2026-07-12 07:02:23', '2026-09-18 10:56:25'),
 	(2, 2, 1, 1, 158.00, 0.00, 0.00, 0.00, 10.00, 1000.00, 1, '2026-09-17', '2026-07-26', NULL, '2026-07-12 07:15:00', '2026-09-17 09:30:30'),
 	(3, 3, 1, NULL, 68.00, 0.00, 0.00, 0.00, NULL, NULL, 1, '2026-09-16', NULL, NULL, '2026-07-14 09:45:17', '2026-09-16 20:44:41'),
-	(4, 4, 1, NULL, 96.00, 0.00, 0.00, 0.00, NULL, NULL, 1, '2026-09-17', NULL, NULL, '2026-09-17 09:18:47', '2026-09-17 09:30:30');
+	(4, 4, 1, NULL, 96.00, 0.00, 0.00, 0.00, NULL, NULL, 1, '2026-09-17', NULL, NULL, '2026-09-17 09:18:47', '2026-09-17 09:30:30'),
+	(5, 5, 1, NULL, 83.00, 0.00, 0.00, 0.00, 20.00, NULL, 4, '2026-09-18', NULL, 'Ajustement inventaire INV-202609-0001 le 2026-09-18', '2026-09-18 10:02:04', '2026-09-18 10:18:54'),
+	(6, 6, 1, NULL, 66.00, 0.00, 0.00, 0.00, 20.00, NULL, 4, '2026-09-18', NULL, NULL, '2026-09-18 10:02:24', '2026-09-18 10:05:46'),
+	(7, 6, 6, 2, 46.00, 0.00, 0.00, 0.00, 20.00, 50.00, 4, '2026-09-18', '2026-10-17', NULL, '2026-09-18 10:30:43', '2026-09-18 10:52:16'),
+	(8, 6, 7, 2, 18.00, 0.00, 0.00, 0.00, NULL, NULL, 4, '2026-09-18', NULL, NULL, '2026-09-18 10:52:16', '2026-09-18 10:59:40');
 
 -- Listage de la structure de table bd_odoo. retours
 CREATE TABLE IF NOT EXISTS `retours` (
@@ -1145,15 +1269,16 @@ CREATE TABLE IF NOT EXISTS `retours` (
   `valide_par` bigint unsigned DEFAULT NULL,
   `date_validation` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `retours_reference_unique` (`reference`),
+  UNIQUE KEY `retours_societe_reference_unique` (`societe_id`,`reference`),
   KEY `retours_type_index` (`type`),
   KEY `retours_date_retour_index` (`date_retour`),
   KEY `retours_societe_id_index` (`societe_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.retours : ~0 rows (environ)
+-- Listage des données de la table bd_odoo.retours : ~1 rows (environ)
 INSERT INTO `retours` (`id`, `societe_id`, `reference`, `date_retour`, `type`, `statut`, `partenaire_id`, `emplacement_id`, `motif`, `notes`, `utilisateur_id`, `created_at`, `updated_at`, `valide_par`, `date_validation`) VALUES
-	(8, 1, 'RET-202609-0001', '2026-09-17', 'casse', 'valide', 7, 1, 'casse', NULL, 1, '2026-09-17 08:58:18', '2026-09-17 09:02:11', 1, '2026-09-17 09:02:11');
+	(8, 1, 'RET-202609-0001', '2026-09-17', 'casse', 'valide', 7, 1, 'casse', NULL, 1, '2026-09-17 08:58:18', '2026-09-17 09:02:11', 1, '2026-09-17 09:02:11'),
+	(9, 4, 'RET-202609-0002', '2026-09-18', 'casse', 'valide', 11, 7, 'avarie', NULL, 9, '2026-09-18 10:59:29', '2026-09-18 10:59:40', 9, '2026-09-18 10:59:40');
 
 -- Listage de la structure de table bd_odoo. roles
 CREATE TABLE IF NOT EXISTS `roles` (
@@ -1168,7 +1293,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
   UNIQUE KEY `roles_societe_nom_unique` (`societe_id`,`nom`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.roles : ~5 rows (environ)
+-- Listage des données de la table bd_odoo.roles : ~18 rows (environ)
 INSERT INTO `roles` (`id`, `nom`, `description`, `societe_id`, `actif`, `created_at`, `updated_at`) VALUES
 	(1, 'administrateur', 'Accès total à toutes les fonctionnalités', NULL, 1, '2026-07-12 06:19:06', '2026-09-17 09:45:24'),
 	(2, 'gestionnaire_stock', 'Gestion des stocks, transferts et mouvements', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
@@ -1177,7 +1302,7 @@ INSERT INTO `roles` (`id`, `nom`, `description`, `societe_id`, `actif`, `created
 	(5, 'lecteur', 'Accès en lecture seule', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(6, 'responsable_boutique', 'Responsable d\'une boutique : accès complet, limité à sa société', NULL, 1, '2026-09-17 11:14:44', '2026-09-17 11:14:44'),
 	(7, 'administrateur', 'Accès total à toutes les fonctionnalités', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
-	(8, 'commercial', 'Gestion des commandes clients et devis', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:42:05'),
+	(8, 'commercial', 'Gestion des commandes clients et devis', 4, 1, '2026-09-17 11:30:10', '2026-09-18 11:53:53'),
 	(9, 'comptable', 'Gestion de la facturation et des paiements', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
 	(10, 'gestionnaire_stock', 'Gestion des stocks, transferts et mouvements', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
 	(11, 'lecteur', 'Accès en lecture seule', 4, 1, '2026-09-17 11:30:10', '2026-09-17 11:30:10'),
@@ -1203,7 +1328,7 @@ CREATE TABLE IF NOT EXISTS `role_permission` (
   CONSTRAINT `role_permission_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=394 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.role_permission : ~56 rows (environ)
+-- Listage des données de la table bd_odoo.role_permission : ~380 rows (environ)
 INSERT INTO `role_permission` (`id`, `role_id`, `permission_id`, `created_at`, `updated_at`) VALUES
 	(1, 1, 8, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(2, 1, 17, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
@@ -1561,7 +1686,6 @@ INSERT INTO `role_permission` (`id`, `role_id`, `permission_id`, `created_at`, `
 	(367, 14, 8, '2026-09-17 11:37:38', '2026-09-17 11:37:38'),
 	(368, 14, 9, '2026-09-17 11:37:38', '2026-09-17 11:37:38'),
 	(369, 14, 13, '2026-09-17 11:37:38', '2026-09-17 11:37:38'),
-	(370, 8, 21, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
 	(371, 8, 24, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
 	(372, 8, 18, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
 	(373, 8, 15, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
@@ -1572,9 +1696,7 @@ INSERT INTO `role_permission` (`id`, `role_id`, `permission_id`, `created_at`, `
 	(378, 8, 17, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
 	(379, 8, 26, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
 	(380, 8, 23, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
-	(381, 8, 20, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
 	(382, 8, 16, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
-	(383, 8, 19, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
 	(384, 8, 25, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
 	(385, 8, 34, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
 	(386, 8, 37, '2026-09-17 11:42:05', '2026-09-17 11:42:05'),
@@ -1605,7 +1727,7 @@ CREATE TABLE IF NOT EXISTS `societes` (
   UNIQUE KEY `societes_code_unique` (`code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.societes : ~0 rows (environ)
+-- Listage des données de la table bd_odoo.societes : ~2 rows (environ)
 INSERT INTO `societes` (`id`, `nom`, `code`, `logo`, `email`, `telephone`, `adresse`, `actif`, `date_abonnement`, `date_expiration`, `notes`, `created_at`, `updated_at`) VALUES
 	(1, 'Pompage', 'PM', '/logos/societe-1-1789639313.png', 'pomgage@gmail.com', '0898596501', NULL, 1, '2026-09-16', '2027-03-19', NULL, '2026-09-16 18:44:31', '2026-09-17 08:01:53'),
 	(4, 'ALIMA', 'AL', '/logos/societe-4-1789593906.png', 'alima@gmail.com', '0898596501', NULL, 1, '2026-09-16', '2026-10-16', NULL, '2026-09-16 19:06:22', '2026-09-16 19:25:06');
@@ -1638,7 +1760,7 @@ CREATE TABLE IF NOT EXISTS `transfert_stock` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `transfert_stock_reference_unique` (`reference`),
+  UNIQUE KEY `transfert_stock_societe_reference_unique` (`societe_id`,`reference`),
   KEY `transfert_stock_commande_vente_id_foreign` (`commande_vente_id`),
   KEY `transfert_stock_commande_achat_id_foreign` (`commande_achat_id`),
   KEY `transfert_stock_emplacement_destination_id_foreign` (`emplacement_destination_id`),
@@ -1654,9 +1776,11 @@ CREATE TABLE IF NOT EXISTS `transfert_stock` (
   CONSTRAINT `transfert_stock_emplacement_destination_id_foreign` FOREIGN KEY (`emplacement_destination_id`) REFERENCES `emplacement_stock` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `transfert_stock_emplacement_source_id_foreign` FOREIGN KEY (`emplacement_source_id`) REFERENCES `emplacement_stock` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `transfert_stock_modifie_par_utilisateur_id_foreign` FOREIGN KEY (`modifie_par_utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.transfert_stock : ~1 rows (environ)
+INSERT INTO `transfert_stock` (`id`, `reference`, `origine`, `commande_vente_id`, `commande_achat_id`, `emplacement_source_id`, `emplacement_destination_id`, `type`, `etat`, `date_transfert`, `date_prevue`, `date_reelle`, `notes`, `adresse_livraison`, `adresse_expedition`, `mode_transport`, `num_facture_transport`, `poids_total`, `volume_total`, `societe_id`, `cree_par_utilisateur_id`, `modifie_par_utilisateur_id`, `actif`, `created_at`, `updated_at`) VALUES
+	(5, 'TRF-2026-00001', NULL, NULL, NULL, 6, 7, 'interne', 'termine', '2026-09-18', '2026-09-18', '2026-09-18', NULL, NULL, NULL, NULL, NULL, 0.00, NULL, 4, 9, 9, 1, '2026-09-18 10:47:30', '2026-09-18 10:52:16');
 
 -- Listage de la structure de table bd_odoo. unite_mesure
 CREATE TABLE IF NOT EXISTS `unite_mesure` (
@@ -1669,10 +1793,11 @@ CREATE TABLE IF NOT EXISTS `unite_mesure` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `societe_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unite_mesure_nom_symbole_unique` (`nom`,`symbole`),
+  UNIQUE KEY `unite_mesure_societe_nom_unique` (`societe_id`,`nom`),
+  UNIQUE KEY `unite_mesure_societe_symbole_unique` (`societe_id`,`symbole`),
   KEY `unite_mesure_nom_index` (`nom`),
   KEY `unite_mesure_societe_id_index` (`societe_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Listage des données de la table bd_odoo.unite_mesure : ~5 rows (environ)
 INSERT INTO `unite_mesure` (`id`, `nom`, `symbole`, `description`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
@@ -1680,7 +1805,8 @@ INSERT INTO `unite_mesure` (`id`, `nom`, `symbole`, `description`, `actif`, `cre
 	(2, 'Kilogramme', 'kg', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
 	(3, 'Litre', 'L', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
 	(4, 'Mètre', 'm', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
-	(5, 'Boîte', 'bt', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1);
+	(5, 'Boîte', 'bt', NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06', 1),
+	(8, 'Kilogramme', 'kg', NULL, 1, '2026-09-18 09:51:21', '2026-09-18 09:51:21', 4);
 
 -- Listage de la structure de table bd_odoo. utilisateurs
 CREATE TABLE IF NOT EXISTS `utilisateurs` (
@@ -1699,18 +1825,18 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `utilisateurs_email_unique` (`email`),
   KEY `utilisateurs_email_index` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.utilisateurs : ~7 rows (environ)
+-- Listage des données de la table bd_odoo.utilisateurs : ~8 rows (environ)
 INSERT INTO `utilisateurs` (`id`, `nom`, `email`, `mot_de_passe`, `remember_token`, `telephone`, `actif`, `est_super_admin`, `derniere_connexion`, `societe_id`, `created_at`, `updated_at`) VALUES
-	(1, 'Pierre Famba', 'pierre@gmail.com', '$2y$10$s1wl7fuVy1MzUAr9/WANG.cVmwu4u5JgmYnBl2f5DUa6lM4axXxPe', NULL, NULL, 1, 0, '2026-09-17 13:34:03', 1, '2026-07-12 06:19:06', '2026-09-17 11:34:03'),
+	(1, 'Pierre Famba', 'pierre@gmail.com', '$2y$10$s1wl7fuVy1MzUAr9/WANG.cVmwu4u5JgmYnBl2f5DUa6lM4axXxPe', NULL, NULL, 1, 0, '2026-09-17 22:59:43', 1, '2026-07-12 06:19:06', '2026-09-17 20:59:43'),
 	(2, 'Jean Dupont', 'jean@exemple.com', '$2y$10$NH7Nm6RtOeU8tMLwghG8yOefhpDR6rfvimaoQneVZ6TFNp4DLn3w.', NULL, NULL, 1, 0, NULL, 1, '2026-07-12 06:19:06', '2026-07-15 10:42:32'),
 	(3, 'Marie Martin', 'marie@exemple.com', '$2y$10$zg1V2gl6VlbfMP8iJSc.NeNJC9lG56VfYHBzfaeeDDZZ1H0zuSi32', NULL, NULL, 1, 0, NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(4, 'Pierre Durand', 'pierre.durand@exemple.com', '$2y$10$dgA7/Lz9OO0.J45nd0vrjOjI2vVPB15zXMsHoXE71jq01ujgDTFD2', NULL, NULL, 1, 0, NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
 	(5, 'Sophie Lefèvre', 'sophie@exemple.com', '$2y$10$81h5JSKow.doxieYaFzba.2kTCnXzS4rLrJLXhfYCNOiFJuQUxbpW', NULL, NULL, 1, 0, NULL, 1, '2026-07-12 06:19:06', '2026-07-12 06:19:06'),
-	(9, 'Kanza', 'kanza@gmail.com', '$2y$10$gK.TAqf./2PoTY2Yr6paxOz5n6WKavQrzWv8fogJovkPGhDzEOYum', NULL, NULL, 1, 0, '2026-09-17 13:40:47', 4, '2026-09-16 19:06:22', '2026-09-17 11:40:47'),
+	(9, 'Kanza', 'kanza@gmail.com', '$2y$10$gK.TAqf./2PoTY2Yr6paxOz5n6WKavQrzWv8fogJovkPGhDzEOYum', NULL, NULL, 1, 0, '2026-09-18 13:52:54', 4, '2026-09-16 19:06:22', '2026-09-18 11:52:54'),
 	(11, 'Administrateur Plateforme', 'plateforme@gs-stock.com', '$2y$10$4Krn694DzUgWjApkuTUdlO3USzGbGSvxjnnC1gzSEEk0Qwg2FfWMS', NULL, NULL, 1, 1, '2026-09-17 13:38:55', NULL, '2026-09-16 19:15:41', '2026-09-17 11:38:55'),
-	(14, 'Kakule', 'kakule@gmail.com', '$2y$10$38u80/K3zPnO4FMPG2fcSeeXCENbS.QSpUDDdhZJcVUsSuzSnOlxK', NULL, '0898569874', 1, 0, '2026-09-17 13:42:21', 4, '2026-09-17 11:37:51', '2026-09-17 11:42:21');
+	(14, 'Kakule', 'pierrpapy@gmail.com', '$2y$10$.WZQuM7517wGm4ZCZ3TTO.3jpTHpw08yDQ5K4TtqpGuHOSczbxN2G', NULL, '0898569874', 1, 0, '2026-09-18 14:00:19', 4, '2026-09-17 11:37:51', '2026-09-18 12:00:19');
 
 -- Listage de la structure de table bd_odoo. utilisateur_role
 CREATE TABLE IF NOT EXISTS `utilisateur_role` (
@@ -1726,7 +1852,7 @@ CREATE TABLE IF NOT EXISTS `utilisateur_role` (
   CONSTRAINT `utilisateur_role_utilisateur_id_foreign` FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.utilisateur_role : ~5 rows (environ)
+-- Listage des données de la table bd_odoo.utilisateur_role : ~7 rows (environ)
 INSERT INTO `utilisateur_role` (`id`, `utilisateur_id`, `role_id`, `created_at`, `updated_at`) VALUES
 	(1, 1, 13, '2026-07-12 06:19:06', '2026-09-17 11:30:10'),
 	(2, 2, 16, '2026-07-12 06:19:06', '2026-09-17 11:30:10'),
@@ -1756,14 +1882,16 @@ CREATE TABLE IF NOT EXISTS `variante_produit` (
   KEY `variante_produit_nom_index` (`nom`),
   KEY `variante_produit_societe_id_index` (`societe_id`),
   CONSTRAINT `variante_produit_modele_produit_id_foreign` FOREIGN KEY (`modele_produit_id`) REFERENCES `produit_modele` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listage des données de la table bd_odoo.variante_produit : ~2 rows (environ)
+-- Listage des données de la table bd_odoo.variante_produit : ~4 rows (environ)
 INSERT INTO `variante_produit` (`id`, `modele_produit_id`, `code_interne`, `nom`, `prix_achat`, `prix_vente`, `poids`, `reference_fournisseur`, `actif`, `created_at`, `updated_at`, `societe_id`) VALUES
 	(1, 1, 'CLAV-CORSAIR-001', 'Corsair K70 RGB', 120.00, 180.00, NULL, 'COR-K70-RGB', 1, '2026-07-12 06:54:26', '2026-07-12 06:54:26', 1),
 	(2, 2, 'ECR-DELL-001', 'Dell S2722QC 4K', 300.00, 350.00, NULL, 'DEL-S2722QC', 1, '2026-07-12 06:57:54', '2026-07-12 06:57:54', 1),
 	(3, 3, 'Code-video', 'hp-video', 300.00, 350.00, NULL, 'Ref-6788', 1, '2026-07-14 09:39:05', '2026-07-14 09:39:05', 1),
-	(4, 4, 'REF-414', 'Salsa', 3000.00, 5000.00, NULL, NULL, 1, '2026-09-17 09:07:02', '2026-09-17 09:07:02', 1);
+	(4, 4, 'REF-414', 'Salsa', 3000.00, 5000.00, NULL, NULL, 1, '2026-09-17 09:07:02', '2026-09-17 09:07:02', 1),
+	(5, 5, 'TM-8541', 'Salsa', 3000.00, 5000.00, NULL, NULL, 1, '2026-09-18 09:52:51', '2026-09-18 09:52:51', 4),
+	(6, 6, 'HT-5214', 'Haricot Blanc', 6000.00, 8000.00, NULL, NULL, 1, '2026-09-18 09:54:57', '2026-09-18 09:54:57', 4);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
