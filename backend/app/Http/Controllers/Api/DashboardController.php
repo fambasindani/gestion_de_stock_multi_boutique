@@ -117,17 +117,27 @@ class DashboardController extends Controller
      */
     private function getChiffresAffaires($dateDebut, $dateFin)
     {
-        // CA des factures clients
-        $caClients = EcritureComptable::where('type', 'facture_client')
-                                      ->where('statut', '!=', 'annulee')
-                                      ->whereBetween('date_emission', [$dateDebut, $dateFin])
-                                      ->sum('montant_ttc');
-
-        // CA des factures fournisseurs
-        $caFournisseurs = EcritureComptable::where('type', 'facture_fournisseur')
+        // CA des factures clients (net des avoirs client)
+        $caClientsFact = EcritureComptable::where('type', 'facture_client')
+                                          ->where('statut', '!=', 'annulee')
+                                          ->whereBetween('date_emission', [$dateDebut, $dateFin])
+                                          ->sum('montant_ttc');
+        $caClientsAvoir = EcritureComptable::where('type', 'avoir_client')
                                            ->where('statut', '!=', 'annulee')
                                            ->whereBetween('date_emission', [$dateDebut, $dateFin])
                                            ->sum('montant_ttc');
+        $caClients = $caClientsFact - $caClientsAvoir;
+
+        // CA des factures fournisseurs (net des avoirs fournisseur)
+        $caFournisseursFact = EcritureComptable::where('type', 'facture_fournisseur')
+                                               ->where('statut', '!=', 'annulee')
+                                               ->whereBetween('date_emission', [$dateDebut, $dateFin])
+                                               ->sum('montant_ttc');
+        $caFournisseursAvoir = EcritureComptable::where('type', 'avoir_fournisseur')
+                                                ->where('statut', '!=', 'annulee')
+                                                ->whereBetween('date_emission', [$dateDebut, $dateFin])
+                                                ->sum('montant_ttc');
+        $caFournisseurs = $caFournisseursFact - $caFournisseursAvoir;
 
         // Factures en attente de paiement
         $facturesImpayees = EcritureComptable::where('statut', '!=', 'payee')

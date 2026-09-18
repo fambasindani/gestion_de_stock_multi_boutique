@@ -13,6 +13,9 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final _dashboardService = DashboardService();
   Map<String, dynamic>? _data;
+  Map<String, dynamic> _subCommandes = {};
+  Map<String, dynamic> _subStock = {};
+  Map<String, dynamic> _subFacturation = {};
   bool _isLoading = true;
   String? _error;
   bool _showStats = true;
@@ -51,11 +54,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() { _isLoading = true; _error = null; });
     try {
       final range = _rangeParams();
-      final data = await _dashboardService.getStats(
-        dateDebut: range['date_debut'],
-        dateFin: range['date_fin'],
-      );
-      if (mounted) setState(() => _data = data);
+      final results = await Future.wait([
+        _dashboardService.getStats(dateDebut: range['date_debut'], dateFin: range['date_fin']),
+        _dashboardService.getCommandesStats(),
+        _dashboardService.getStockStats(),
+        _dashboardService.getFacturationStats(),
+      ]);
+      if (mounted) {
+        setState(() {
+          _data = results[0];
+          _subCommandes = results[1];
+          _subStock = results[2];
+          _subFacturation = results[3];
+        });
+      }
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
     } finally {
@@ -124,9 +136,75 @@ class _DashboardScreenState extends State<DashboardScreen> {
           _buildFactures(d['factures_recents'] as List? ?? []),
           const SizedBox(height: 20),
           _buildAlertes(d['alertes_stock'] as List? ?? []),
+          const SizedBox(height: 20),
+          _buildSubSections(),
         ],
         const SizedBox(height: 32),
       ]),
+    );
+  }
+
+  Widget _buildSubSections() {
+    final cmd = _subCommandes;
+    final st = _subStock;
+    final fact = _subFacturation;
+
+    Widget card(String title, IconData icon, List<Widget> children) => Card(
+          margin: const EdgeInsets.only(bottom: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          elevation: 1,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(color: const Color(0xFF2563EB).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+                  child: Icon(icon, color: const Color(0xFF2563EB), size: 18),
+                ),
+                const SizedBox(width: 10),
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+              ]),
+              const Divider(height: 20),
+              ...children,
+            ]),
+          ),
+        );
+
+    Widget line(String label, String value) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 3),
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text(label, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+            Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+          ]),
+        );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 10),
+          child: Text('DÉTAILS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF94A3B8), letterSpacing: 1)),
+        ),
+        if (cmd.isNotEmpty)
+          card('Commandes (détail)', Icons.receipt_long_outlined, [
+            line("Aujourd'hui", '${cmd['aujourd_hui']?['commandes'] ?? 0} • ${_formatCurrency(cmd['aujourd_hui']?['montant'])}'),
+            line('Total période', '${cmd['total_periode']?['commandes'] ?? 0} • ${_formatCurrency(cmd['total_periode']?['montant'])}'),
+          ]),
+        if (st.isNotEmpty)
+          card('Stock (détail)', Icons.warehouse_outlined, [
+            line('Valeur totale', _formatCurrency(st['valeur_totale_stock'])),
+            line('Quantité totale', '${st['total_quantite'] ?? 0}'),
+            line('Produits', '${st['nombre_produits'] ?? 0}'),
+          ]),
+        if (fact.isNotEmpty)
+          card('Facturation (détail)', Icons.receipt_outlined, [
+            line('Montant total', _formatCurrency(fact['montant_total'])),
+            line('Factures', '${fact['total_factures'] ?? 0}'),
+            line('Impayé', '${fact['factures_impayees'] ?? 0} • ${_formatCurrency(fact['montant_impaye'])}'),
+          ]),
+      ],
     );
   }
 

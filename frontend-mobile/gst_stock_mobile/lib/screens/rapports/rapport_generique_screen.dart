@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:gst_stock_mobile/config/theme.dart';
 import 'package:gst_stock_mobile/utils/utils.dart';
 
@@ -150,6 +153,22 @@ class _RapportGeneriqueScreenState extends State<RapportGeneriqueScreen> {
     await Printing.layoutPdf(onLayout: (format) async => doc.save());
   }
 
+  String _csv(String v) => '"${v.replaceAll('"', '""')}"';
+
+  Future<void> _exportCsv() async {
+    if (_lignes.isEmpty) return;
+    final buffer = StringBuffer();
+    buffer.writeln(widget.columns.map((c) => _csv(c.header)).join(';'));
+    for (final row in _lignes) {
+      final r = row is Map<String, dynamic> ? row : <String, dynamic>{};
+      buffer.writeln(widget.columns.map((c) => _csv(c.value(r))).join(';'));
+    }
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/rapport-${DateTime.now().millisecondsSinceEpoch}.csv');
+    await file.writeAsString(buffer.toString());
+    await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: widget.title));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -160,6 +179,7 @@ class _RapportGeneriqueScreenState extends State<RapportGeneriqueScreen> {
           if (widget.dateFilter)
             IconButton(icon: const Icon(Icons.date_range), onPressed: _pickDates, tooltip: 'Période'),
           IconButton(icon: const Icon(Icons.picture_as_pdf), onPressed: _exportPdf, tooltip: 'PDF'),
+          IconButton(icon: const Icon(Icons.grid_on), onPressed: _exportCsv, tooltip: 'Excel / CSV'),
           IconButton(icon: const Icon(Icons.refresh), onPressed: _load, tooltip: 'Actualiser'),
         ],
       ),

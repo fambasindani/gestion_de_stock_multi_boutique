@@ -235,11 +235,25 @@ class RapportController extends Controller
                 'date_fin' => 'nullable|date|after_or_equal:date_debut',
             ]);
 
-            $typeFacture = $request->type === 'fournisseur' ? 'facture_fournisseur' : 'facture_client';
+            $isFournisseur = $request->type === 'fournisseur';
+            $typeFacture = $isFournisseur ? 'facture_fournisseur' : 'facture_client';
+            $typeAvoir = $isFournisseur ? 'avoir_fournisseur' : 'avoir_client';
 
-            $query = EcritureComptable::with('partenaire:id,nom')
-                ->where('type', $typeFacture)
-                ->where('statut', '!=', 'annulee')
+            $base = function (string $type) use ($request) {
+                $q = EcritureComptable::with('partenaire:id,nom')
+                    ->where('type', $type)
+                    ->where('statut', '!=', 'annulee');
+                if ($request->filled('date_debut')) {
+                    $q->whereDate('date_emission', '>=', $request->date_debut);
+                }
+                if ($request->filled('date_fin')) {
+                    $q->whereDate('date_emission', '<=', $request->date_fin);
+                }
+                return $q;
+            };
+
+            // Factures (positives)
+            $factures = $base($typeFacture)
                 ->select(
                     'partenaire_id',
                     \DB::raw('COUNT(*) as nombre_factures'),
@@ -248,27 +262,39 @@ class RapportController extends Controller
                     \DB::raw('COALESCE(SUM(montant_restant),0) as total_impaye')
                 )
                 ->groupBy('partenaire_id')
-                ->orderByDesc('total_ttc');
+                ->get()
+                ->keyBy('partenaire_id');
 
-            if ($request->filled('date_debut')) {
-                $query->whereDate('date_emission', '>=', $request->date_debut);
-            }
-            if ($request->filled('date_fin')) {
-                $query->whereDate('date_emission', '<=', $request->date_fin);
-            }
+            // Avoirs (à déduire)
+            $avoirs = $base($typeAvoir)
+                ->select(
+                    'partenaire_id',
+                    \DB::raw('COALESCE(SUM(montant_ht),0) as avoir_ht'),
+                    \DB::raw('COALESCE(SUM(montant_ttc),0) as avoir_ttc')
+                )
+                ->groupBy('partenaire_id')
+                ->get()
+                ->keyBy('partenaire_id');
 
-            $rows = $query->get();
+            $ids = $factures->keys()->merge($avoirs->keys())->unique();
 
-            $lignes = $rows->map(function ($r) {
+            $lignes = $ids->map(function ($id) use ($factures, $avoirs) {
+                $f = $factures->get($id);
+                $a = $avoirs->get($id);
+                $nom = $f->partenaire->nom ?? ($a->partenaire->nom ?? 'N/A');
+                $ht = (float) ($f->total_ht ?? 0) - (float) ($a->avoir_ht ?? 0);
+                $ttc = (float) ($f->total_ttc ?? 0) - (float) ($a->avoir_ttc ?? 0);
+                $impaye = max(0, (float) ($f->total_impaye ?? 0) - (float) ($a->avoir_ttc ?? 0));
+
                 return [
-                    'partenaire_id' => $r->partenaire_id,
-                    'partenaire' => $r->partenaire->nom ?? 'N/A',
-                    'nombre_factures' => (int) $r->nombre_factures,
-                    'total_ht' => round((float) $r->total_ht, 2),
-                    'total_ttc' => round((float) $r->total_ttc, 2),
-                    'total_impaye' => round((float) $r->total_impaye, 2),
+                    'partenaire_id' => $id,
+                    'partenaire' => $nom,
+                    'nombre_factures' => (int) ($f->nombre_factures ?? 0),
+                    'total_ht' => round($ht, 2),
+                    'total_ttc' => round($ttc, 2),
+                    'total_impaye' => round($impaye, 2),
                 ];
-            })->values();
+            })->sortByDesc('total_ttc')->values();
 
             return response()->json([
                 'success' => true,
@@ -277,10 +303,10 @@ class RapportController extends Controller
                     'lignes' => $lignes,
                     'totaux' => [
                         'nombre_partenaires' => $lignes->count(),
-                        'nombre_factures' => (int) $rows->sum('nombre_factures'),
-                        'total_ht' => round((float) $rows->sum('total_ht'), 2),
-                        'total_ttc' => round((float) $rows->sum('total_ttc'), 2),
-                        'total_impaye' => round((float) $rows->sum('total_impaye'), 2),
+                        'nombre_factures' => (int) $lignes->sum('nombre_factures'),
+                        'total_ht' => round((float) $lignes->sum('total_ht'), 2),
+                        'total_ttc' => round((float) $lignes->sum('total_ttc'), 2),
+                        'total_impaye' => round((float) $lignes->sum('total_impaye'), 2),
                     ],
                 ],
                 'message' => 'Rapport généré avec succès',

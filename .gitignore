@@ -17,3 +17,6 @@ frontend-mobile/**/build/
 # Divers
 .DS_Store
 Thumbs.db
+
+# Dump de base de donnees (donnees reelles)
+bd_odoo.sql

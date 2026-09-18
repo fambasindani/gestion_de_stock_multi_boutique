@@ -1,30 +1,69 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:gst_stock_mobile/main.dart';
+import 'package:gst_stock_mobile/models/models.dart';
+import 'package:gst_stock_mobile/utils/utils.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('formatCurrency', () {
+    test('formate un entier', () {
+      expect(formatCurrency(1000000), contains('1 000 000'));
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    test('gère une chaîne décimale', () {
+      expect(formatCurrency('1500.5'), contains('1 500,50'));
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('gère null', () {
+      expect(formatCurrency(null), isNotEmpty);
+    });
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('formatDate', () {
+    test('formate une date ISO', () {
+      expect(formatDate('2026-09-18'), '18/09/2026');
+    });
+
+    test('retourne "-" pour null', () {
+      expect(formatDate(null), '-');
+    });
+  });
+
+  group('PosCartLine', () {
+    test('calcule HT, TVA et TTC', () {
+      final line = PosCartLine(produitId: 1, nom: 'Test', prixUnitaireHt: 1000, quantite: 2, tauxTva: 16);
+      expect(line.montantHt, 2000);
+      expect(line.montantTva, closeTo(320, 0.001));
+      expect(line.montantTtc, closeTo(2320, 0.001));
+    });
+
+    test('applique la remise avant TVA', () {
+      final line = PosCartLine(produitId: 1, nom: 'Test', prixUnitaireHt: 100, quantite: 1, tauxTva: 10, tauxRemise: 50);
+      expect(line.montantHt, 50);
+      expect(line.montantTva, 5);
+      expect(line.montantTtc, 55);
+    });
+  });
+
+  group('LoginResponse', () {
+    test('parse les permissions et la société', () {
+      final res = LoginResponse.fromJson({
+        'access_token': 'abc',
+        'utilisateur': {'id': 1, 'nom': 'Pierre', 'email': 'p@x.com', 'actif': 1},
+        'roles': ['administrateur'],
+        'permissions': ['vendre_pos', 'voir_stock'],
+        'est_super_admin': false,
+        'societe': {'id': 4, 'nom': 'ALIMA', 'actif': 1},
+      });
+      expect(res.permissions.length, 2);
+      expect(res.estSuperAdmin, false);
+      expect(res.societe?.nom, 'ALIMA');
+    });
+  });
+
+  group('AppNotification', () {
+    test('parse une notification', () {
+      final n = AppNotification.fromJson({'title': 'Rupture', 'message': 'Stock 0', 'type': 'stock', 'level': 'danger'});
+      expect(n.title, 'Rupture');
+      expect(n.level, 'danger');
+    });
   });
 }

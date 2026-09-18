@@ -464,13 +464,21 @@ class PermissionService {
 class DashboardService {
   final ApiClient _api = ApiClient();
 
+  Future<Map<String, dynamic>> _getData(String path, {Map<String, dynamic>? params}) async {
+    final data = await _api.get(path, params: params);
+    return data['data'] is Map<String, dynamic> ? data['data'] as Map<String, dynamic> : {};
+  }
+
   Future<Map<String, dynamic>> getStats({String? dateDebut, String? dateFin}) async {
     final params = <String, dynamic>{};
     if (dateDebut != null) params['date_debut'] = dateDebut;
     if (dateFin != null) params['date_fin'] = dateFin;
-    final data = await _api.get('/dashboard', params: params.isEmpty ? null : params);
-    return data['data'] is Map<String, dynamic> ? data['data'] as Map<String, dynamic> : {};
+    return _getData('/dashboard', params: params.isEmpty ? null : params);
   }
+
+  Future<Map<String, dynamic>> getCommandesStats() => _getData('/dashboard/commandes');
+  Future<Map<String, dynamic>> getStockStats() => _getData('/dashboard/stock');
+  Future<Map<String, dynamic>> getFacturationStats() => _getData('/dashboard/facturation');
 }
 
 class PosService {
