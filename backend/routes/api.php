@@ -95,9 +95,9 @@ Route::middleware(['auth:sanctum', 'societe'])->group(function () {
 
 
       // ✅ Catégories de produits
-    Route::get('/categories', [CategorieProduitController::class, 'index'])->middleware('permission:voir_categories');
-    Route::get('/categories/arborescence', [CategorieProduitController::class, 'arborescence'])->middleware('permission:voir_categories');
-    Route::get('/categories/{id}', [CategorieProduitController::class, 'show'])->middleware('permission:voir_categories');
+    Route::get('/categories', [CategorieProduitController::class, 'index'])->middleware('permission:voir_categories|gerer_categories');
+    Route::get('/categories/arborescence', [CategorieProduitController::class, 'arborescence'])->middleware('permission:voir_categories|gerer_categories');
+    Route::get('/categories/{id}', [CategorieProduitController::class, 'show'])->middleware('permission:voir_categories|gerer_categories');
     Route::post('/categories', [CategorieProduitController::class, 'store'])->middleware('permission:gerer_categories');
     Route::put('/categories/{id}', [CategorieProduitController::class, 'update'])->middleware('permission:gerer_categories');
     Route::delete('/categories/{id}', [CategorieProduitController::class, 'destroy'])->middleware('permission:gerer_categories');
@@ -119,9 +119,9 @@ Route::middleware(['auth:sanctum', 'societe'])->group(function () {
 
 
     // ✅ Unités de mesure
-    Route::get('/unites-mesure', [UniteMesureController::class, 'index'])->middleware('permission:voir_unites');
-    Route::get('/unites-mesure/actives', [UniteMesureController::class, 'actives'])->middleware('permission:voir_unites');
-    Route::get('/unites-mesure/{id}', [UniteMesureController::class, 'show'])->middleware('permission:voir_unites');
+    Route::get('/unites-mesure', [UniteMesureController::class, 'index'])->middleware('permission:voir_unites|gerer_unites');
+    Route::get('/unites-mesure/actives', [UniteMesureController::class, 'actives'])->middleware('permission:voir_unites|gerer_unites');
+    Route::get('/unites-mesure/{id}', [UniteMesureController::class, 'show'])->middleware('permission:voir_unites|gerer_unites');
     Route::post('/unites-mesure', [UniteMesureController::class, 'store'])->middleware('permission:gerer_unites');
     Route::put('/unites-mesure/{id}', [UniteMesureController::class, 'update'])->middleware('permission:gerer_unites');
     Route::delete('/unites-mesure/{id}', [UniteMesureController::class, 'destroy'])->middleware('permission:gerer_unites');

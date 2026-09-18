@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:gst_stock_mobile/providers/auth_provider.dart';
+import 'package:gst_stock_mobile/models/models.dart';
 import 'package:gst_stock_mobile/services/services.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -18,7 +19,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Map<String, dynamic> _subFacturation = {};
   bool _isLoading = true;
   String? _error;
-  bool _showStats = true;
   String _periode = 'mois';
 
   @override
@@ -112,33 +112,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return RefreshIndicator(
       onRefresh: _loadStats,
       child: ListView(padding: const EdgeInsets.all(16), children: [
-        _buildHeader(user?.nom ?? 'Utilisateur'),
+        _buildHeader(user),
         const SizedBox(height: 20),
         _buildPeriodeSelector(),
-        const SizedBox(height: 8),
-        _buildToggle(),
-        if (_showStats) ...[
-          const SizedBox(height: 16),
-          _buildKpiGrid(sg),
-          const SizedBox(height: 20),
-          _buildRevenueCards(ca),
-          const SizedBox(height: 20),
-          _buildOrdersSection(cmd),
-          const SizedBox(height: 20),
-          _buildStockSection(stock),
-          const SizedBox(height: 20),
-          _buildTopProduits(d['top_produits'] as List? ?? []),
-          const SizedBox(height: 20),
-          _buildUserActivity(d['activite_utilisateurs'] as Map<String, dynamic>? ?? {}),
-          const SizedBox(height: 20),
-          _buildTransferts(d['transferts_recents'] as List? ?? []),
-          const SizedBox(height: 20),
-          _buildFactures(d['factures_recents'] as List? ?? []),
-          const SizedBox(height: 20),
-          _buildAlertes(d['alertes_stock'] as List? ?? []),
-          const SizedBox(height: 20),
-          _buildSubSections(),
-        ],
+        const SizedBox(height: 16),
+        _buildKpiGrid(sg),
+        const SizedBox(height: 20),
+        _buildRevenueCards(ca),
+        const SizedBox(height: 20),
+        _buildOrdersSection(cmd),
+        const SizedBox(height: 20),
+        _buildStockSection(stock),
+        const SizedBox(height: 20),
+        _buildTopProduits(d['top_produits'] as List? ?? []),
+        const SizedBox(height: 20),
+        _buildUserActivity(d['activite_utilisateurs'] as Map<String, dynamic>? ?? {}),
+        const SizedBox(height: 20),
+        _buildTransferts(d['transferts_recents'] as List? ?? []),
+        const SizedBox(height: 20),
+        _buildFactures(d['factures_recents'] as List? ?? []),
+        const SizedBox(height: 20),
+        _buildAlertes(d['alertes_stock'] as List? ?? []),
+        const SizedBox(height: 20),
+        _buildSubSections(),
         const SizedBox(height: 32),
       ]),
     );
@@ -208,17 +204,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildHeader(String name) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        Expanded(child: Text('Bonjour $name', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold))),
-        Container(width: 10, height: 10, decoration: const BoxDecoration(color: Color(0xFF10B981), shape: BoxShape.circle)),
-        const SizedBox(width: 6),
-        const Text('En ligne', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-      ]),
-      const SizedBox(height: 4),
-      Text(_formatDate(DateTime.now()), style: const TextStyle(fontSize: 14, color: Color(0xFF64748B))),
-    ]);
+  Widget _buildHeader(Utilisateur? user) {
+    final nom = user?.nom ?? 'Utilisateur';
+    final role = (user?.roles != null && user!.roles!.isNotEmpty) ? user.roles!.first.nom : null;
+    final initiales = nom
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .map((w) => w[0])
+        .join()
+        .toUpperCase();
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 26,
+          backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.1),
+          child: Text(
+            initiales.length > 2 ? initiales.substring(0, 2) : initiales,
+            style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2563EB), fontSize: 18),
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Tableau de bord', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 2),
+              Text(
+                role != null ? '$nom • $role' : nom,
+                style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+              ),
+              const SizedBox(height: 2),
+              Text(_formatDate(DateTime.now()), style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildPeriodeSelector() {
@@ -251,21 +274,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ],
     );
-  }
-
-  Widget _buildToggle() {
-    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-      GestureDetector(
-        onTap: () => setState(() => _showStats = !_showStats),
-        child: Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(color: const Color(0xFF2563EB).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(_showStats ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 16, color: const Color(0xFF2563EB)),
-            const SizedBox(width: 6),
-            Text(_showStats ? 'Masquer les stats' : 'Afficher les stats', style: const TextStyle(fontSize: 12, color: Color(0xFF2563EB), fontWeight: FontWeight.w500)),
-          ])),
-      ),
-    ]);
   }
 
   Widget _buildKpiGrid(Map<String, dynamic> sg) {

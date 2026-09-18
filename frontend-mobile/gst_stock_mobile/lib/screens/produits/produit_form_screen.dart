@@ -80,27 +80,25 @@ class _ProduitFormScreenState extends State<ProduitFormScreen> {
     super.dispose();
   }
 
+  List<dynamic> _extract(Map<String, dynamic> r) {
+    final raw = r['data'];
+    if (raw is List) return raw;
+    if (raw is Map) return (raw['data'] as List?) ?? [];
+    return [];
+  }
+
   Future<void> _loadData() async {
+    final api = ApiClient();
+    // Chargements indépendants : si l'un échoue (permission), l'autre reste disponible.
     try {
-      final api = ApiClient();
       final cats = await api.get('/categories', params: {'per_page': 200});
+      _categories = _extract(cats).map((e) => CategorieProduit.fromJson(e)).toList();
+    } catch (_) {}
+    try {
       final unts = await api.get('/unites-mesure', params: {'per_page': 200});
-      if (mounted) {
-        List<dynamic> extract(Map<String, dynamic> r) {
-          final raw = r['data'];
-          if (raw is List) return raw;
-          if (raw is Map) return (raw['data'] as List?) ?? [];
-          return [];
-        }
-        setState(() {
-          _categories = extract(cats).map((e) => CategorieProduit.fromJson(e)).toList();
-          _unites = extract(unts).map((e) => UniteMesure.fromJson(e)).toList();
-          _loadingData = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => _loadingData = false);
-    }
+      _unites = _extract(unts).map((e) => UniteMesure.fromJson(e)).toList();
+    } catch (_) {}
+    if (mounted) setState(() => _loadingData = false);
   }
 
   void _addVariante() => setState(() => _variantes.add(_VarianteLine()));
