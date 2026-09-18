@@ -17,6 +17,14 @@ void main() {
     });
   });
 
+  group('formatCompact', () {
+    test('milliards -> Md', () => expect(formatCompact(1500000000), contains('1,5 Md')));
+    test('millions -> M', () => expect(formatCompact(2500000), contains('2,5 M')));
+    test('milliers -> k', () => expect(formatCompact(12000), contains('12 k')));
+    test('petit montant exact', () => expect(formatCompact(1500), contains('1,5 k')));
+    test('moins de 1000 reste exact', () => expect(formatCompact(500), contains('500,00')));
+  });
+
   group('formatDate', () {
     test('formate une date ISO', () {
       expect(formatDate('2026-09-18'), '18/09/2026');

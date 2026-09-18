@@ -19,7 +19,7 @@ class PlusScreen extends StatelessWidget {
 
     // Menu filtré selon les permissions de l'utilisateur (le super-admin voit tout)
     final canPartenaires = auth.hasPermission('voir_partenaires');
-    final canTransferts = auth.hasAny(['voir_stock', 'transferer_stock']);
+    final canTransferts = auth.hasAny(['transferer_stock', 'valider_transferts']);
     final canRapports = auth.hasPermission('voir_rapports');
     final canUtilisateurs = auth.hasPermission('gerer_utilisateurs');
     final canRoles = auth.hasAny(['gerer_roles', 'assigner_roles']);

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:gst_stock_mobile/providers/auth_provider.dart';
 import 'package:gst_stock_mobile/models/models.dart';
 import 'package:gst_stock_mobile/services/services.dart';
+import 'package:gst_stock_mobile/utils/utils.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -75,13 +76,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  String _formatCurrency(dynamic v) {
-    if (v == null) return '0,00 CDF';
-    final n = (v is num) ? v.toDouble() : double.tryParse(v.toString()) ?? 0;
-    final parts = n.toStringAsFixed(2).split('.');
-    final intPart = parts[0].replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]} ');
-    return '$intPart,${parts[1]} CDF';
-  }
+  String _formatCurrency(dynamic v) => formatCompact(v);
 
   String _formatDate(DateTime d) {
     const days = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];

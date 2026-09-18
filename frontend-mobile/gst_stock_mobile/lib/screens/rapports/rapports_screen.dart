@@ -113,6 +113,7 @@ class RapportsScreen extends StatelessWidget {
         RapportColumn('Total TTC', (r) => _txt(r['total_ttc']), numeric: true),
       ], loader: (p) => service.fetch('/rapports/ventes-vendeurs', params: p)),
       _ReportEntry('Traçabilité', Icons.qr_code_2, Colors.deepPurple, permission: 'voir_stock', loader: (p) async {
+
         final ops = await OperationService().getAll();
         return {'lignes': ops, 'totaux': {'total': ops.length}};
       }, columns: [

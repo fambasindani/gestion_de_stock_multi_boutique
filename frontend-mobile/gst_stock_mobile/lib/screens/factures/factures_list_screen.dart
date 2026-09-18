@@ -154,7 +154,7 @@ class _FacturesListScreenState extends State<FacturesListScreen> {
           const SizedBox(height: 8),
           Row(children: [Icon(Icons.person_outline, size: 16, color: Colors.grey[600]), const SizedBox(width: 6), Text(f.partenaire?.nom ?? 'Partenaire #${f.partenaireId}', style: TextStyle(color: Colors.grey[700]))]),
           const SizedBox(height: 4),
-          Row(children: [Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]), const SizedBox(width: 6), Text(formatDate(f.dateEmission), style: TextStyle(color: Colors.grey[600])), const Spacer(), Text(formatCurrency(f.montantTtc), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))]),
+          Row(children: [Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]), const SizedBox(width: 6), Text(formatDate(f.dateEmission), style: TextStyle(color: Colors.grey[600])), const Spacer(), Text(formatCompact(f.montantTtc), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))]),
           const SizedBox(height: 12),
           ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: ratio, backgroundColor: Colors.grey[200], valueColor: AlwaysStoppedAnimation<Color>(f.montantRestant <= 0 ? Colors.green : Colors.orange), minHeight: 6)),
           const SizedBox(height: 4),

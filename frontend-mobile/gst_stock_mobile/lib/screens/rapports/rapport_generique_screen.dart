@@ -96,8 +96,8 @@ class _RapportGeneriqueScreenState extends State<RapportGeneriqueScreen> {
     final k = key.toLowerCase();
     final isMoney = k.contains('ht') || k.contains('ttc') || k.contains('montant') ||
         k.contains('valeur') || k.contains('ca') || k.contains('impaye') || k.contains('manque');
-    if (value is num || (value is String && double.tryParse(value) != null)) {
-      return isMoney ? formatCurrency(value) : '$value';
+    if (value is num || (value is String && double.tryParse(value.replaceAll(' ', '').replaceAll(',', '.')) != null)) {
+      return isMoney ? formatCompact(value) : '$value';
     }
     return '$value';
   }

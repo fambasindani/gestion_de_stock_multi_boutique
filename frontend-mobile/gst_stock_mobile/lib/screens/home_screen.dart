@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         _drawerItem(Icons.description_rounded, 'Factures', () => _pushScreen(const FacturesListScreen())),
                       if (auth.estSuperAdmin)
                         _drawerItem(Icons.business_rounded, 'Sociétés', () => _pushScreen(const SocietesScreen())),
-                      if (auth.hasPermission('voir_stock'))
+                      if (auth.hasAny(['transferer_stock', 'valider_transferts']))
                         _drawerItem(Icons.swap_horiz_rounded, 'Transferts', () => _pushScreen(const TransfertsScreen())),
                       if (auth.hasPermission('voir_retours'))
                         _drawerItem(Icons.assignment_return_rounded, 'Retours', () => _pushScreen(const RetoursScreen())),
