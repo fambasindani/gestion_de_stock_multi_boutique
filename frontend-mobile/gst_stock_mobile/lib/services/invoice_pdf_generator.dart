@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:dio/dio.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -15,18 +16,38 @@ String _formatDate(String? date) {
 }
 
 class InvoicePdfGenerator {
-  static Future<Uint8List> generate(EcritureComptable facture) async {
+  static Future<pw.MemoryImage?> _loadLogo(String? logoUrl) async {
+    if (logoUrl == null || logoUrl.isEmpty) return null;
+    try {
+      final res = await Dio().get<List<int>>(
+        logoUrl,
+        options: Options(responseType: ResponseType.bytes, followRedirects: true),
+      );
+      final data = res.data;
+      if (data == null || data.isEmpty) return null;
+      return pw.MemoryImage(Uint8List.fromList(data));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<Uint8List> generate(
+    EcritureComptable facture, {
+    String? societeNom,
+    String? logoUrl,
+  }) async {
     final doc = pw.Document();
 
     final lignes = facture.lignes ?? [];
     final tva = facture.montantTva ?? (facture.montantTtc - facture.montantHt);
+    final logo = await _loadLogo(logoUrl);
 
     doc.addPage(pw.Page(
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(40),
       build: (pw.Context ctx) => pw.Column(children: [
         pw.Expanded(child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
-          _buildHeader(facture),
+          _buildHeader(facture, logo, societeNom),
           pw.SizedBox(height: 8),
           _buildInvoiceInfo(facture),
           pw.SizedBox(height: 24),
@@ -42,22 +63,22 @@ class InvoicePdfGenerator {
             _buildNotes(facture),
           ],
         ])),
-        _buildFooter(),
+        _buildFooter(societeNom),
       ]),
     ));
 
     return doc.save();
   }
 
-  static pw.Widget _buildHeader(EcritureComptable facture) {
+  static pw.Widget _buildHeader(EcritureComptable facture, pw.MemoryImage? logo, String? societeNom) {
     return pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
       pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-        pw.Text('GS STOCK', style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 24, color: PdfColors.blue700)),
-        pw.SizedBox(height: 4),
-        pw.Text('123 Rue du Commerce', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
-        pw.Text('75001 Paris, France', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
-        pw.Text('TVA: FR12345678901', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
-        pw.Text('SIRET: 12345678900001', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
+        if (logo != null) pw.Image(logo, height: 46),
+        if (logo != null) pw.SizedBox(height: 6),
+        pw.Text(
+          societeNom ?? 'GS STOCK',
+          style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 22, color: PdfColors.blue700),
+        ),
       ]),
       pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.end, children: [
         pw.Container(
@@ -207,19 +228,23 @@ class InvoicePdfGenerator {
     ]);
   }
 
-  static pw.Widget _buildFooter() {
+  static pw.Widget _buildFooter(String? societeNom) {
     return pw.Column(children: [
       pw.Divider(color: PdfColors.grey300),
       pw.SizedBox(height: 8),
       pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-        pw.Text('GS Stock - 123 Rue du Commerce, 75001 Paris', style: pw.TextStyle(fontSize: 8, color: PdfColors.grey500)),
-        pw.Text('contact@gsstock.fr - www.gsstock.fr', style: pw.TextStyle(fontSize: 8, color: PdfColors.grey500)),
+        pw.Text(societeNom ?? 'GS Stock', style: pw.TextStyle(fontSize: 8, color: PdfColors.grey500)),
+        pw.Text('Document généré automatiquement', style: pw.TextStyle(fontSize: 8, color: PdfColors.grey500)),
       ]),
     ]);
   }
 
-  static Future<void> download(EcritureComptable facture) async {
-    final pdf = await generate(facture);
+  static Future<void> download(
+    EcritureComptable facture, {
+    String? societeNom,
+    String? logoUrl,
+  }) async {
+    final pdf = await generate(facture, societeNom: societeNom, logoUrl: logoUrl);
     await Printing.sharePdf(bytes: pdf, filename: 'Facture_${facture.reference}.pdf');
   }
 }

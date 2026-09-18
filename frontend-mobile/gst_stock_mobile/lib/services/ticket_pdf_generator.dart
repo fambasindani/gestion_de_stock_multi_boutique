@@ -1,13 +1,34 @@
 import 'dart:typed_data';
+import 'package:dio/dio.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:gst_stock_mobile/models/models.dart';
 
 class TicketPdfGenerator {
-  static Future<Uint8List> generate(PosVenteResult vente, {String? societeNom}) async {
+  static Future<pw.MemoryImage?> _loadLogo(String? logoUrl) async {
+    if (logoUrl == null || logoUrl.isEmpty) return null;
+    try {
+      final res = await Dio().get<List<int>>(
+        logoUrl,
+        options: Options(responseType: ResponseType.bytes, followRedirects: true),
+      );
+      final data = res.data;
+      if (data == null || data.isEmpty) return null;
+      return pw.MemoryImage(Uint8List.fromList(data));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<Uint8List> generate(
+    PosVenteResult vente, {
+    String? societeNom,
+    String? logoUrl,
+  }) async {
     final doc = pw.Document();
     final lignes = vente.facture.lignes ?? [];
+    final logo = await _loadLogo(logoUrl);
 
     doc.addPage(pw.Page(
       pageFormat: PdfPageFormat.roll80,
@@ -15,6 +36,8 @@ class TicketPdfGenerator {
       build: (pw.Context ctx) => pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.stretch,
         children: [
+          if (logo != null)
+            pw.Center(child: pw.Image(logo, height: 44)),
           pw.Center(
             child: pw.Text(
               societeNom ?? 'GS STOCK',
@@ -72,8 +95,12 @@ class TicketPdfGenerator {
         ],
       );
 
-  static Future<void> printTicket(PosVenteResult vente, {String? societeNom}) async {
-    final bytes = await generate(vente, societeNom: societeNom);
+  static Future<void> printTicket(
+    PosVenteResult vente, {
+    String? societeNom,
+    String? logoUrl,
+  }) async {
+    final bytes = await generate(vente, societeNom: societeNom, logoUrl: logoUrl);
     await Printing.layoutPdf(onLayout: (format) async => bytes);
   }
 }

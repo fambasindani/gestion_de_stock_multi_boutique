@@ -24,6 +24,7 @@ import 'achats/receptions_screen.dart';
 import 'recherche/recherche_screen.dart';
 import 'societes/societes_screen.dart';
 import 'package:gst_stock_mobile/widgets/notification_bell.dart';
+import 'package:gst_stock_mobile/utils/assets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -129,15 +130,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.asset('assets/images/logo.png', width: 40, height: 40, fit: BoxFit.cover),
+                          child: _logoBoutique(auth.societe) ??
+                              Image.asset('assets/images/logo.png', width: 40, height: 40, fit: BoxFit.cover),
                         ),
                         const SizedBox(width: 10),
                         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Row(children: [
-                            Text('GS', style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold, fontSize: 18)),
-                            const SizedBox(width: 2),
-                            const Text('Stock', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-                          ]),
+                          Text(
+                            auth.societe?.nom ?? 'GS Stock',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 17),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           Text('Gestion de stock', style: TextStyle(color: AppTheme.sidebarText, fontSize: 11)),
                         ]),
                       ]),
@@ -228,6 +231,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  /// Logo de la boutique (servi par l'API), ou null si absent.
+  Widget? _logoBoutique(Societe? societe) {
+    final url = boutiqueLogoUrl(societe);
+    if (url == null) return null;
+    return Image.network(
+      url,
+      width: 40,
+      height: 40,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => Image.asset('assets/images/logo.png', width: 40, height: 40, fit: BoxFit.cover),
     );
   }
 

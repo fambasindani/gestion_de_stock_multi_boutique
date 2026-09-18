@@ -8,6 +8,8 @@ import 'package:gst_stock_mobile/screens/plus/utilisateurs_screen.dart';
 import 'package:gst_stock_mobile/screens/plus/emplacements_screen.dart';
 import 'package:gst_stock_mobile/screens/plus/roles_screen.dart';
 import 'package:gst_stock_mobile/screens/plus/permissions_screen.dart';
+import 'package:gst_stock_mobile/screens/parametres/parametres_screen.dart';
+import 'package:gst_stock_mobile/screens/profil/profil_screen.dart';
 
 class PlusScreen extends StatelessWidget {
   const PlusScreen({super.key});
@@ -25,6 +27,7 @@ class PlusScreen extends StatelessWidget {
     final canRoles = auth.hasAny(['gerer_roles', 'assigner_roles']);
     final canPermissions = auth.hasAny(['gerer_permissions', 'gerer_roles']);
     final canEmplacements = auth.hasAny(['voir_emplacements', 'gerer_emplacements']);
+    final canParametres = auth.hasPermission('gerer_parametres');
     final hasGestion = canPartenaires || canTransferts || canRapports;
     final hasAdmin = canUtilisateurs || canRoles || canPermissions || canEmplacements;
 
@@ -124,7 +127,25 @@ class PlusScreen extends StatelessWidget {
               ),
             const SizedBox(height: 24),
           ],
-          if (!hasGestion && !hasAdmin)
+          _sectionTitle('Configuration'),
+          const SizedBox(height: 8),
+          if (canParametres) ...[
+            _menuCard(
+              context,
+              icon: Icons.settings_outlined,
+              title: 'Paramètres',
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ParametresScreen())),
+            ),
+            const SizedBox(height: 8),
+          ],
+          _menuCard(
+            context,
+            icon: Icons.account_circle_outlined,
+            title: 'Mon profil',
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilScreen())),
+          ),
+          const SizedBox(height: 24),
+          if (!hasGestion && !hasAdmin && !canParametres)
             Container(
               padding: const EdgeInsets.all(16),
               margin: const EdgeInsets.only(bottom: 16),

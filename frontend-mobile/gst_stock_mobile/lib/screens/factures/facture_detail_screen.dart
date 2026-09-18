@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:gst_stock_mobile/providers/auth_provider.dart';
+import 'package:gst_stock_mobile/utils/assets.dart';
 import 'package:gst_stock_mobile/models/models.dart';
 import 'package:gst_stock_mobile/services/services.dart';
 import 'package:gst_stock_mobile/services/invoice_pdf_generator.dart';
@@ -188,7 +191,12 @@ class _FactureDetailScreenState extends State<FactureDetailScreen> {
     if (_facture == null) return;
     setState(() => _pdfLoading = true);
     try {
-      await InvoicePdfGenerator.download(_facture!);
+      final societe = context.read<AuthProvider>().societe;
+      await InvoicePdfGenerator.download(
+        _facture!,
+        societeNom: societe?.nom,
+        logoUrl: boutiqueLogoUrl(societe),
+      );
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur PDF: $e')));
     } finally {

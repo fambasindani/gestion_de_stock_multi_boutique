@@ -7,6 +7,7 @@ import 'package:gst_stock_mobile/services/api_client.dart';
 import 'package:gst_stock_mobile/services/services.dart';
 import 'package:gst_stock_mobile/services/ticket_pdf_generator.dart';
 import 'package:gst_stock_mobile/screens/pos/pos_journal_screen.dart';
+import 'package:gst_stock_mobile/utils/assets.dart';
 
 class _ProduitItem {
   final int id;
@@ -194,7 +195,9 @@ class _PosScreenState extends State<PosScreen> {
   }
 
   void _showTicket(PosVenteResult vente) {
-    final societe = context.read<AuthProvider>().societe?.nom;
+    final societeObj = context.read<AuthProvider>().societe;
+    final societe = societeObj?.nom;
+    final logoUrl = boutiqueLogoUrl(societeObj);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -204,7 +207,7 @@ class _PosScreenState extends State<PosScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Fermer')),
           ElevatedButton.icon(
-            onPressed: () => TicketPdfGenerator.printTicket(vente, societeNom: societe),
+            onPressed: () => TicketPdfGenerator.printTicket(vente, societeNom: societe, logoUrl: logoUrl),
             icon: const Icon(Icons.print),
             label: const Text('Imprimer'),
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primary, foregroundColor: Colors.white),
