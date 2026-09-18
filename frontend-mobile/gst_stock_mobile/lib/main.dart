@@ -9,9 +9,9 @@ import 'screens/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Charge assets/.env (API_URL, API_TIMEOUT). Valeur de secours si absent.
+  // Charge le fichier .env à la racine (API_URL, API_TIMEOUT).
   try {
-    await dotenv.load(fileName: 'assets/.env');
+    await dotenv.load();
   } catch (_) {}
   runApp(
     ChangeNotifierProvider(

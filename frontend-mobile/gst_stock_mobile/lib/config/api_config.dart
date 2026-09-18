@@ -1,6 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// Configuration de l'API, lue depuis `assets/.env`.
+/// Configuration de l'API, lue depuis le fichier `.env` (racine du projet).
 class ApiConfig {
   /// URL de base de l'API (clé `API_URL` du fichier assets/.env).
   static String get baseUrl {
