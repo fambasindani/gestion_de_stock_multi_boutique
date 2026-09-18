@@ -50,8 +50,8 @@ class Utilisateur {
   final List<Role>? roles;
   Utilisateur.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        nom = json['nom'],
-        email = json['email'],
+        nom = (json['nom'] ?? '').toString(),
+        email = (json['email'] ?? '').toString(),
         telephone = json['telephone'],
         actif = json['actif'] == 1 || json['actif'] == true,
         estSuperAdmin = json['est_super_admin'] == true || json['est_super_admin'] == 1,
@@ -74,7 +74,7 @@ class Partenaire {
   final bool actif;
   Partenaire.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        nom = json['nom'],
+        nom = (json['nom'] ?? '').toString(),
         code = json['code'],
         email = json['email'],
         telephone = json['telephone'],
@@ -93,7 +93,7 @@ class CategorieProduit {
   final bool actif;
   CategorieProduit.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        nom = json['nom'],
+        nom = (json['nom'] ?? '').toString(),
         description = json['description'],
         parentId = json['parent_id'],
         actif = json['actif'] == 1 || json['actif'] == true;
@@ -106,8 +106,8 @@ class UniteMesure {
   final bool actif;
   UniteMesure.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        nom = json['nom'],
-        symbole = json['symbole'],
+        nom = (json['nom'] ?? '').toString(),
+        symbole = (json['symbole'] ?? '').toString(),
         actif = json['actif'] == 1 || json['actif'] == true;
 }
 
@@ -121,9 +121,9 @@ class VarianteProduit {
   final bool actif;
   VarianteProduit.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        modeleProduitId = json['modele_produit_id'],
+        modeleProduitId = json['modele_produit_id'] ?? 0,
         codeInterne = json['code_interne'],
-        nom = json['nom'],
+        nom = (json['nom'] ?? json['code_interne'] ?? '').toString(),
         prixAchat = _parseDouble(json['prix_achat']),
         prixVente = _parseDouble(json['prix_vente']),
         actif = json['actif'] == 1 || json['actif'] == true;
@@ -141,8 +141,8 @@ class ProduitModele {
   final UniteMesure? unite;
   ProduitModele.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        nom = json['nom'],
-        type = json['type'],
+        nom = (json['nom'] ?? '').toString(),
+        type = (json['type'] ?? 'stockable').toString(),
         categorieId = json['categorie_id'],
         uniteId = json['unite_id'],
         actif = json['actif'] == 1 || json['actif'] == true,
@@ -475,7 +475,7 @@ class Role {
   final List<Permission>? permissions;
   Role.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        nom = json['nom'],
+        nom = (json['nom'] ?? '').toString(),
         description = json['description'],
         societeId = json['societe_id'],
         utilisateursCount = json['utilisateurs_count'] ?? 0,
