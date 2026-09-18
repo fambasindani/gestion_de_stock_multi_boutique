@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
         key: _scaffoldKey,
         backgroundColor: AppTheme.surface,
         appBar: AppBar(
-          title: const Text('GS Stock'),
+          title: Text(auth.societe?.nom ?? 'GS Stock'),
           leading: IconButton(
             icon: const Icon(Icons.menu),
             onPressed: () => _scaffoldKey.currentState?.openDrawer(),

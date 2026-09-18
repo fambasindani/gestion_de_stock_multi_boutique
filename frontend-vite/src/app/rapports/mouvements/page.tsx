@@ -10,6 +10,7 @@ import { DataTable } from "@/components/common/DataTable";
 import { SkeletonTable } from "@/components/ui/skeleton";
 import { rapportsService } from "@/lib/api/services/rapports.service";
 import { RapportVentesLigne, RapportAchatsLigne, RapportMouvementLigne } from "@/lib/api/typess";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Search, RefreshCw, Loader2, BarChart3, FileText, FileSpreadsheet,
   ShoppingCart, Truck, PackageOpen
@@ -27,6 +28,7 @@ export default function MouvementsPageWrapper() {
 }
 
 function RapportPage() {
+  const { societe } = useAuth();
   const [tab, setTab] = useState<Tab>("ventes");
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
@@ -216,7 +218,7 @@ function RapportPage() {
             )}
           </View>
 
-          <View style={styles.footer}><Text>GS Stock ERP • Rapport généré automatiquement le {today}</Text></View>
+          <View style={styles.footer}><Text>{societe?.nom || "GS Stock"} • Rapport généré automatiquement le {today}</Text></View>
         </Page>
       </Document>
     );
