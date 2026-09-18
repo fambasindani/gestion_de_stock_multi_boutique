@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'config/theme.dart';
 import 'providers/auth_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Charge assets/.env (API_URL, API_TIMEOUT). Valeur de secours si absent.
+  try {
+    await dotenv.load(fileName: 'assets/.env');
+  } catch (_) {}
   runApp(
     ChangeNotifierProvider(
       create: (_) => AuthProvider()..init(),
