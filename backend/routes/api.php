@@ -197,14 +197,14 @@ Route::middleware(['auth:sanctum', 'societe'])->group(function () {
 
 
       // ✅ Quantités de stock
-    Route::get('/stocks', [QuantiteStockController::class, 'index'])->middleware('permission:voir_stock');
-    Route::get('/stocks/{id}', [QuantiteStockController::class, 'show'])->middleware('permission:voir_stock');
+    Route::get('/stocks', [QuantiteStockController::class, 'index'])->middleware('permission:voir_stock|gerer_stock|transferer_stock|inventorier_stock');
+    Route::get('/stocks/{id}', [QuantiteStockController::class, 'show'])->middleware('permission:voir_stock|gerer_stock|transferer_stock|inventorier_stock');
     Route::post('/stocks', [QuantiteStockController::class, 'store'])->middleware('permission:gerer_stock');
     Route::put('/stocks/{id}', [QuantiteStockController::class, 'update'])->middleware('permission:gerer_stock');
     Route::delete('/stocks/{id}', [QuantiteStockController::class, 'destroy'])->middleware('permission:gerer_stock');
     Route::post('/stocks/mouvement', [QuantiteStockController::class, 'mouvement'])->middleware('permission:gerer_stock');
-    Route::get('/stocks/resume/produit/{produitId}', [QuantiteStockController::class, 'resumerProduit'])->middleware('permission:voir_stock');
-    Route::get('/stocks/resume/emplacement/{emplacementId}', [QuantiteStockController::class, 'resumerEmplacement'])->middleware('permission:voir_stock');
+    Route::get('/stocks/resume/produit/{produitId}', [QuantiteStockController::class, 'resumerProduit'])->middleware('permission:voir_stock|gerer_stock|transferer_stock|inventorier_stock');
+    Route::get('/stocks/resume/emplacement/{emplacementId}', [QuantiteStockController::class, 'resumerEmplacement'])->middleware('permission:voir_stock|gerer_stock|transferer_stock|inventorier_stock');
 
     // Retours en stock (client / fournisseur / casse)
     Route::get('/retours', [RetourController::class, 'index'])->middleware('permission:voir_retours');
@@ -264,8 +264,8 @@ Route::middleware(['auth:sanctum', 'societe'])->group(function () {
 
 
   // ✅ Transferts de stock
-    Route::get('/transferts', [TransfertStockController::class, 'index'])->middleware('permission:voir_stock');
-    Route::get('/transferts/{id}', [TransfertStockController::class, 'show'])->middleware('permission:voir_stock');
+    Route::get('/transferts', [TransfertStockController::class, 'index'])->middleware('permission:voir_stock|transferer_stock|valider_transferts');
+    Route::get('/transferts/{id}', [TransfertStockController::class, 'show'])->middleware('permission:voir_stock|transferer_stock|valider_transferts');
     Route::post('/transferts', [TransfertStockController::class, 'store'])->middleware('permission:transferer_stock');
     Route::put('/transferts/{id}', [TransfertStockController::class, 'update'])->middleware('permission:transferer_stock');
     Route::delete('/transferts/{id}', [TransfertStockController::class, 'destroy'])->middleware('permission:transferer_stock');
@@ -278,9 +278,9 @@ Route::middleware(['auth:sanctum', 'societe'])->group(function () {
 
 
  // ✅ Lignes d'opérations stock
-    Route::get('/operations', [LigneOperationStockController::class, 'index'])->middleware('permission:voir_stock');
-    Route::get('/operations/{id}', [LigneOperationStockController::class, 'show'])->middleware('permission:voir_stock');
-    Route::get('/operations/mouvement/{mouvementId}', [LigneOperationStockController::class, 'parMouvement'])->middleware('permission:voir_stock');
+    Route::get('/operations', [LigneOperationStockController::class, 'index'])->middleware('permission:voir_stock|transferer_stock|valider_transferts');
+    Route::get('/operations/{id}', [LigneOperationStockController::class, 'show'])->middleware('permission:voir_stock|transferer_stock|valider_transferts');
+    Route::get('/operations/mouvement/{mouvementId}', [LigneOperationStockController::class, 'parMouvement'])->middleware('permission:voir_stock|transferer_stock|valider_transferts');
     Route::post('/operations', [LigneOperationStockController::class, 'store'])->middleware('permission:transferer_stock');
     Route::delete('/operations/{id}', [LigneOperationStockController::class, 'destroy'])->middleware('permission:transferer_stock');
 

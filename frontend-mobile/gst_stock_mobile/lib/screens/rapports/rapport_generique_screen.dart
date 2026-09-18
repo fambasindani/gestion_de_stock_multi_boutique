@@ -92,36 +92,130 @@ class _RapportGeneriqueScreenState extends State<RapportGeneriqueScreen> {
     }
   }
 
-  Widget _totauxBar() {
+  String _formatTotal(String key, dynamic value) {
+    final k = key.toLowerCase();
+    final isMoney = k.contains('ht') || k.contains('ttc') || k.contains('montant') ||
+        k.contains('valeur') || k.contains('ca') || k.contains('impaye') || k.contains('manque');
+    if (value is num || (value is String && double.tryParse(value) != null)) {
+      return isMoney ? formatCurrency(value) : '$value';
+    }
+    return '$value';
+  }
+
+  /// Cartes de synthèse horizontales (totaux).
+  Widget _totauxCards() {
     if (_totaux.isEmpty) return const SizedBox.shrink();
-    final entries = _totaux.entries.take(4).toList();
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+    final entries = _totaux.entries.take(6).toList();
+    const colors = [Color(0xFF2563EB), Color(0xFF16A34A), Color(0xFFD97706), Color(0xFF7C3AED), Color(0xFFDC2626), Color(0xFF0D9488)];
+    return SizedBox(
+      height: 86,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        itemCount: entries.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, i) {
+          final e = entries[i];
+          final color = colors[i % colors.length];
+          return Container(
+            width: 160,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.grey.shade200),
+              boxShadow: [BoxShadow(color: color.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 2))],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                  child: Text(
+                    e.key.replaceAll('_', ' ').toUpperCase(),
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: color, letterSpacing: 0.5),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  _formatTotal(e.key, e.value),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          );
+        },
       ),
-      child: Wrap(
-        spacing: 24,
-        runSpacing: 12,
-        children: entries
-            .map((e) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      e.key.replaceAll('_', ' ').toUpperCase(),
-                      style: TextStyle(color: Colors.grey[500], fontSize: 10, letterSpacing: 0.5),
+    );
+  }
+
+  /// Une ligne du rapport sous forme de carte lisible.
+  Widget _rowCard(Map<String, dynamic> row, int index) {
+    final first = widget.columns.first;
+    final rest = widget.columns.skip(1).toList();
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 24,
+                  height: 24,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                  child: Text('${index + 1}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.primary)),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    first.value(row),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            if (rest.isNotEmpty) ...[
+              const Divider(height: 16),
+              ...rest.map((c) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(c.header, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                        const SizedBox(width: 12),
+                        Flexible(
+                          child: Text(
+                            c.value(row),
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: c.numeric ? FontWeight.w700 : FontWeight.w500,
+                              color: c.numeric ? AppTheme.primary : Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      e.value is num ? formatCurrency(e.value) : '${e.value}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                  ],
-                ))
-            .toList(),
+                  )),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -183,58 +277,64 @@ class _RapportGeneriqueScreenState extends State<RapportGeneriqueScreen> {
           IconButton(icon: const Icon(Icons.refresh), onPressed: _load, tooltip: 'Actualiser'),
         ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(_error!, textAlign: TextAlign.center)))
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (_range != null)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-                        child: Text(
-                          'Période : ${formatDate(_iso(_range!.start))} → ${formatDate(_iso(_range!.end))}',
-                          style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                        ),
+      body: SafeArea(
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.error_outline, size: 48, color: Colors.grey),
+                          const SizedBox(height: 12),
+                          Text(_error!, textAlign: TextAlign.center),
+                          const SizedBox(height: 16),
+                          ElevatedButton(onPressed: _load, child: const Text('Réessayer')),
+                        ],
                       ),
-                    Expanded(
-                      child: _lignes.isEmpty
-                          ? const Center(child: Text('Aucune donnée', style: TextStyle(color: Colors.grey)))
-                          : SingleChildScrollView(
-                              padding: const EdgeInsets.all(12),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _totauxBar(),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: DataTable(
-                                      headingRowColor: WidgetStateProperty.all(const Color(0xFFF1F5F9)),
-                                      columnSpacing: 18,
-                                      columns: widget.columns
-                                          .map((c) => DataColumn(label: Text(c.header, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12))))
-                                          .toList(),
-                                      rows: _lignes.asMap().entries.map((entry) {
-                                        final row = entry.value is Map<String, dynamic> ? entry.value as Map<String, dynamic> : <String, dynamic>{};
-                                        return DataRow(
-                                          color: WidgetStateProperty.all(entry.key.isEven ? Colors.white : const Color(0xFFFAFAFA)),
-                                          cells: widget.columns
-                                              .map((c) => DataCell(Text(
-                                                    c.value(row),
-                                                    style: TextStyle(fontSize: 13, fontWeight: c.numeric ? FontWeight.w600 : FontWeight.normal),
-                                                  )))
-                                              .toList(),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                     ),
-                  ],
-                ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 12),
+                      _totauxCards(),
+                      if (_range != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                          child: Row(
+                            children: [
+                              Icon(Icons.calendar_today, size: 13, color: Colors.grey[500]),
+                              const SizedBox(width: 6),
+                              Text(
+                                '${formatDate(_iso(_range!.start))} → ${formatDate(_iso(_range!.end))}',
+                                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                              ),
+                              const Spacer(),
+                              Text('${_lignes.length} ligne(s)', style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: _lignes.isEmpty
+                            ? const Center(child: Text('Aucune donnée', style: TextStyle(color: Colors.grey)))
+                            : ListView.builder(
+                                padding: const EdgeInsets.fromLTRB(12, 4, 12, 32),
+                                itemCount: _lignes.length,
+                                itemBuilder: (context, i) {
+                                  final row = _lignes[i] is Map<String, dynamic>
+                                      ? _lignes[i] as Map<String, dynamic>
+                                      : <String, dynamic>{};
+                                  return _rowCard(row, i);
+                                },
+                              ),
+                      ),
+                    ],
+                  ),
+      ),
     );
   }
 }
