@@ -36,12 +36,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final List<Widget> _screens = [
-    const DashboardScreen(),
-    const ProduitsListScreen(),
-    const cmd.CommandesListScreen(),
-    const StockListScreen(),
-    const PlusScreen(),
+  static const List<_TabDef> _allTabs = [
+    _TabDef(null, Icons.dashboard_rounded, 'Dashboard', DashboardScreen()),
+    _TabDef('voir_produits', Icons.inventory_2_rounded, 'Produits', ProduitsListScreen()),
+    _TabDef('voir_commandes', Icons.receipt_long_rounded, 'Commandes', cmd.CommandesListScreen()),
+    _TabDef('voir_stock', Icons.warehouse_rounded, 'Stock', StockListScreen()),
+    _TabDef(null, Icons.more_horiz_rounded, 'Plus', PlusScreen()),
   ];
 
   void _navigateTo(int index) {
@@ -57,6 +57,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+
+    // Onglets visibles selon les permissions de l'utilisateur
+    final tabs = _allTabs
+        .where((t) => t.permission == null || auth.hasPermission(t.permission!))
+        .toList();
+    final index = _currentIndex < tabs.length ? _currentIndex : 0;
 
     return PopScope(
       canPop: false,
@@ -101,16 +107,13 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 4),
           ],
         ),
-        body: _screens[_currentIndex],
+        body: tabs[index].screen,
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
+          currentIndex: index,
           onTap: (i) => setState(() => _currentIndex = i),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.dashboard_rounded), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.inventory_2_rounded), label: 'Produits'),
-            BottomNavigationBarItem(icon: Icon(Icons.receipt_long_rounded), label: 'Commandes'),
-            BottomNavigationBarItem(icon: Icon(Icons.warehouse_rounded), label: 'Stock'),
-            BottomNavigationBarItem(icon: Icon(Icons.more_horiz_rounded), label: 'Plus'),
+          items: [
+            for (final t in tabs)
+              BottomNavigationBarItem(icon: Icon(t.icon), label: t.label),
           ],
         ),
         drawer: Drawer(
@@ -147,25 +150,34 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: EdgeInsets.zero,
                     children: [
                       _sectionHeader('PRINCIPAL'),
-                      _drawerItem(Icons.dashboard_rounded, 'Dashboard', () => _navigateTo(0), index: 0),
-                      _drawerItem(Icons.inventory_2_rounded, 'Produits', () => _navigateTo(1), index: 1),
-                      _drawerItem(Icons.receipt_long_rounded, 'Commandes', () => _navigateTo(2), index: 2),
-                      _drawerItem(Icons.warehouse_rounded, 'Stock', () => _navigateTo(3), index: 3),
+                      for (var i = 0; i < tabs.length - 1; i++)
+                        _drawerItem(tabs[i].icon, tabs[i].label, () => _navigateTo(i), index: i),
                       Divider(color: AppTheme.sidebarBorder, height: 1, thickness: 1),
                       _sectionHeader('GESTION'),
-                      _drawerItem(Icons.point_of_sale_rounded, 'Vente comptoir (POS)', () => _pushScreen(const PosScreen())),
-                      _drawerItem(Icons.people_rounded, 'Partenaires', () => _pushScreen(const PartenairesListScreen())),
-                      _drawerItem(Icons.inventory_rounded, 'Réceptions', () => _pushScreen(const ReceptionsScreen())),
-                      _drawerItem(Icons.category_rounded, 'Catégories', () => _pushScreen(const CategoriesScreen())),
-                      _drawerItem(Icons.straighten_rounded, 'Unités de mesure', () => _pushScreen(const UnitesScreen())),
-                      _drawerItem(Icons.description_rounded, 'Factures', () => _pushScreen(const FacturesListScreen())),
+                      if (auth.hasPermission('vendre_pos'))
+                        _drawerItem(Icons.point_of_sale_rounded, 'Vente comptoir (POS)', () => _pushScreen(const PosScreen())),
+                      if (auth.hasPermission('voir_partenaires'))
+                        _drawerItem(Icons.people_rounded, 'Partenaires', () => _pushScreen(const PartenairesListScreen())),
+                      if (auth.hasPermission('gerer_achats'))
+                        _drawerItem(Icons.inventory_rounded, 'Réceptions', () => _pushScreen(const ReceptionsScreen())),
+                      if (auth.hasPermission('voir_categories'))
+                        _drawerItem(Icons.category_rounded, 'Catégories', () => _pushScreen(const CategoriesScreen())),
+                      if (auth.hasPermission('voir_unites'))
+                        _drawerItem(Icons.straighten_rounded, 'Unités de mesure', () => _pushScreen(const UnitesScreen())),
+                      if (auth.hasPermission('voir_factures'))
+                        _drawerItem(Icons.description_rounded, 'Factures', () => _pushScreen(const FacturesListScreen())),
                       if (auth.estSuperAdmin)
                         _drawerItem(Icons.business_rounded, 'Sociétés', () => _pushScreen(const SocietesScreen())),
-                      _drawerItem(Icons.swap_horiz_rounded, 'Transferts', () => _pushScreen(const TransfertsScreen())),
-                      _drawerItem(Icons.assignment_return_rounded, 'Retours', () => _pushScreen(const RetoursScreen())),
-                      _drawerItem(Icons.fact_check_rounded, 'Inventaires', () => _pushScreen(const InventairesScreen())),
-                      _drawerItem(Icons.bar_chart_rounded, 'Rapports', () => _pushScreen(const RapportsScreen())),
-                      _drawerItem(Icons.settings_rounded, 'Paramètres', () => _pushScreen(const ParametresScreen())),
+                      if (auth.hasPermission('voir_stock'))
+                        _drawerItem(Icons.swap_horiz_rounded, 'Transferts', () => _pushScreen(const TransfertsScreen())),
+                      if (auth.hasPermission('voir_retours'))
+                        _drawerItem(Icons.assignment_return_rounded, 'Retours', () => _pushScreen(const RetoursScreen())),
+                      if (auth.hasPermission('voir_inventaire'))
+                        _drawerItem(Icons.fact_check_rounded, 'Inventaires', () => _pushScreen(const InventairesScreen())),
+                      if (auth.hasPermission('voir_rapports'))
+                        _drawerItem(Icons.bar_chart_rounded, 'Rapports', () => _pushScreen(const RapportsScreen())),
+                      if (auth.hasPermission('gerer_parametres'))
+                        _drawerItem(Icons.settings_rounded, 'Paramètres', () => _pushScreen(const ParametresScreen())),
                       Divider(color: AppTheme.sidebarBorder, height: 1, thickness: 1),
                       _sectionHeader('COMPTE'),
                       _drawerItem(Icons.person_rounded, 'Mon profil', () => _pushScreen(const ProfilScreen())),
@@ -281,4 +293,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+class _TabDef {
+  final String? permission;
+  final IconData icon;
+  final String label;
+  final Widget screen;
+  const _TabDef(this.permission, this.icon, this.label, this.screen);
 }

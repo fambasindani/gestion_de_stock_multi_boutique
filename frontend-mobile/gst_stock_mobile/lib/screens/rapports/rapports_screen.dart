@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:gst_stock_mobile/config/theme.dart';
+import 'package:gst_stock_mobile/providers/auth_provider.dart';
 import 'package:gst_stock_mobile/services/services.dart';
 import 'package:gst_stock_mobile/utils/utils.dart';
 import 'rapport_generique_screen.dart';
@@ -29,8 +31,9 @@ class RapportsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final service = RapportService();
+    final auth = context.watch<AuthProvider>();
 
-    final entries = <_ReportEntry>[
+    final allEntries = <_ReportEntry>[
       _ReportEntry('Ventes', Icons.trending_up, Colors.green, hasDate: true, columns: [
         RapportColumn('Produit', (r) => _get(r, ['produit', 'nom']) != '-' ? _get(r, ['produit', 'nom']) : _get(r, ['nom'])),
         RapportColumn('Qté', (r) => _txt(r['total_quantite'] ?? r['quantite']), numeric: true),
@@ -109,7 +112,7 @@ class RapportsScreen extends StatelessWidget {
         RapportColumn('Remise', (r) => _txt(r['total_remise']), numeric: true),
         RapportColumn('Total TTC', (r) => _txt(r['total_ttc']), numeric: true),
       ], loader: (p) => service.fetch('/rapports/ventes-vendeurs', params: p)),
-      _ReportEntry('Traçabilité', Icons.qr_code_2, Colors.deepPurple, loader: (p) async {
+      _ReportEntry('Traçabilité', Icons.qr_code_2, Colors.deepPurple, permission: 'voir_stock', loader: (p) async {
         final ops = await OperationService().getAll();
         return {'lignes': ops, 'totaux': {'total': ops.length}};
       }, columns: [
@@ -119,7 +122,7 @@ class RapportsScreen extends StatelessWidget {
         RapportColumn('Type', (r) => _txt(r['type_operation'])),
         RapportColumn('Qté', (r) => _txt(r['quantite_traitee']), numeric: true),
       ]),
-      _ReportEntry('Logs d\'activité', Icons.history, Colors.grey, loader: (p) async {
+      _ReportEntry('Logs d\'activité', Icons.history, Colors.grey, permission: 'gerer_utilisateurs', loader: (p) async {
         final res = await AuditLogService().getAll(search: p['search'] as String?);
         return {'lignes': res['lignes'], 'totaux': {'total': res['total']}};
       }, columns: [
@@ -131,11 +134,16 @@ class RapportsScreen extends StatelessWidget {
       ]),
     ];
 
+    final entries = allEntries
+        .where((e) => e.permission == null || auth.hasPermission(e.permission!))
+        .toList();
+
     return Scaffold(
       backgroundColor: AppTheme.surface,
       appBar: AppBar(title: const Text('Rapports')),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(12),
+      body: SafeArea(
+        child: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 96),
         itemCount: entries.length,
         separatorBuilder: (_, __) => const SizedBox(height: 8),
         itemBuilder: (context, i) {
@@ -168,6 +176,7 @@ class RapportsScreen extends StatelessWidget {
           );
         },
       ),
+      ),
     );
   }
 }
@@ -178,6 +187,7 @@ class _ReportEntry {
   final Color color;
   final bool hasDate;
   final Map<String, dynamic> fixed;
+  final String? permission;
   final List<RapportColumn> columns;
   final Future<Map<String, dynamic>> Function(Map<String, dynamic> params) loader;
   _ReportEntry(
@@ -188,5 +198,6 @@ class _ReportEntry {
     required this.columns,
     this.hasDate = false,
     this.fixed = const {},
+    this.permission,
   });
 }
