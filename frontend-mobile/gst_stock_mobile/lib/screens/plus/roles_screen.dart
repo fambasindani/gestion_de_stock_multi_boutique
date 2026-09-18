@@ -51,7 +51,7 @@ class _RolesScreenState extends State<RolesScreen> {
   }
 
   Future<void> _confirmDelete(Role r) async {
-    if (r.nom == 'administrateur') {
+    if (r.nom == 'administrateur' || r.nom == 'responsable_boutique') {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ce rôle système ne peut pas être supprimé')));
       return;
     }
@@ -122,6 +122,14 @@ class _RolesScreenState extends State<RolesScreen> {
             child: Text(r.actif ? 'Actif' : 'Inactif', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: r.actif ? AppTheme.success : AppTheme.danger))),
           const SizedBox(width: 8),
           Text('$permCount permission(s)', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+          const SizedBox(width: 8),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(color: AppTheme.textSecondary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
+            child: Text(r.societeId != null ? 'Boutique' : 'Global', style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary))),
+          if (r.utilisateursCount > 0) ...[
+            const SizedBox(width: 8),
+            Text('${r.utilisateursCount} utilisateur(s)', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+          ],
         ]),
       ])),
       PopupMenuButton<String>(onSelected: (v) async {
@@ -158,6 +166,7 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
   bool _actif = true;
   bool _saving = false;
   bool _loadingPerms = true;
+  String _permQuery = '';
 
   @override
   void initState() {
@@ -189,7 +198,8 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
 
   @override
   void dispose() {
-    _nomCtrl.dispose(); _descCtrl.dispose();
+    _nomCtrl.dispose();
+    _descCtrl.dispose();
     super.dispose();
   }
 
@@ -209,8 +219,16 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final q = _permQuery.trim().toLowerCase();
+    final filtered = q.isEmpty
+        ? _allPermissions
+        : _allPermissions.where((p) =>
+            p.nom.toLowerCase().contains(q) ||
+            (p.description ?? '').toLowerCase().contains(q) ||
+            (p.garde ?? '').toLowerCase().contains(q)).toList();
+
     final grouped = <String, List<Permission>>{};
-    for (final p in _allPermissions) {
+    for (final p in filtered) {
       grouped.putIfAbsent(p.garde ?? 'autres', () => []).add(p);
     }
     final groupKeys = grouped.keys.toList()..sort();
@@ -226,9 +244,35 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
         const SizedBox(height: 8),
         SwitchListTile(title: const Text('Actif'), value: _actif, onChanged: (v) => setState(() => _actif = v), contentPadding: EdgeInsets.zero),
         const SizedBox(height: 16),
-        const Text('PERMISSIONS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textSecondary, letterSpacing: 1)),
+        Row(children: [
+          const Text('PERMISSIONS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textSecondary, letterSpacing: 1)),
+          const Spacer(),
+          Text('${_selectedPermIds.length} / ${_allPermissions.length}', style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+        ]),
         const SizedBox(height: 8),
+        TextField(
+          decoration: const InputDecoration(
+            hintText: 'Rechercher une permission...',
+            prefixIcon: Icon(Icons.search),
+            isDense: true,
+          ),
+          onChanged: (v) => setState(() => _permQuery = v),
+        ),
+        const SizedBox(height: 8),
+        Row(children: [
+          TextButton.icon(
+            onPressed: () => setState(() => _selectedPermIds = filtered.map((p) => p.id).toSet().toList()..addAll(_selectedPermIds)),
+            icon: const Icon(Icons.check_circle_outline, size: 16),
+            label: Text(q.isEmpty ? 'Tout sélectionner' : 'Sélectionner les résultats'),
+          ),
+          TextButton.icon(
+            onPressed: () => setState(() => _selectedPermIds = []),
+            icon: const Icon(Icons.remove_circle_outline, size: 16),
+            label: const Text('Désélectionner'),
+          ),
+        ]),
         if (_loadingPerms) const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()))
+        else if (filtered.isEmpty) const Padding(padding: EdgeInsets.all(24), child: Center(child: Text('Aucune permission trouvée')))
         else ...groupKeys.map((garde) => Card(margin: const EdgeInsets.only(bottom: 10), child: Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(garde.toUpperCase(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.textSecondary, letterSpacing: 1)),
           const Divider(height: 12),

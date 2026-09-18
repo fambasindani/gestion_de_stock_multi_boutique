@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:gst_stock_mobile/providers/auth_provider.dart';
 import 'package:gst_stock_mobile/config/theme.dart';
+import 'package:gst_stock_mobile/models/models.dart';
+import 'package:gst_stock_mobile/services/services.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'produits/produits_list_screen.dart';
 import 'commandes/ventes_list_screen.dart' as cmd;
@@ -11,6 +13,12 @@ import 'partenaires/partenaires_list_screen.dart';
 import 'factures/factures_list_screen.dart';
 import 'rapports/rapports_screen.dart';
 import 'plus/plus_screen.dart';
+import 'pos/pos_screen.dart';
+import 'profil/profil_screen.dart';
+import 'retours/retours_screen.dart';
+import 'inventaire/inventaires_screen.dart';
+import 'parametres/parametres_screen.dart';
+import 'package:gst_stock_mobile/widgets/notification_bell.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -78,6 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () => _scaffoldKey.currentState?.openDrawer(),
             tooltip: 'Menu',
           ),
+          actions: const [
+            NotificationBell(),
+            SizedBox(width: 4),
+          ],
         ),
         body: _screens[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
@@ -119,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+                if (auth.estSuperAdmin) _societeSelector(auth),
                 Expanded(
                   child: ListView(
                     padding: EdgeInsets.zero,
@@ -130,12 +143,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       _drawerItem(Icons.warehouse_rounded, 'Stock', () => _navigateTo(3), index: 3),
                       Divider(color: AppTheme.sidebarBorder, height: 1, thickness: 1),
                       _sectionHeader('GESTION'),
+                      _drawerItem(Icons.point_of_sale_rounded, 'Vente comptoir (POS)', () => _pushScreen(const PosScreen())),
                       _drawerItem(Icons.people_rounded, 'Partenaires', () => _pushScreen(const PartenairesListScreen())),
                       _drawerItem(Icons.description_rounded, 'Factures', () => _pushScreen(const FacturesListScreen())),
                       _drawerItem(Icons.swap_horiz_rounded, 'Transferts', () => _pushScreen(const TransfertsScreen())),
+                      _drawerItem(Icons.assignment_return_rounded, 'Retours', () => _pushScreen(const RetoursScreen())),
+                      _drawerItem(Icons.fact_check_rounded, 'Inventaires', () => _pushScreen(const InventairesScreen())),
                       _drawerItem(Icons.bar_chart_rounded, 'Rapports', () => _pushScreen(const RapportsScreen())),
+                      _drawerItem(Icons.settings_rounded, 'Paramètres', () => _pushScreen(const ParametresScreen())),
                       Divider(color: AppTheme.sidebarBorder, height: 1, thickness: 1),
                       _sectionHeader('COMPTE'),
+                      _drawerItem(Icons.person_rounded, 'Mon profil', () => _pushScreen(const ProfilScreen())),
                       _drawerItem(Icons.logout_rounded, 'Déconnexion', () {
                         Navigator.pop(context);
                         showDialog(
@@ -182,6 +200,44 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _societeSelector(AuthProvider auth) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+      child: FutureBuilder<List<Societe>>(
+        future: SocieteService().getAll(),
+        builder: (context, snapshot) {
+          final societes = snapshot.data ?? [];
+          final value = auth.selectedSocieteId?.toString() ?? '';
+          return DropdownButtonFormField<String>(
+            initialValue: value,
+            dropdownColor: AppTheme.sidebarBg,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+            decoration: InputDecoration(
+              labelText: 'Société ciblée',
+              labelStyle: TextStyle(color: AppTheme.sidebarText),
+              isDense: true,
+              filled: true,
+              fillColor: AppTheme.sidebarHover,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+            ),
+            items: [
+              const DropdownMenuItem(value: '', child: Text('Toutes les sociétés')),
+              ...societes.map((s) => DropdownMenuItem(value: s.id.toString(), child: Text(s.nom))),
+            ],
+            onChanged: (v) async {
+              await auth.setSelectedSociete(v);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Société sélectionnée. Rouvrez les écrans pour rafraîchir.')),
+                );
+              }
+            },
+          );
+        },
       ),
     );
   }

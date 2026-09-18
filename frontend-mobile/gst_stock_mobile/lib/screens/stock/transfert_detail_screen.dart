@@ -89,6 +89,7 @@ class _TransfertDetailScreenState extends State<TransfertDetailScreen> {
               case 'edit': _edit();
               case 'delete': _delete();
               case 'confirme': _changerEtat('confirme');
+              case 'assigne': _changerEtat('assigne');
               case 'annule': _changerEtat('annule');
               case 'valider': _valider();
             }
@@ -98,7 +99,11 @@ class _TransfertDetailScreenState extends State<TransfertDetailScreen> {
               const PopupMenuItem(value: 'confirme', child: ListTile(leading: Icon(Icons.check_circle_outline, color: Colors.blue), title: Text('Confirmer'), dense: true)),
             ],
             if (_transfert!.etat == 'confirme') ...[
+              const PopupMenuItem(value: 'assigne', child: ListTile(leading: Icon(Icons.assignment_ind_outlined, color: Colors.indigo), title: Text('Assigner'), dense: true)),
               const PopupMenuItem(value: 'valider', child: ListTile(leading: Icon(Icons.done_all, color: Colors.green), title: Text('Valider'), dense: true)),
+            ],
+            if (_transfert!.etat == 'assigne') ...[
+              const PopupMenuItem(value: 'valider', child: ListTile(leading: Icon(Icons.done_all, color: Colors.green), title: Text('Valider et terminer'), dense: true)),
             ],
             if (_transfert!.etat != 'termine' && _transfert!.etat != 'annule') ...[
               const PopupMenuItem(value: 'annule', child: ListTile(leading: Icon(Icons.cancel_outlined, color: Colors.red), title: Text('Annuler'), dense: true)),
@@ -182,6 +187,77 @@ class _TransfertDetailScreenState extends State<TransfertDetailScreen> {
         Text('Traité: ${m.quantiteTraitee.toStringAsFixed(1)}', style: TextStyle(color: Colors.grey[500], fontSize: 13)),
       ]),
       if (m.lot != null) Padding(padding: const EdgeInsets.only(top: 4), child: Text('Lot: ${m.lot!.nom}', style: TextStyle(color: Colors.grey[600], fontSize: 12))),
+      if (_transfert!.etat != 'termine' && _transfert!.etat != 'annule')
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: () => _traiter(m),
+            icon: const Icon(Icons.playlist_add_check, size: 16),
+            label: const Text('Traiter'),
+          ),
+        ),
     ])));
+  }
+
+  Future<void> _traiter(MouvementStock m) async {
+    final restante = m.quantiteDemandee - m.quantiteTraitee;
+    final qteCtrl = TextEditingController(text: restante.toStringAsFixed(2));
+    String typeOp = 'prelevement';
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModal) => AlertDialog(
+          title: Text(m.nomProduit),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Restant à traiter : ${restante.toStringAsFixed(2)}'),
+              const SizedBox(height: 12),
+              TextField(
+                controller: qteCtrl,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Quantité traitée'),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: typeOp,
+                decoration: const InputDecoration(labelText: 'Type d\'opération'),
+                items: const [
+                  DropdownMenuItem(value: 'prelevement', child: Text('Prélèvement')),
+                  DropdownMenuItem(value: 'reception', child: Text('Réception')),
+                  DropdownMenuItem(value: 'scan', child: Text('Scan')),
+                ],
+                onChanged: (v) => setModal(() => typeOp = v ?? 'prelevement'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), foregroundColor: Colors.white),
+              child: const Text('Enregistrer'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (ok != true) return;
+    try {
+      await StockService().ajouterOperation(widget.id, {
+        'mouvement_id': m.id,
+        'produit_id': m.produitId,
+        if (m.lotId != null) 'lot_id': m.lotId,
+        'quantite_traitee': double.tryParse(qteCtrl.text.replaceAll(',', '.')) ?? 0,
+        'emplacement_source_id': m.emplacementSourceId,
+        'emplacement_destination_id': m.emplacementDestinationId,
+        'type_operation': typeOp,
+      });
+      _load();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.redAccent));
+      }
+    }
   }
 }

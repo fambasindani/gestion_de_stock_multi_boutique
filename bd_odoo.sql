@@ -1179,7 +1179,7 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 	(50, 'App\\Models\\Utilisateur', 1, 'auth_token', '998a7b7fb6e45acf97f77bf5dcc16919650de07b0b2a8d84370a2448245a3e80', '["*"]', '2026-07-17 11:25:51', NULL, '2026-07-17 11:24:48', '2026-07-17 11:25:51'),
 	(77, 'App\\Models\\Utilisateur', 11, 'auth_token', 'c2fde285d29f1fb4289375cf538cf545e5477ee9bc4505e6b79001a87b90876c', '["*"]', '2026-09-16 19:15:59', NULL, '2026-09-16 19:15:59', '2026-09-16 19:15:59'),
 	(224, 'App\\Models\\Utilisateur', 15, 'auth_token', '84c0b91ab0d55d618871b643232cf76918c3b4662ca8324b4c3eabfb89b95531', '["*"]', NULL, NULL, '2026-09-18 11:41:30', '2026-09-18 11:41:30'),
-	(232, 'App\\Models\\Utilisateur', 14, 'auth_token', '82e56b6778bc116e95f1829b59e83c74d2cb04d536b2d4aee25ba2760bad8746', '["*"]', '2026-09-18 12:03:23', NULL, '2026-09-18 12:00:19', '2026-09-18 12:03:23');
+	(232, 'App\\Models\\Utilisateur', 14, 'auth_token', '82e56b6778bc116e95f1829b59e83c74d2cb04d536b2d4aee25ba2760bad8746', '["*"]', '2026-09-18 12:05:24', NULL, '2026-09-18 12:00:19', '2026-09-18 12:05:24');
 
 -- Listage de la structure de table bd_odoo. produit_modele
 CREATE TABLE IF NOT EXISTS `produit_modele` (

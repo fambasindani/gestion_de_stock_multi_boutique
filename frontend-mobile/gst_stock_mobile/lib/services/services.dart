@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../models/models.dart';
 import 'api_client.dart';
 
@@ -38,8 +39,20 @@ class ProduitService {
   }
 
   Future<List<ProduitModele>> searchByBarcode(String barcode) async {
-    final data = await _api.get('/produits', params: {'search': barcode, 'modele': true});
-    return _extractList(data).map((e) => ProduitModele.fromJson(e)).toList();
+    // Endpoint dédié au scan (code-barres / QR)
+    final data = await _api.get('/produits/scan/${Uri.encodeComponent(barcode)}');
+    final raw = data['data'];
+    if (raw is List) {
+      return raw.map((e) => ProduitModele.fromJson(e)).toList();
+    }
+    if (raw is Map<String, dynamic>) {
+      if (raw['variantes'] != null || raw['nom'] != null) {
+        return [ProduitModele.fromJson(raw)];
+      }
+      final inner = raw['data'];
+      if (inner is List) return inner.map((e) => ProduitModele.fromJson(e)).toList();
+    }
+    return [];
   }
 }
 
@@ -282,6 +295,10 @@ class StockService {
   Future<void> validerTransfert(int id) async {
     await _api.post('/transferts/$id/valider');
   }
+
+  Future<void> ajouterOperation(int transfertId, Map<String, dynamic> body) async {
+    await _api.post('/transferts/$transfertId/operations', data: body);
+  }
 }
 
 class FactureService {
@@ -341,6 +358,25 @@ class UserService {
   Future<Utilisateur> getById(int id) async {
     final data = await _api.get('/utilisateurs/$id');
     return Utilisateur.fromJson(data['data'] ?? data);
+  }
+
+  /// Détail complet : utilisateur + permissions + statistiques + activité.
+  Future<Map<String, dynamic>> getDetails(int id) async {
+    return await _api.get('/utilisateurs/$id');
+  }
+
+  /// Liste paginée.
+  Future<Map<String, dynamic>> getPage({String? search, int page = 1, int perPage = 15}) async {
+    final params = <String, dynamic>{'page': page, 'per_page': perPage};
+    if (search != null && search.isNotEmpty) params['search'] = search;
+    final data = await _api.get('/utilisateurs', params: params);
+    final raw = data['data'];
+    final items = raw is List ? raw.map((e) => Utilisateur.fromJson(e as Map<String, dynamic>)).toList() : <Utilisateur>[];
+    return {
+      'items': items,
+      'total': data['total'] ?? items.length,
+      'last_page': data['last_page'] ?? 1,
+    };
   }
 
   Future<Utilisateur> create(Map<String, dynamic> body) async {
@@ -426,45 +462,255 @@ class PermissionService {
 class DashboardService {
   final ApiClient _api = ApiClient();
 
-  Future<Map<String, dynamic>> getStats() async {
-    final data = await _api.get('/dashboard');
+  Future<Map<String, dynamic>> getStats({String? dateDebut, String? dateFin}) async {
+    final params = <String, dynamic>{};
+    if (dateDebut != null) params['date_debut'] = dateDebut;
+    if (dateFin != null) params['date_fin'] = dateFin;
+    final data = await _api.get('/dashboard', params: params.isEmpty ? null : params);
     return data['data'] is Map<String, dynamic> ? data['data'] as Map<String, dynamic> : {};
+  }
+}
+
+class PosService {
+  final ApiClient _api = ApiClient();
+
+  Future<PosVenteResult> vendre({
+    required List<Map<String, dynamic>> lignes,
+    int? partenaireId,
+    String? clientNom,
+    String? modePaiement,
+    double? montantPaye,
+    int? emplacementId,
+  }) async {
+    final data = await _api.post('/pos/vendre', data: {
+      'lignes': lignes,
+      if (partenaireId != null) 'partenaire_id': partenaireId,
+      if (clientNom != null && clientNom.isNotEmpty) 'client_nom': clientNom,
+      if (modePaiement != null) 'mode_paiement': modePaiement,
+      if (montantPaye != null) 'montant_paye': montantPaye,
+      if (emplacementId != null) 'emplacement_id': emplacementId,
+    });
+    return PosVenteResult.fromJson(data['data'] as Map<String, dynamic>);
+  }
+
+  Future<Map<String, dynamic>> journal({String? date}) async {
+    final data = await _api.get('/pos/journal', params: date != null ? {'date': date} : null);
+    return (data['data'] as Map<String, dynamic>?) ?? {};
+  }
+
+  Future<void> cloturer() async {
+    await _api.post('/pos/cloturer');
+  }
+
+  Future<void> reouvrir() async {
+    await _api.post('/pos/reouvrir');
+  }
+}
+
+class NotificationService {
+  final ApiClient _api = ApiClient();
+
+  Future<List<AppNotification>> getAll() async {
+    final data = await _api.get('/notifications');
+    final raw = data['data'];
+    final list = raw is List ? raw : (raw is Map ? (raw['data'] as List? ?? []) : []);
+    return list.map((e) => AppNotification.fromJson(e as Map<String, dynamic>)).toList();
+  }
+}
+
+class ProfilService {
+  final ApiClient _api = ApiClient();
+
+  Future<Utilisateur> get() async {
+    final data = await _api.get('/profil');
+    return Utilisateur.fromJson((data['data'] ?? data['utilisateur'] ?? data) as Map<String, dynamic>);
+  }
+
+  Future<void> update(Map<String, dynamic> body) async {
+    await _api.put('/profil', data: body);
+  }
+
+  Future<void> updatePassword(Map<String, dynamic> body) async {
+    await _api.put('/profil/password', data: body);
+  }
+}
+
+class ParametreService {
+  final ApiClient _api = ApiClient();
+
+  Future<Map<String, dynamic>> getAll() async {
+    final data = await _api.get('/parametres');
+    final raw = data['data'];
+    return raw is Map<String, dynamic> ? raw : {};
+  }
+
+  Future<void> update(Map<String, dynamic> params) async {
+    await _api.put('/parametres', data: {'parametres': params});
+  }
+
+  Future<void> uploadLogo(String filePath) async {
+    final form = FormData();
+    form.files.add(MapEntry(
+      'logo',
+      await MultipartFile.fromFile(filePath, filename: filePath.split(RegExp(r'[/\\]')).last),
+    ));
+    await _api.postMultipart('/societe/logo', form);
+  }
+
+  Future<void> deleteLogo() async {
+    await _api.delete('/societe/logo');
+  }
+}
+
+class SocieteService {
+  final ApiClient _api = ApiClient();
+
+  Future<List<Societe>> getAll() async {
+    final data = await _api.get('/societes', params: {'per_page': 200});
+    return _extractList(data).map((e) => Societe.fromJson(e)).toList();
   }
 }
 
 class RapportService {
   final ApiClient _api = ApiClient();
 
-  Future<List<dynamic>> getVentes({String? dateDebut, String? dateFin}) async {
-    final params = <String, dynamic>{};
-    if (dateDebut != null) params['date_debut'] = dateDebut;
-    if (dateFin != null) params['date_fin'] = dateFin;
-    final data = await _api.get('/rapports/ventes', params: params);
+  /// Requête générique : renvoie { lignes: [...], totaux: {...} }.
+  Future<Map<String, dynamic>> fetch(String path, {Map<String, dynamic>? params}) async {
+    final data = await _api.get(path, params: params);
     final inner = data['data'];
-    if (inner is List) return inner;
-    if (inner is Map) return (inner['lignes'] as List?) ?? [];
-    return [];
+    if (inner is Map) {
+      return {
+        'lignes': inner['lignes'] ?? [],
+        'totaux': inner['totaux'] ?? {},
+      };
+    }
+    if (inner is List) {
+      return {'lignes': inner, 'totaux': {}};
+    }
+    return {'lignes': [], 'totaux': {}};
+  }
+
+  Future<List<dynamic>> getVentes({String? dateDebut, String? dateFin}) async {
+    final r = await fetch('/rapports/ventes', params: {
+      if (dateDebut != null) 'date_debut': dateDebut,
+      if (dateFin != null) 'date_fin': dateFin,
+    });
+    return r['lignes'] as List<dynamic>;
   }
 
   Future<List<dynamic>> getAchats({String? dateDebut, String? dateFin}) async {
-    final params = <String, dynamic>{};
-    if (dateDebut != null) params['date_debut'] = dateDebut;
-    if (dateFin != null) params['date_fin'] = dateFin;
-    final data = await _api.get('/rapports/achats', params: params);
-    final inner = data['data'];
-    if (inner is List) return inner;
-    if (inner is Map) return (inner['lignes'] as List?) ?? [];
-    return [];
+    final r = await fetch('/rapports/achats', params: {
+      if (dateDebut != null) 'date_debut': dateDebut,
+      if (dateFin != null) 'date_fin': dateFin,
+    });
+    return r['lignes'] as List<dynamic>;
   }
 
   Future<List<dynamic>> getMouvements({String? dateDebut, String? dateFin}) async {
+    final r = await fetch('/rapports/mouvements', params: {
+      if (dateDebut != null) 'date_debut': dateDebut,
+      if (dateFin != null) 'date_fin': dateFin,
+    });
+    return r['lignes'] as List<dynamic>;
+  }
+}
+
+class RetourService {
+  final ApiClient _api = ApiClient();
+
+  Future<List<Retour>> getAll({String? search, String? type}) async {
     final params = <String, dynamic>{};
-    if (dateDebut != null) params['date_debut'] = dateDebut;
-    if (dateFin != null) params['date_fin'] = dateFin;
-    final data = await _api.get('/rapports/mouvements', params: params);
+    if (search != null && search.isNotEmpty) params['search'] = search;
+    if (type != null && type != 'all') params['type'] = type;
+    final data = await _api.get('/retours', params: params.isEmpty ? null : params);
+    return _extractList(data).map((e) => Retour.fromJson(e)).toList();
+  }
+
+  Future<Retour> getById(int id) async {
+    final data = await _api.get('/retours/$id');
     final inner = data['data'];
-    if (inner is List) return inner;
-    if (inner is Map) return (inner['lignes'] as List?) ?? [];
-    return [];
+    return Retour.fromJson(inner is Map<String, dynamic> ? inner : data);
+  }
+
+  Future<Retour> create(Map<String, dynamic> body) async {
+    final data = await _api.post('/retours', data: body);
+    return Retour.fromJson(data['data'] ?? data);
+  }
+
+  Future<void> valider(int id) async {
+    await _api.post('/retours/$id/valider');
+  }
+
+  Future<void> delete(int id) async {
+    await _api.delete('/retours/$id');
+  }
+}
+
+class InventaireService {
+  final ApiClient _api = ApiClient();
+
+  Future<List<Inventaire>> getAll({String? search, String? statut}) async {
+    final params = <String, dynamic>{};
+    if (search != null && search.isNotEmpty) params['search'] = search;
+    if (statut != null && statut != 'all') params['statut'] = statut;
+    final data = await _api.get('/inventaires', params: params.isEmpty ? null : params);
+    return _extractList(data).map((e) => Inventaire.fromJson(e)).toList();
+  }
+
+  Future<Map<String, dynamic>> getById(int id) async {
+    final data = await _api.get('/inventaires/$id');
+    final inner = data['data'];
+    if (inner is Map<String, dynamic>) return inner;
+    return {};
+  }
+
+  Future<Inventaire> create(Map<String, dynamic> body) async {
+    final data = await _api.post('/inventaires', data: body);
+    return Inventaire.fromJson(data['data'] ?? data);
+  }
+
+  Future<void> delete(int id) async {
+    await _api.delete('/inventaires/$id');
+  }
+
+  Future<void> genererLignes(int id) async {
+    await _api.post('/inventaires/$id/generer-lignes');
+  }
+
+  Future<void> ajouterLigne(int id, Map<String, dynamic> body) async {
+    await _api.post('/inventaires/$id/lignes', data: body);
+  }
+
+  Future<void> updateLigne(int id, int ligneId, Map<String, dynamic> body) async {
+    await _api.put('/inventaires/$id/lignes/$ligneId', data: body);
+  }
+
+  Future<void> supprimerLigne(int id, int ligneId) async {
+    await _api.delete('/inventaires/$id/lignes/$ligneId');
+  }
+
+  Future<void> cloturer(int id) async {
+    await _api.post('/inventaires/$id/cloturer');
+  }
+
+  Future<void> ajuster(int id) async {
+    await _api.post('/inventaires/$id/ajuster');
+  }
+}
+
+class AuditLogService {
+  final ApiClient _api = ApiClient();
+
+  Future<Map<String, dynamic>> getAll({String? search, String? action, String? societeId}) async {
+    final params = <String, dynamic>{};
+    if (search != null && search.isNotEmpty) params['search'] = search;
+    if (action != null && action != 'all') params['action'] = action;
+    if (societeId != null && societeId.isNotEmpty) params['societe_id'] = societeId;
+    final data = await _api.get('/audit-logs', params: params.isEmpty ? null : params);
+    final inner = data['data'];
+    if (inner is Map) {
+      return {'lignes': inner['data'] ?? [], 'total': inner['total'] ?? 0};
+    }
+    return {'lignes': [], 'total': 0};
   }
 }

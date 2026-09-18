@@ -16,6 +16,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool _isLoading = true;
   String? _error;
   bool _showStats = true;
+  String _periode = 'mois';
 
   @override
   void initState() {
@@ -23,10 +24,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _loadStats();
   }
 
+  Map<String, String> _rangeParams() {
+    final now = DateTime.now();
+    DateTime start;
+    switch (_periode) {
+      case 'jour':
+        start = DateTime(now.year, now.month, now.day);
+        break;
+      case 'semaine':
+        start = now.subtract(Duration(days: now.weekday - 1));
+        break;
+      case 'annee':
+        start = DateTime(now.year, 1, 1);
+        break;
+      case 'tout':
+        start = DateTime(2020, 1, 1);
+        break;
+      default:
+        start = DateTime(now.year, now.month, 1);
+    }
+    String iso(DateTime d) => d.toIso8601String().split('T').first;
+    return {'date_debut': iso(start), 'date_fin': iso(now)};
+  }
+
   Future<void> _loadStats() async {
     setState(() { _isLoading = true; _error = null; });
     try {
-      final data = await _dashboardService.getStats();
+      final range = _rangeParams();
+      final data = await _dashboardService.getStats(
+        dateDebut: range['date_debut'],
+        dateFin: range['date_fin'],
+      );
       if (mounted) setState(() => _data = data);
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
@@ -74,6 +102,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: ListView(padding: const EdgeInsets.all(16), children: [
         _buildHeader(user?.nom ?? 'Utilisateur'),
         const SizedBox(height: 20),
+        _buildPeriodeSelector(),
+        const SizedBox(height: 8),
         _buildToggle(),
         if (_showStats) ...[
           const SizedBox(height: 16),
@@ -111,6 +141,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
       const SizedBox(height: 4),
       Text(_formatDate(DateTime.now()), style: const TextStyle(fontSize: 14, color: Color(0xFF64748B))),
     ]);
+  }
+
+  Widget _buildPeriodeSelector() {
+    const labels = {
+      'jour': "Aujourd'hui",
+      'semaine': 'Cette semaine',
+      'mois': 'Ce mois',
+      'annee': 'Cette année',
+      'tout': 'Tout',
+    };
+    return Row(
+      children: [
+        const Icon(Icons.calendar_today_outlined, size: 16, color: Color(0xFF64748B)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _periode,
+              isExpanded: true,
+              items: labels.entries
+                  .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
+                  .toList(),
+              onChanged: (v) {
+                if (v == null) return;
+                setState(() => _periode = v);
+                _loadStats();
+              },
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildToggle() {

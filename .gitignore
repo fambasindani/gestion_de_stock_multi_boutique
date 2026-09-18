@@ -8,6 +8,12 @@ frontend-mobile/**/ios/App/build/
 # Fichiers uploadés (logos des boutiques)
 backend/public/logos/
 
+# Archives
+*.zip
+
+# Build Flutter
+frontend-mobile/**/build/
+
 # Divers
 .DS_Store
 Thumbs.db

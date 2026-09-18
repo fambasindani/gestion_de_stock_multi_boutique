@@ -17,6 +17,9 @@ class _UtilisateursScreenState extends State<UtilisateursScreen> {
   List<Utilisateur> _utilisateurs = [];
   bool _isLoading = true;
   String? _error;
+  int _page = 1;
+  int _lastPage = 1;
+  int _total = 0;
 
   @override
   void initState() {
@@ -30,11 +33,21 @@ class _UtilisateursScreenState extends State<UtilisateursScreen> {
     super.dispose();
   }
 
-  Future<void> _load({String? search}) async {
+  Future<void> _load({String? search, int? page}) async {
+    if (page != null) _page = page;
     setState(() { _isLoading = true; _error = null; });
     try {
-      final data = await _userService.getAll(search: search);
-      if (mounted) setState(() => _utilisateurs = data);
+      final data = await _userService.getPage(
+        search: search ?? (_searchController.text.isEmpty ? null : _searchController.text),
+        page: _page,
+      );
+      if (mounted) {
+        setState(() {
+          _utilisateurs = (data['items'] as List).cast<Utilisateur>();
+          _total = data['total'] as int;
+          _lastPage = data['last_page'] as int;
+        });
+      }
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
     } finally {
@@ -43,6 +56,7 @@ class _UtilisateursScreenState extends State<UtilisateursScreen> {
   }
 
   void _onSearch(String value) {
+    _page = 1;
     _load(search: value.isEmpty ? null : value);
   }
 
@@ -99,6 +113,24 @@ class _UtilisateursScreenState extends State<UtilisateursScreen> {
             itemCount: _utilisateurs.length,
             itemBuilder: (_, i) => _buildUserCard(_utilisateurs[i]),
           ))),
+      if (!_isLoading && _lastPage > 1)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: _page > 1 ? () => _load(page: _page - 1) : null,
+                icon: const Icon(Icons.chevron_left),
+              ),
+              Text('Page $_page / $_lastPage  ($_total au total)', style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+              IconButton(
+                onPressed: _page < _lastPage ? () => _load(page: _page + 1) : null,
+                icon: const Icon(Icons.chevron_right),
+              ),
+            ],
+          ),
+        ),
     ]);
   }
 

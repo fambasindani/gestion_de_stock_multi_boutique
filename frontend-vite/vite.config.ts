@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => {
   const apiUrl = env.VITE_API_URL || "http://localhost:8005/api";
 
   return {
+    // L'application est servie sous /gst (ex: http://localhost:5173/gst/dashboard/pos)
+    base: "/gst/",
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
@@ -22,6 +24,7 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       "process.env.NEXT_PUBLIC_API_URL": JSON.stringify(apiUrl),
+      "process.env.NEXT_PUBLIC_BASE_PATH": JSON.stringify("/gst"),
     },
     server: {
       port: 5173,

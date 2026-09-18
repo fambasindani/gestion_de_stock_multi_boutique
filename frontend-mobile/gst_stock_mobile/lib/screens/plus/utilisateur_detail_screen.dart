@@ -15,6 +15,7 @@ class _UtilisateurDetailScreenState extends State<UtilisateurDetailScreen> {
   final _userService = UserService();
   final _roleService = RoleService();
   Utilisateur? _user;
+  Map<String, dynamic> _details = {};
   bool _loading = true;
   String? _error;
 
@@ -27,8 +28,15 @@ class _UtilisateurDetailScreenState extends State<UtilisateurDetailScreen> {
   Future<void> _load() async {
     setState(() { _loading = true; _error = null; });
     try {
-      final user = await _userService.getById(widget.id);
-      if (mounted) setState(() => _user = user);
+      final details = await _userService.getDetails(widget.id);
+      final raw = details['data'];
+      final user = Utilisateur.fromJson((raw ?? details) as Map<String, dynamic>);
+      if (mounted) {
+        setState(() {
+          _user = user;
+          _details = details;
+        });
+      }
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
     } finally {
@@ -70,7 +78,99 @@ class _UtilisateurDetailScreenState extends State<UtilisateurDetailScreen> {
               _buildInfoCard(),
               const SizedBox(height: 16),
               _buildRolesCard(),
+              const SizedBox(height: 16),
+              _buildPermissionsCard(),
+              const SizedBox(height: 16),
+              _buildStatsCard(),
+              const SizedBox(height: 16),
+              _buildActiviteCard(),
             ]),
+    );
+  }
+
+  Widget _buildPermissionsCard() {
+    final perms = (_details['permissions'] as List?)?.map((e) => e is Map ? (e['nom'] ?? '').toString() : e.toString()).where((e) => e.isNotEmpty).toList() ?? [];
+    if (perms.isEmpty) return const SizedBox.shrink();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Permissions (${perms.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: perms
+                  .map((p) => Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                        child: Text(p.replaceAll('_', ' '), style: const TextStyle(fontSize: 11, color: AppTheme.primary)),
+                      ))
+                  .toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsCard() {
+    final stats = (_details['statistiques'] as Map<String, dynamic>?) ?? {};
+    if (stats.isEmpty) return const SizedBox.shrink();
+    Widget item(String label, String value) => Expanded(
+          child: Column(
+            children: [
+              Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 2),
+              Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+            ],
+          ),
+        );
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Statistiques de vente', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            const SizedBox(height: 12),
+            Row(children: [
+              item('Ventes', '${stats['nombre_ventes'] ?? 0}'),
+              item('Total HT', '${stats['total_ht'] ?? 0}'),
+              item('Total TTC', '${stats['total_ttc'] ?? 0}'),
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActiviteCard() {
+    final activite = (_details['activite_recente'] as List?) ?? [];
+    if (activite.isEmpty) return const SizedBox.shrink();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Activité récente', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            const Divider(height: 20),
+            ...activite.map((a) {
+              final m = a is Map<String, dynamic> ? a : <String, dynamic>{};
+              return ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.history, size: 18),
+                title: Text((m['action'] ?? '').toString(), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                subtitle: Text((m['description'] ?? '').toString(), style: const TextStyle(fontSize: 11)),
+              );
+            }),
+          ],
+        ),
+      ),
     );
   }
 

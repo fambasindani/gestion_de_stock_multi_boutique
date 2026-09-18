@@ -5,16 +5,36 @@ class LoginCredentials {
   Map<String, dynamic> toJson() => {'email': email, 'mot_de_passe': motDePasse};
 }
 
+class Societe {
+  final int id;
+  final String nom;
+  final String? code;
+  final String? logo;
+  final bool actif;
+  final String? dateExpiration;
+  Societe.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        nom = json['nom'],
+        code = json['code'],
+        logo = json['logo'],
+        actif = json['actif'] == 1 || json['actif'] == true,
+        dateExpiration = json['date_expiration'];
+}
+
 class LoginResponse {
   final String accessToken;
   final Utilisateur utilisateur;
   final List<String> roles;
   final List<String> permissions;
+  final Societe? societe;
+  final bool estSuperAdmin;
   LoginResponse.fromJson(Map<String, dynamic> json)
       : accessToken = json['access_token'],
         utilisateur = Utilisateur.fromJson(json['utilisateur']),
         roles = List<String>.from(json['roles'] ?? []),
-        permissions = List<String>.from(json['permissions'] ?? []);
+        permissions = List<String>.from(json['permissions'] ?? []),
+        societe = json['societe'] != null ? Societe.fromJson(json['societe']) : null,
+        estSuperAdmin = json['est_super_admin'] == true || json['est_super_admin'] == 1;
 }
 
 class Utilisateur {
@@ -23,6 +43,9 @@ class Utilisateur {
   final String email;
   final String? telephone;
   final bool actif;
+  final bool estSuperAdmin;
+  final int? societeId;
+  final Societe? societe;
   final String? derniereConnexion;
   final List<Role>? roles;
   Utilisateur.fromJson(Map<String, dynamic> json)
@@ -31,6 +54,9 @@ class Utilisateur {
         email = json['email'],
         telephone = json['telephone'],
         actif = json['actif'] == 1 || json['actif'] == true,
+        estSuperAdmin = json['est_super_admin'] == true || json['est_super_admin'] == 1,
+        societeId = json['societe_id'],
+        societe = json['societe'] != null ? Societe.fromJson(json['societe']) : null,
         derniereConnexion = json['derniere_connexion'],
         roles = json['roles'] != null ? (json['roles'] as List).map((r) => Role.fromJson(r)).toList() : null;
 }
@@ -443,12 +469,16 @@ class Role {
   final int id;
   final String nom;
   final String? description;
+  final int? societeId;
+  final int utilisateursCount;
   final bool actif;
   final List<Permission>? permissions;
   Role.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         nom = json['nom'],
         description = json['description'],
+        societeId = json['societe_id'],
+        utilisateursCount = json['utilisateurs_count'] ?? 0,
         actif = json['actif'] == 1 || json['actif'] == true,
         permissions = json['permissions'] != null ? (json['permissions'] as List).map((p) => Permission.fromJson(p)).toList() : null;
 }
@@ -487,6 +517,149 @@ class DashboardStats {
         totalFactures = _parseDouble(json['chiffres_affaires']?['total_factures']),
         valeurStock = _parseDouble(json['stock']?['quantite_totale']),
         stockAlerte = json['stock']?['produits_alerte'] ?? 0;
+}
+
+class PosCartLine {
+  final int produitId;
+  final String nom;
+  final String? code;
+  double prixUnitaireHt;
+  double quantite;
+  double tauxTva;
+  double tauxRemise;
+  PosCartLine({
+    required this.produitId,
+    required this.nom,
+    this.code,
+    required this.prixUnitaireHt,
+    this.quantite = 1,
+    this.tauxTva = 0,
+    this.tauxRemise = 0,
+  });
+
+  double get montantHt => quantite * prixUnitaireHt * (1 - tauxRemise / 100);
+  double get montantTva => montantHt * (tauxTva / 100);
+  double get montantTtc => montantHt + montantTva;
+}
+
+class PosVenteResult {
+  final CommandeVente commande;
+  final EcritureComptable facture;
+  final Map<String, dynamic> totaux;
+  final String? clientNom;
+  final String? vendeur;
+  PosVenteResult.fromJson(Map<String, dynamic> json)
+      : commande = CommandeVente.fromJson(json['commande']),
+        facture = EcritureComptable.fromJson(json['facture']),
+        totaux = (json['totaux'] as Map<String, dynamic>?) ?? {},
+        clientNom = json['client_nom'],
+        vendeur = json['vendeur'];
+}
+
+class LigneRetour {
+  final int id;
+  final int produitId;
+  final double quantite;
+  final double prixUnitaireHt;
+  final double montantHt;
+  final String? nomProduit;
+  LigneRetour.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        produitId = json['produit_id'],
+        quantite = _parseDouble(json['quantite']),
+        prixUnitaireHt = _parseDouble(json['prix_unitaire_ht']),
+        montantHt = _parseDouble(json['montant_ht']),
+        nomProduit = json['produit'] is Map ? json['produit']['nom'] : json['nom_produit'];
+}
+
+class Retour {
+  final int id;
+  final String reference;
+  final String dateRetour;
+  final String type;
+  final String statut;
+  final int? partenaireId;
+  final int? emplacementId;
+  final String? motif;
+  final String? notes;
+  final String? partenaireNom;
+  final String? emplacementNom;
+  final int lignesCount;
+  final List<LigneRetour>? lignes;
+  Retour.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        reference = json['reference'] ?? '#${json['id']}',
+        dateRetour = json['date_retour'] ?? '',
+        type = json['type'] ?? 'client',
+        statut = json['statut'] ?? 'brouillon',
+        partenaireId = json['partenaire_id'],
+        emplacementId = json['emplacement_id'],
+        motif = json['motif'],
+        notes = json['notes'],
+        partenaireNom = json['partenaire'] is Map ? json['partenaire']['nom'] : null,
+        emplacementNom = json['emplacement'] is Map ? json['emplacement']['nom'] : null,
+        lignesCount = json['lignes_count'] ?? (json['lignes'] is List ? (json['lignes'] as List).length : 0),
+        lignes = json['lignes'] != null ? (json['lignes'] as List).map((l) => LigneRetour.fromJson(l)).toList() : null;
+}
+
+class Inventaire {
+  final int id;
+  final String reference;
+  final String dateInventaire;
+  final String statut;
+  final String? emplacementNom;
+  final int? emplacementId;
+  final String? notes;
+  final String? dateCloture;
+  final int lignesCount;
+  Inventaire.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        reference = json['reference'] ?? '#${json['id']}',
+        dateInventaire = json['date_inventaire'] ?? '',
+        statut = json['statut'] ?? 'brouillon',
+        emplacementNom = json['emplacement'] is Map ? json['emplacement']['nom'] : null,
+        emplacementId = json['emplacement_id'],
+        notes = json['notes'],
+        dateCloture = json['date_cloture'],
+        lignesCount = json['lignes_count'] ?? 0;
+}
+
+class LigneInventaire {
+  final int id;
+  final int produitId;
+  final String? nomProduit;
+  final String? codeProduit;
+  final int? emplacementId;
+  final String? emplacementNom;
+  final double quantiteTheorique;
+  final double quantitePhysique;
+  final double ecart;
+  final bool ajuste;
+  LigneInventaire.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        produitId = json['produit_id'],
+        nomProduit = json['produit'] is Map ? json['produit']['nom'] : null,
+        codeProduit = json['produit'] is Map ? json['produit']['code_interne'] : null,
+        emplacementId = json['emplacement_id'],
+        emplacementNom = json['emplacement'] is Map ? json['emplacement']['nom'] : null,
+        quantiteTheorique = _parseDouble(json['quantite_theorique']),
+        quantitePhysique = _parseDouble(json['quantite_physique']),
+        ecart = _parseDouble(json['ecart']),
+        ajuste = json['ajuste'] == 1 || json['ajuste'] == true;
+}
+
+class AppNotification {
+  final String title;
+  final String message;
+  final String type;
+  final String level; // info | warning | danger
+  final String? link;
+  AppNotification.fromJson(Map<String, dynamic> json)
+      : title = json['title'] ?? '',
+        message = json['message'] ?? '',
+        type = json['type'] ?? 'info',
+        level = json['level'] ?? 'info',
+        link = json['link'];
 }
 
 double _parseDouble(dynamic value) {

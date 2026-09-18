@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:gst_stock_mobile/providers/auth_provider.dart';
+import 'package:gst_stock_mobile/screens/auth/forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -165,7 +166,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                        ),
+                        child: const Text(
+                          'Mot de passe oublié ?',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      ),
+                    ),
                     Consumer<AuthProvider>(
                       builder: (context, auth, _) {
                         if (auth.error != null) {

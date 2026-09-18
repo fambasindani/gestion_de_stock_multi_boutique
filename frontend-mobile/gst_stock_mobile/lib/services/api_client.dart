@@ -18,6 +18,7 @@ class ApiClient {
   late final Dio _dio;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   static const _tokenKey = 'auth_token';
+  static const _societeKey = 'selected_societe';
 
   ApiClient._internal() {
     _dio = Dio(BaseOptions(
@@ -31,6 +32,11 @@ class ApiClient {
         final token = await _storage.read(key: _tokenKey);
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
+        }
+        // Super-admin : société ciblée
+        final societe = await _storage.read(key: _societeKey);
+        if (societe != null && societe.isNotEmpty) {
+          options.headers['X-Societe-Id'] = societe;
         }
         handler.next(options);
       },
@@ -59,6 +65,14 @@ class ApiClient {
       return _storage.write(key: _tokenKey, value: token);
     }
     return _storage.delete(key: _tokenKey);
+  }
+
+  Future<String?> getSociete() => _storage.read(key: _societeKey);
+  Future<void> setSociete(String? societeId) {
+    if (societeId != null && societeId.isNotEmpty) {
+      return _storage.write(key: _societeKey, value: societeId);
+    }
+    return _storage.delete(key: _societeKey);
   }
 
   Future<Map<String, dynamic>> _handleResponse(Response response) async {
@@ -90,6 +104,19 @@ class ApiClient {
   Future<Map<String, dynamic>> put(String path, {dynamic data}) async {
     try {
       final response = await _dio.put(path, data: data);
+      return _handleResponse(response);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> postMultipart(String path, FormData form) async {
+    try {
+      final response = await _dio.post(
+        path,
+        data: form,
+        options: Options(contentType: 'multipart/form-data'),
+      );
       return _handleResponse(response);
     } on DioException catch (e) {
       throw _handleDioError(e);

@@ -98,7 +98,7 @@ import RapportsLogsPage from "@/app/rapports/logs/page";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/gst">
       <Routes>
         {/* Public */}
         <Route path="/" element={<RootLoginPage />} />

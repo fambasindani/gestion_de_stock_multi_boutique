@@ -86,8 +86,9 @@ export class ApiClient {
         if (typeof window !== 'undefined') {
           const pathname = window.location.pathname;
           if (!pathname.includes('/auth/login') && !pathname.includes('/login')) {
-            console.log('🔴 Redirection vers /auth/login depuis client.ts');
-            window.location.href = '/auth/login';
+            const base = process.env.NEXT_PUBLIC_BASE_PATH || '';
+            console.log('🔴 Redirection vers la page de connexion depuis client.ts');
+            window.location.href = `${base}/auth/login`;
           }
         }
         
